@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pretty_gauge/pretty_gauge.dart';
+import 'package:syncfusion_flutter_gauges/gauges.dart';
 
 class ScoreScreen extends StatelessWidget {
   final double bmiScore;
@@ -33,22 +33,65 @@ class ScoreScreen extends StatelessWidget {
               const SizedBox(
                 height: 50,
               ),
-              PrettyGauge(
-                gaugeSize: 300,
-                minValue: 0,
-                maxValue: 40,
-                segments: [
-                  GaugeSegment('UnderWeight', 18.5, Colors.red),
-                  GaugeSegment('Normal', 6.4, Colors.green),
-                  GaugeSegment('OverWeight', 5, Colors.orange),
-                  GaugeSegment('Obese', 10.1, Colors.pink),
+              SfRadialGauge(
+                axes: <RadialAxis>[
+                  RadialAxis(
+                      showLabels: false,
+                      showAxisLine: false,
+                      showTicks: false,
+                      minimum: 0,
+                      maximum: 40,
+                      ranges: <GaugeRange>[
+                        GaugeRange(
+                            startValue: 0,
+                            endValue: 18.5,
+                            color: Colors.red,
+                            sizeUnit: GaugeSizeUnit.factor,
+                            startWidth: 0.4,
+                            endWidth: 0.4),
+                        GaugeRange(
+                          startValue: 18.5,
+                          endValue: 24.9,
+                          color: Colors.green,
+                          startWidth: 0.4,
+                          endWidth: 0.4,
+                          sizeUnit: GaugeSizeUnit.factor,
+                        ),
+                        GaugeRange(
+                          startValue: 24.9,
+                          endValue: 29.9,
+                          color: Colors.orange,
+                          sizeUnit: GaugeSizeUnit.factor,
+                          startWidth: 0.4,
+                          endWidth: 0.4,
+                        ),
+                        GaugeRange(
+                          startValue: 29.9,
+                          endValue: 40,
+                          color: Colors.pink,
+                          sizeUnit: GaugeSizeUnit.factor,
+                          startWidth: 0.4,
+                          endWidth: 0.4,
+                        ),
+                      ],
+                      pointers: <GaugePointer>[
+                        NeedlePointer(
+                            value: bmiScore,
+                            lengthUnit: GaugeSizeUnit.logicalPixel,
+                            needleLength: 140,
+                            enableAnimation: true)
+                      ],
+                      annotations: <GaugeAnnotation>[
+                        GaugeAnnotation(
+                            angle: 90,
+                            positionFactor: 0.4,
+                            widget: Text(
+                              bmiScore.toStringAsFixed(1),
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 30),
+                            ))
+                      ])
                 ],
-                valueWidget: Text(
-                  bmiScore.toStringAsFixed(1),
-                  style: const TextStyle(fontSize: 40),
-                ),
-                currentValue: bmiScore.toDouble(),
-                needleColor: Colors.blue,
               ),
               Text(
                 bmiStatus!,

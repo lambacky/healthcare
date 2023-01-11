@@ -1,6 +1,4 @@
 import 'package:healthcare/pages/login-register/reset_password_screen.dart';
-
-import '../../models/form_model.dart';
 import '../../components/text_input.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -26,11 +24,15 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    const List<FormModel> forms = <FormModel>[
-      FormModel(title: 'First Name', icon: Icons.account_circle),
-      FormModel(title: 'Last Name', icon: Icons.account_circle),
-      FormModel(title: 'Email', icon: Icons.email),
-      FormModel(title: 'Password', icon: Icons.lock),
+    final List<TextInput> formInputs = <TextInput>[
+      TextInput(
+          title: 'Email',
+          icon: Icons.email,
+          textEditingController: controllers[0]),
+      TextInput(
+          title: 'Password',
+          icon: Icons.lock,
+          textEditingController: controllers[1]),
     ];
     final loginButton = Material(
       elevation: 5,
@@ -74,10 +76,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: List.generate(
-                          2,
-                          (index) => TextInput(
-                              textEditingController: controllers[index],
-                              formModel: forms[index + 2])),
+                          formInputs.length, (index) => formInputs[index]),
                     ),
                     loginButton,
                     const SizedBox(height: 20),
@@ -136,13 +135,9 @@ class _LoginScreenState extends State<LoginScreen> {
       } on FirebaseAuthException catch (error) {
         switch (error.code) {
           case "invalid-email":
-            errorMessage = "Your email address appears to be malformed.";
-            break;
           case "wrong-password":
-            errorMessage = "Your password is wrong.";
-            break;
           case "user-not-found":
-            errorMessage = "User with this email doesn't exist.";
+            errorMessage = "Your email or password is wrong.";
             break;
           case "user-disabled":
             errorMessage = "User with this email has been disabled.";

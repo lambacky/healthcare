@@ -4,7 +4,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import '../../components/text_input.dart';
-import '/models/form_model.dart';
 
 class RegistrationScreen extends StatefulWidget {
   final VoidCallback showLoginPage;
@@ -22,16 +21,28 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
   final _formKey = GlobalKey<FormState>();
   final List<TextEditingController> controllers =
-      List.generate(10, (i) => TextEditingController());
+      List.generate(4, (i) => TextEditingController());
   final confirmPasswordEditingController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    const List<FormModel> forms = <FormModel>[
-      FormModel(title: 'First Name', icon: Icons.account_circle),
-      FormModel(title: 'Last Name', icon: Icons.account_circle),
-      FormModel(title: 'Email', icon: Icons.email),
-      FormModel(title: 'Password', icon: Icons.lock),
+    final List<TextInput> formInputs = <TextInput>[
+      TextInput(
+          title: 'First Name',
+          icon: Icons.account_circle,
+          textEditingController: controllers[0]),
+      TextInput(
+          title: 'Last Name',
+          icon: Icons.account_circle,
+          textEditingController: controllers[1]),
+      TextInput(
+          title: 'Email',
+          icon: Icons.email,
+          textEditingController: controllers[2]),
+      TextInput(
+          title: 'Password',
+          icon: Icons.lock,
+          textEditingController: controllers[3]),
     ];
     //confirm password field
     final confirmPasswordField = TextFormField(
@@ -39,8 +50,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         controller: confirmPasswordEditingController,
         obscureText: true,
         validator: (value) {
-          if (confirmPasswordEditingController.text !=
-              controllers[forms.length - 1].text) {
+          if (confirmPasswordEditingController.text != controllers[3].text) {
             return "Password don't match";
           }
           return null;
@@ -101,10 +111,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: List.generate(
-                          forms.length,
-                          (index) => TextInput(
-                              textEditingController: controllers[index],
-                              formModel: forms[index])),
+                          formInputs.length, (index) => formInputs[index]),
                     ),
                     confirmPasswordField,
                     const SizedBox(height: 20),

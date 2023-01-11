@@ -50,6 +50,9 @@ dependencies:
   http: ^0.13.4
   webview_flutter: ^4.0.1
   dcdg: ^4.0.1
+  syncfusion_flutter_gauges: ^20.4.43
+  permission_handler: ^10.2.0
+  percent_indicator: ^4.2.2
 
 dev_dependencies:
   flutter_test:

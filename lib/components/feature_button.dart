@@ -1,9 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:healthcare/models/feature_button_model.dart';
 
-class SelectFeature extends StatelessWidget {
-  final FeatureButton feature;
-  const SelectFeature({Key? key, required this.feature}) : super(key: key);
+class FeatureButton extends StatelessWidget {
+  final String label;
+  final IconData icon;
+  final Color color;
+  final Widget widget;
+  const FeatureButton(
+      {Key? key,
+      required this.label,
+      required this.icon,
+      required this.color,
+      required this.widget})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -22,14 +30,14 @@ class SelectFeature extends StatelessWidget {
       onPressed: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => feature.widget),
+          MaterialPageRoute(builder: (context) => widget),
         );
       },
       child: Column(
         children: <Widget>[
-          Icon(feature.icon, color: feature.color, size: 80),
+          Icon(icon, color: color, size: 80),
           const SizedBox(height: 20),
-          Text(feature.label),
+          Text(label),
         ],
       ),
     );

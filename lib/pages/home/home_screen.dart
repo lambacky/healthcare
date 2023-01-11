@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../../components/feature_button.dart';
-import 'package:healthcare/models/feature_button_model.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:healthcare/pages/articles/articles_screen.dart';
 import 'package:healthcare/pages/running/running_screen.dart';
@@ -60,8 +59,7 @@ class HomeScreen extends StatelessWidget {
         crossAxisCount: 2,
         crossAxisSpacing: 30,
         mainAxisSpacing: 30,
-        children: List.generate(features.length,
-            (index) => SelectFeature(feature: features[index])),
+        children: List.generate(features.length, (index) => features[index]),
       ),
     );
   }

@@ -1,4 +1,3 @@
-import '../../models/form_model.dart';
 import '../../components/text_input.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +12,8 @@ class ResetPasswordScreen extends StatefulWidget {
 
 class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   final _emailController = TextEditingController();
-  final emailForm = const FormModel(title: 'Email', icon: Icons.email);
+  final _formKey = GlobalKey<FormState>();
+
   @override
   void dispose() {
     // TODO: implement dispose
@@ -22,19 +22,25 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   }
 
   void resetPassword() async {
-    try {
-      await FirebaseAuth.instance
-          .sendPasswordResetEmail(email: _emailController.text.trim())
-          .then((uid) => {
-                Fluttertoast.showToast(msg: "Password reset email sent"),
-              });
-    } on FirebaseAuthException catch (e) {
-      print(e);
+    if (_formKey.currentState!.validate()) {
+      try {
+        await FirebaseAuth.instance
+            .sendPasswordResetEmail(email: _emailController.text.trim())
+            .then((uid) => {
+                  Fluttertoast.showToast(msg: "Password reset email sent"),
+                });
+      } on FirebaseAuthException catch (e) {
+        print(e);
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final emailForm = TextInput(
+        title: 'Email',
+        icon: Icons.email,
+        textEditingController: _emailController);
     final resetPasswordButton = Material(
       elevation: 5,
       borderRadius: BorderRadius.circular(30),
@@ -59,21 +65,22 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(36.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              const Text(
-                "Enter your email here",
-                style: TextStyle(fontSize: 20),
-              ),
-              const SizedBox(height: 20),
-              TextInput(
-                textEditingController: _emailController,
-                formModel: emailForm,
-              ),
-              resetPasswordButton
-            ],
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                const Text(
+                  "Enter your email and we will send you a link to reset password",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 20),
+                ),
+                const SizedBox(height: 20),
+                emailForm,
+                resetPasswordButton
+              ],
+            ),
           ),
         ),
       ),

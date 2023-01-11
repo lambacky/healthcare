@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:camera/camera.dart';
 import 'package:healthcare/pages/heartrate/measure_screen.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class HeartRateScreen extends StatefulWidget {
   const HeartRateScreen({Key? key}) : super(key: key);
@@ -31,16 +32,8 @@ class _HeartRateScreenState extends State<HeartRateScreen> {
               glowColor: const Color(0xff11BFEB),
               icon: FontAwesomeIcons.heartPulse,
               onTap: () async {
-                await availableCameras().then(
-                  (value) => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => MeasureScreen(
-                        cameras: value,
-                      ),
-                    ),
-                  ),
-                );
+                await availableCameras()
+                    .then((value) => checkCameraPermission(value));
               },
             ),
             const SizedBox(
@@ -54,6 +47,50 @@ class _HeartRateScreenState extends State<HeartRateScreen> {
               ),
             )
           ],
+        ),
+      ),
+    );
+  }
+
+  checkCameraPermission(List<CameraDescription> value) async {
+    var cameraStatus = await Permission.camera.request();
+    if (cameraStatus.isDenied) {
+      return;
+    }
+    if (cameraStatus.isPermanentlyDenied) {
+      showDialog<String>(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+          title: const Text('Allow app to acess your camera ?'),
+          content: const Text(
+              'You need to allow camera access to measure heart rate in your app'),
+          actions: <Widget>[
+            // if user deny again, we do nothing
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Don\'t allow'),
+            ),
+            TextButton(
+              onPressed: () {
+                openAppSettings();
+                Navigator.pop(context);
+              },
+              child: const Text('Allow'),
+            ),
+          ],
+        ),
+      );
+      return;
+    }
+    openMeasureScreen(value);
+  }
+
+  openMeasureScreen(List<CameraDescription> value) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => MeasureScreen(
+          cameras: value,
         ),
       ),
     );

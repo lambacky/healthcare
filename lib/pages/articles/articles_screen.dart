@@ -27,7 +27,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
             return ListView.builder(
               itemCount: articles!.length,
               itemBuilder: (context, index) =>
-                  customListTile(articles[index], context),
+                  CustomListTile(article: articles[index]),
             );
           }
           return const Center(
