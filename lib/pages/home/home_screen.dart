@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../components/feature_button.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:healthcare/pages/articles/articles_screen.dart';
-import 'package:healthcare/pages/running/running_screen.dart';
+import 'package:healthcare/pages/running/running_menu_screen.dart';
 import '../bmi/bmi_screen.dart';
 import '../heartrate/heart_rate_screen.dart';
 import '../recommend/recommend.dart';
@@ -28,7 +28,7 @@ class HomeScreen extends StatelessWidget {
           label: 'RUN TRACKING',
           icon: Icons.directions_run,
           color: Colors.blue,
-          widget: RunningScreen()),
+          widget: RunningMenuScreen()),
       FeatureButton(
           label: 'ARTICLES',
           icon: FontAwesomeIcons.newspaper,
