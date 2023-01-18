@@ -2,6 +2,8 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 
+import 'result_screen.dart';
+
 class MeasureScreen extends StatefulWidget {
   final List<CameraDescription>? cameras;
   const MeasureScreen({this.cameras, Key? key}) : super(key: key);
@@ -34,13 +36,21 @@ class _MeasureScreenState extends State<MeasureScreen> {
   }
 
   void startAnimation() {
-    setState(() {
-      if (_value == 0) {
-        _value = 0.4;
-      } else {
-        _value = 0;
-      }
-    });
+    // setState(() {
+    //   if (_value == 0) {
+    //     _value = 0.4;
+    //   } else {
+    //     _value = 0;
+    //   }
+    // });
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ResultScreen(
+          bpm: 80,
+        ),
+      ),
+    );
   }
 
   @override

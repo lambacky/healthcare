@@ -68,24 +68,18 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           ),
         ));
 
-    //signup button
-    final signUpButton = Material(
-      elevation: 5,
-      borderRadius: BorderRadius.circular(30),
-      color: Colors.redAccent,
-      child: MaterialButton(
-          padding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
-          minWidth: MediaQuery.of(context).size.width,
-          onPressed: () {
-            signUp(controllers[2].text, controllers[3].text);
-          },
-          child: const Text(
-            "SignUp",
-            textAlign: TextAlign.center,
-            style: TextStyle(
-                fontSize: 20, color: Colors.white, fontWeight: FontWeight.bold),
-          )),
-    );
+    final signUpButton = ElevatedButton(
+        onPressed: () {
+          signUp(controllers[2].text, controllers[3].text);
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.red,
+          fixedSize: const Size(200, 50),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(25),
+          ),
+        ),
+        child: const Text("Sign Up", style: TextStyle(fontSize: 20)));
 
     return Scaffold(
       body: Center(

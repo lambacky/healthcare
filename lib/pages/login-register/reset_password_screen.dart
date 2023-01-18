@@ -41,21 +41,17 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
         title: 'Email',
         icon: Icons.email,
         textEditingController: _emailController);
-    final resetPasswordButton = Material(
-      elevation: 5,
-      borderRadius: BorderRadius.circular(30),
-      color: Colors.redAccent,
-      child: MaterialButton(
-          padding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
-          minWidth: double.infinity,
-          onPressed: resetPassword,
-          child: const Text(
-            "Reset Password",
-            textAlign: TextAlign.center,
-            style: TextStyle(
-                fontSize: 20, color: Colors.white, fontWeight: FontWeight.bold),
-          )),
-    );
+
+    final resetPasswordButton = ElevatedButton(
+        onPressed: resetPassword,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.red,
+          fixedSize: const Size(200, 50),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(25),
+          ),
+        ),
+        child: const Text("Reset Password", style: TextStyle(fontSize: 20)));
 
     return Scaffold(
       appBar: AppBar(

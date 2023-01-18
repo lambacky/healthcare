@@ -25,9 +25,17 @@ class _HeartRateScreenState extends State<HeartRateScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            Image.asset('assets/heart-rate-tutorial.jpg'),
+            const SizedBox(height: 40),
+            const Text(
+              "Use your finger to fully cover your phone camera lens. Hold steadily until the measurement is completed",
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 20),
+            ),
+            const SizedBox(height: 30),
             BreathingGlowingButton(
-              height: 150,
-              width: 150,
+              height: 100,
+              width: 100,
               buttonBackgroundColor: const Color(0xffFF4B4B),
               glowColor: const Color(0xff11BFEB),
               icon: FontAwesomeIcons.heartPulse,
@@ -36,16 +44,6 @@ class _HeartRateScreenState extends State<HeartRateScreen> {
                     .then((value) => checkCameraPermission(value));
               },
             ),
-            const SizedBox(
-              height: 50,
-            ),
-            const Text(
-              "Start test",
-              style: TextStyle(
-                fontSize: 30,
-                fontWeight: FontWeight.w500,
-              ),
-            )
           ],
         ),
       ),

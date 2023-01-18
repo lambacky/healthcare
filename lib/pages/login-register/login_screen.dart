@@ -34,23 +34,18 @@ class _LoginScreenState extends State<LoginScreen> {
           icon: Icons.lock,
           textEditingController: controllers[1]),
     ];
-    final loginButton = Material(
-      elevation: 5,
-      borderRadius: BorderRadius.circular(30),
-      color: Colors.redAccent,
-      child: MaterialButton(
-          padding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
-          minWidth: double.infinity,
-          onPressed: () {
-            signIn(controllers[0].text, controllers[1].text);
-          },
-          child: const Text(
-            "Login",
-            textAlign: TextAlign.center,
-            style: TextStyle(
-                fontSize: 20, color: Colors.white, fontWeight: FontWeight.bold),
-          )),
-    );
+    final loginButton = ElevatedButton(
+        onPressed: () {
+          signIn(controllers[0].text, controllers[1].text);
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.red,
+          fixedSize: const Size(200, 50),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(25),
+          ),
+        ),
+        child: const Text("Log In", style: TextStyle(fontSize: 20)));
 
     return Scaffold(
       body: Center(

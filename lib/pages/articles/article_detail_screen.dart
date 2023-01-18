@@ -28,12 +28,8 @@ class _ArticlePageState extends State<ArticlePage> {
         centerTitle: true,
         title: const Text("Health Article"),
       ),
-      body: Container(
-        height: MediaQuery.of(context).size.height,
-        width: MediaQuery.of(context).size.width,
-        child: WebViewWidget(
-          controller: _controller,
-        ),
+      body: WebViewWidget(
+        controller: _controller,
       ),
     );
   }
