@@ -6,6 +6,7 @@ class HeightWeight extends StatefulWidget {
   final String unit;
   final int initValue;
   final double maxValue;
+  final double minValue;
 
   const HeightWeight(
       {Key? key,
@@ -13,7 +14,8 @@ class HeightWeight extends StatefulWidget {
       required this.title,
       required this.unit,
       required this.initValue,
-      required this.maxValue})
+      required this.maxValue,
+      required this.minValue})
       : super(key: key);
 
   @override
@@ -24,7 +26,6 @@ class _HeightWeightState extends State<HeightWeight> {
   int _initvalue = 0;
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _initvalue = widget.initValue;
   }
@@ -32,7 +33,7 @@ class _HeightWeightState extends State<HeightWeight> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(15.0),
+      padding: const EdgeInsets.all(15),
       child: Card(
           elevation: 12,
           shape:
@@ -66,7 +67,7 @@ class _HeightWeightState extends State<HeightWeight> {
                 ],
               ),
               Slider(
-                min: 0,
+                min: widget.minValue,
                 max: widget.maxValue,
                 value: _initvalue.toDouble(),
                 thumbColor: Colors.red,

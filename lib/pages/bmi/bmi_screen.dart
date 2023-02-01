@@ -44,6 +44,7 @@ class _BMIScreenState extends State<BMIScreen> {
                 title: 'Height',
                 unit: 'cm',
                 initValue: 170,
+                minValue: 100,
                 maxValue: 250,
               ),
               const SizedBox(
@@ -56,11 +57,12 @@ class _BMIScreenState extends State<BMIScreen> {
                 title: 'Weight',
                 unit: 'kg',
                 initValue: 60,
+                minValue: 10,
                 maxValue: 200,
               ),
+              const SizedBox(height: 30),
               Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 50, horizontal: 60),
+                padding: const EdgeInsets.symmetric(horizontal: 60),
                 child: SwipeableButtonView(
                   isFinished: _isFinished,
                   onFinish: () async {

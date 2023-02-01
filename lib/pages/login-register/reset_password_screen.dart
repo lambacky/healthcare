@@ -16,7 +16,6 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     _emailController.dispose();
     super.dispose();
   }
@@ -60,7 +59,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
       ),
       body: Center(
         child: Padding(
-          padding: const EdgeInsets.all(36.0),
+          padding: const EdgeInsets.all(30.0),
           child: Form(
             key: _formKey,
             child: Column(

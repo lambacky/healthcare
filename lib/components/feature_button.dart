@@ -37,7 +37,7 @@ class FeatureButton extends StatelessWidget {
         children: <Widget>[
           Icon(icon, color: color, size: 80),
           const SizedBox(height: 20),
-          Text(label),
+          Text(label, style: const TextStyle(fontSize: 11)),
         ],
       ),
     );

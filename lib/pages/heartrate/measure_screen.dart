@@ -13,15 +13,16 @@ class MeasureScreen extends StatefulWidget {
 }
 
 class _MeasureScreenState extends State<MeasureScreen> {
-  late CameraController controller;
+  late CameraController _cameraController;
   double _value = 0;
 
   @override
   void initState() {
     super.initState();
-    controller = CameraController(widget.cameras![0], ResolutionPreset.max,
+    _cameraController = CameraController(
+        widget.cameras![0], ResolutionPreset.max,
         enableAudio: false);
-    controller.initialize().then((_) {
+    _cameraController.initialize().then((_) {
       if (!mounted) {
         return;
       }
@@ -31,7 +32,7 @@ class _MeasureScreenState extends State<MeasureScreen> {
 
   @override
   void dispose() {
-    controller.dispose();
+    _cameraController.dispose();
     super.dispose();
   }
 
@@ -46,7 +47,7 @@ class _MeasureScreenState extends State<MeasureScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => ResultScreen(
+        builder: (context) => const ResultScreen(
           bpm: 80,
         ),
       ),
@@ -55,7 +56,7 @@ class _MeasureScreenState extends State<MeasureScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // if (!controller.value.isInitialized) {
+    // if (!_cameraController.value.isInitialized) {
     //   Navigator.pop(context);
     // }
     return Scaffold(
@@ -76,10 +77,10 @@ class _MeasureScreenState extends State<MeasureScreen> {
                 progressColor: Colors.green,
                 circularStrokeCap: CircularStrokeCap.round,
                 center: ClipOval(
-                  child: Container(
+                  child: SizedBox(
                     width: 260,
                     height: 260,
-                    child: CameraPreview(controller),
+                    child: CameraPreview(_cameraController),
                   ),
                 ),
               ),

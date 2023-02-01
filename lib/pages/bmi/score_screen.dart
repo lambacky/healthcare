@@ -22,17 +22,17 @@ class ScoreScreen extends StatelessWidget {
       ),
       body: Center(
         child: Container(
-          padding: const EdgeInsets.all(12),
+          padding: const EdgeInsets.all(20),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text(
-                "Your Score",
-                style: TextStyle(fontSize: 30, color: Colors.blue),
-              ),
-              const SizedBox(
-                height: 50,
-              ),
+              // const Text(
+              //   "Your Score",
+              //   style: TextStyle(fontSize: 30, color: Colors.blue),
+              // ),
+              // const SizedBox(
+              //   height: 10,
+              // ),
               SfRadialGauge(
                 axes: <RadialAxis>[
                   RadialAxis(
@@ -102,6 +102,7 @@ class ScoreScreen extends StatelessWidget {
               ),
               Text(
                 bmiInterpretation!,
+                textAlign: TextAlign.center,
                 style: const TextStyle(fontSize: 20),
               ),
             ],
