@@ -1,6 +1,6 @@
 import '/services/api_service.dart';
 import 'package:flutter/material.dart';
-import '../../components/custom_list_tile.dart';
+import '../../components/article_list_tile.dart';
 import '/models/article_model.dart';
 
 class ArticleScreen extends StatefulWidget {
@@ -27,7 +27,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
             return ListView.builder(
               itemCount: articles!.length,
               itemBuilder: (context, index) =>
-                  CustomListTile(article: articles[index]),
+                  ArticleListTile(article: articles[index]),
             );
           }
           return const Center(

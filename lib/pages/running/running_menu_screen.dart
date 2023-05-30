@@ -1,9 +1,11 @@
-import 'package:breathing_collection/breathing_collection.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:healthcare/components/track_list_tile.dart';
 import 'package:healthcare/pages/running/tracking_screen.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 
 class RunningMenuScreen extends StatefulWidget {
   const RunningMenuScreen({Key? key}) : super(key: key);
@@ -58,6 +60,36 @@ class _RunningMenuScreenState extends State<RunningMenuScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => const TrackingScreen()),
+    ).then((value) => setState(() {}));
+  }
+
+  deleteTrack(dynamic track) {
+    showDialog<String>(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: const Text('Delete this track ?'),
+        content: const Text('The track will be removed permanently'),
+        actions: <Widget>[
+          // if user deny again, we do nothing
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.pop(context);
+              await FirebaseFirestore.instance
+                  .collection("users")
+                  .doc(FirebaseAuth.instance.currentUser?.uid)
+                  .update({
+                "running": FieldValue.arrayRemove([track])
+              });
+              setState(() {});
+            },
+            child: const Text('Yes'),
+          ),
+        ],
+      ),
     );
   }
 
@@ -68,34 +100,57 @@ class _RunningMenuScreenState extends State<RunningMenuScreen> {
         centerTitle: true,
         title: const Text("Running"),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            BreathingGlowingButton(
-              height: 150,
-              width: 150,
-              buttonBackgroundColor: const Color(0xffFF4B4B),
-              glowColor: const Color(0xff11BFEB),
-              icon: FontAwesomeIcons.heartPulse,
-              onTap: () async {
-                await checkLocationPermission();
+      body: FutureBuilder(
+        future: FirebaseFirestore.instance
+            .collection('users')
+            .doc(FirebaseAuth.instance.currentUser?.uid)
+            .get(),
+        builder: (BuildContext context,
+            AsyncSnapshot<DocumentSnapshot<Map<String, dynamic>>> snapshot) {
+          if (snapshot.hasData) {
+            var user = snapshot.data!;
+            if (!user.data()!.containsKey("running")) {
+              return const Center(
+                  child: Text("There are currently no records"));
+            }
+            var tracks = user['running'];
+            tracks = List.from(tracks.reversed);
+            return ListView.builder(
+              itemCount: tracks.length,
+              itemBuilder: (context, index) {
+                return Slidable(
+                    endActionPane: ActionPane(
+                        motion: const ScrollMotion(),
+                        extentRatio: 0.25,
+                        children: [
+                          SlidableAction(
+                              onPressed: (context) =>
+                                  deleteTrack(tracks[index]),
+                              backgroundColor: Colors.red,
+                              icon: Icons.delete,
+                              label: "Delete")
+                        ]),
+                    child: TrackListTile(track: tracks[index]));
               },
-            ),
-            const SizedBox(
-              height: 50,
-            ),
-            const Text(
-              "Start running",
-              style: TextStyle(
-                fontSize: 30,
-                fontWeight: FontWeight.w500,
-              ),
-            )
-          ],
-        ),
+            );
+          }
+          return const Center(child: CircularProgressIndicator());
+        },
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          await checkLocationPermission();
+        },
+        backgroundColor: Colors.red,
+        child: const Icon(Icons.add),
+      ),
+      bottomNavigationBar: const BottomAppBar(
+        color: Colors.red,
+        notchMargin: 4,
+        shape: CircularNotchedRectangle(),
+        height: 45,
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 }

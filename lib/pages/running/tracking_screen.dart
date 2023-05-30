@@ -28,7 +28,8 @@ class _TrackingScreenState extends State<TrackingScreen> {
   final StopWatchTimer _stopWatchTimer = StopWatchTimer();
   final Set<Polyline> _polyLines = {};
   Polyline _polyLine = const Polyline(polylineId: PolylineId("route"));
-  int polyLineCount = 0;
+  int _polyLineCount = 0;
+  final List<List<LatLng>> _coordinates = [];
 
   @override
   void initState() {
@@ -45,8 +46,40 @@ class _TrackingScreenState extends State<TrackingScreen> {
     });
   }
 
-  void _onMapCreated(GoogleMapController mapController) {
+  void _onMapCreated(GoogleMapController mapController) async {
     _controller.complete(mapController);
+    var controller = await _controller.future;
+    _positionStreamSubscription = Geolocator.getPositionStream(
+            locationSettings: const LocationSettings(
+                accuracy: LocationAccuracy.high, distanceFilter: 10))
+        .listen((Position position) {
+      setState(() {
+        if (_runningState == "run") {
+          _distance += Geolocator.distanceBetween(
+                  _currentPosition!.latitude,
+                  _currentPosition!.longitude,
+                  position.latitude,
+                  position.longitude) /
+              1000;
+          _speed = _stopWatchTimer.secondTime.value > 0
+              ? 3600 * _distance / _stopWatchTimer.secondTime.value
+              : 0;
+
+          _coordinates[_polyLineCount - 1]
+              .add(LatLng(position.latitude, position.longitude));
+          _polyLine = Polyline(
+            polylineId: PolylineId(_polyLineCount.toString()),
+            points: _coordinates[_polyLineCount - 1],
+            color: Colors.blue,
+            width: 5,
+          );
+          _polyLines.add(_polyLine);
+        }
+        _currentPosition = position;
+        controller.animateCamera(CameraUpdate.newLatLngZoom(
+            LatLng(position.latitude, position.longitude), 15));
+      });
+    });
   }
 
   @override
@@ -60,45 +93,14 @@ class _TrackingScreenState extends State<TrackingScreen> {
     setState(() {
       _runningState = "run";
     });
-    _currentPosition = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
-    var controller = await _controller.future;
-    List<LatLng> coordinates = [];
-    polyLineCount++;
+    _coordinates.add([]);
+    _polyLineCount++;
     _stopWatchTimer.onStartTimer();
-    _positionStreamSubscription = Geolocator.getPositionStream(
-            locationSettings: const LocationSettings(
-                accuracy: LocationAccuracy.high, distanceFilter: 10))
-        .listen((Position position) {
-      setState(() {
-        _distance += Geolocator.distanceBetween(
-                _currentPosition!.latitude,
-                _currentPosition!.longitude,
-                position.latitude,
-                position.longitude) /
-            1000;
-        _speed = _stopWatchTimer.secondTime.value > 0
-            ? 3600 * _distance / _stopWatchTimer.secondTime.value
-            : 0;
-        coordinates.add(LatLng(position.latitude, position.longitude));
-        _polyLine = Polyline(
-          polylineId: PolylineId(polyLineCount.toString()),
-          points: coordinates,
-          color: Colors.blue,
-          width: 5,
-        );
-        _polyLines.add(_polyLine);
-        _currentPosition = position;
-        controller.animateCamera(CameraUpdate.newLatLngZoom(
-            LatLng(position.latitude, position.longitude), 15));
-      });
-    });
   }
 
   void stopRun() {
     setState(() {
       _runningState = "stop";
-      _positionStreamSubscription?.cancel();
     });
 
     _stopWatchTimer.onStopTimer();
@@ -123,8 +125,9 @@ class _TrackingScreenState extends State<TrackingScreen> {
                 _distance = 0.0;
                 _speed = 0.0;
                 _polyLines.clear();
-                _positionStreamSubscription?.cancel();
                 _stopWatchTimer.onResetTimer();
+                _polyLineCount = 0;
+                _coordinates.clear();
               });
               Navigator.pop(context);
             },

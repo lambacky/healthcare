@@ -4,7 +4,7 @@ class Article {
   Source source;
   String? author;
   String title;
-  String description;
+  String? description;
   String url;
   String? urlToImage;
   String publishedAt;
@@ -14,7 +14,7 @@ class Article {
       {required this.source,
       this.author,
       required this.title,
-      required this.description,
+      this.description,
       required this.url,
       this.urlToImage,
       required this.publishedAt,

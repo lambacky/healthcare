@@ -3,10 +3,18 @@ import 'package:syncfusion_flutter_gauges/gauges.dart';
 
 class ResultScreen extends StatelessWidget {
   final double bpm;
-  const ResultScreen({Key? key, required this.bpm}) : super(key: key);
+
+  String? bpmStatus;
+
+  String? bpmInterpretation;
+
+  Color? bpmStatusColor;
+
+  ResultScreen({Key? key, required this.bpm}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    setbpmInterpretation();
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -24,8 +32,8 @@ class ResultScreen extends StatelessWidget {
                       style: const TextStyle(
                           fontSize: 70, fontWeight: FontWeight.w500)),
                   const SizedBox(width: 30),
-                  Column(
-                    children: const [
+                  const Column(
+                    children: [
                       Icon(
                         Icons.favorite,
                         size: 30,
@@ -75,10 +83,44 @@ class ResultScreen extends StatelessWidget {
                       endWidth: 15)
                 ],
               ),
+              const SizedBox(
+                height: 30,
+              ),
+              Text(
+                bpmStatus!,
+                style: TextStyle(fontSize: 30, color: bpmStatusColor!),
+              ),
+              const SizedBox(
+                height: 30,
+              ),
+              Text(
+                bpmInterpretation!,
+                textAlign: TextAlign.center,
+                style: const TextStyle(fontSize: 20),
+              ),
+              const Expanded(child: SizedBox()),
+              const Text("Note: This result is only for reference"),
+              const SizedBox(height: 30)
             ],
           ),
         ),
       ),
     );
+  }
+
+  void setbpmInterpretation() {
+    if (bpm < 60) {
+      bpmStatus = "LOW";
+      bpmInterpretation = "Your heart rate is lower than average";
+      bpmStatusColor = Colors.orange;
+    } else if (bpm <= 100) {
+      bpmStatus = "NORMAL";
+      bpmInterpretation = "Your heart rate is in normal range";
+      bpmStatusColor = Colors.green;
+    } else {
+      bpmStatus = "HIGH";
+      bpmInterpretation = "Your heart rate is higher than average";
+      bpmStatusColor = Colors.red;
+    }
   }
 }

@@ -2,9 +2,9 @@ import '/models/article_model.dart';
 import '../pages/articles/article_detail_screen.dart';
 import 'package:flutter/material.dart';
 
-class CustomListTile extends StatelessWidget {
+class ArticleListTile extends StatelessWidget {
   final Article article;
-  const CustomListTile({Key? key, required this.article}) : super(key: key);
+  const ArticleListTile({Key? key, required this.article}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
