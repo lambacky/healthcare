@@ -1,11 +1,13 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:healthcare/components/track_list_tile.dart';
-import 'package:healthcare/pages/running/tracking_screen.dart';
+import 'package:healthcare/pages/running/history_screen.dart';
+import 'package:healthcare/pages/running/target_screen.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:provider/provider.dart';
+
+import '../../models/running_target.dart';
+import '../../providers/user_firestore.dart';
+import 'tracking_screen.dart';
 
 class RunningMenuScreen extends StatefulWidget {
   const RunningMenuScreen({Key? key}) : super(key: key);
@@ -15,6 +17,29 @@ class RunningMenuScreen extends StatefulWidget {
 }
 
 class _RunningMenuScreenState extends State<RunningMenuScreen> {
+  final List pages = const [HistoryScreen(), TargetScreen()];
+  int _currentIndex = 0;
+
+  void checkTargetDueDate() {
+    final userFireStore = context.read<UserFireStore>();
+    final user = userFireStore.userData;
+    if (user.isNotEmpty) {
+      if (user.containsKey("targets") && user['targets'].length > 0) {
+        List<dynamic> targets = user['targets'];
+        DateTime now = DateTime.now();
+        for (int i = 0; i < targets.length; i++) {
+          RunningTarget runningTarget =
+              RunningTarget.fromJson(Map<String, dynamic>.from(targets[i]));
+          if (now.compareTo(runningTarget.endDate) > 0) {
+            runningTarget.status = 'done';
+            targets[i] = runningTarget.toJson();
+          }
+        }
+        userFireStore.updateData({'targets': targets});
+      }
+    }
+  }
+
   checkLocationPermission() async {
     LocationPermission permission;
     permission = await Geolocator.checkPermission();
@@ -63,80 +88,10 @@ class _RunningMenuScreenState extends State<RunningMenuScreen> {
     ).then((value) => setState(() {}));
   }
 
-  deleteTrack(dynamic track) {
-    showDialog<String>(
-      context: context,
-      builder: (BuildContext context) => AlertDialog(
-        title: const Text('Delete this track ?'),
-        content: const Text('The track will be removed permanently'),
-        actions: <Widget>[
-          // if user deny again, we do nothing
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () async {
-              Navigator.pop(context);
-              await FirebaseFirestore.instance
-                  .collection("users")
-                  .doc(FirebaseAuth.instance.currentUser?.uid)
-                  .update({
-                "running": FieldValue.arrayRemove([track])
-              });
-              setState(() {});
-            },
-            child: const Text('Yes'),
-          ),
-        ],
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: const Text("Running"),
-      ),
-      body: FutureBuilder(
-        future: FirebaseFirestore.instance
-            .collection('users')
-            .doc(FirebaseAuth.instance.currentUser?.uid)
-            .get(),
-        builder: (BuildContext context,
-            AsyncSnapshot<DocumentSnapshot<Map<String, dynamic>>> snapshot) {
-          if (snapshot.hasData) {
-            var user = snapshot.data!;
-            if (!user.data()!.containsKey("running")) {
-              return const Center(
-                  child: Text("There are currently no records"));
-            }
-            var tracks = user['running'];
-            tracks = List.from(tracks.reversed);
-            return ListView.builder(
-              itemCount: tracks.length,
-              itemBuilder: (context, index) {
-                return Slidable(
-                    endActionPane: ActionPane(
-                        motion: const ScrollMotion(),
-                        extentRatio: 0.25,
-                        children: [
-                          SlidableAction(
-                              onPressed: (context) =>
-                                  deleteTrack(tracks[index]),
-                              backgroundColor: Colors.red,
-                              icon: Icons.delete,
-                              label: "Delete")
-                        ]),
-                    child: TrackListTile(track: tracks[index]));
-              },
-            );
-          }
-          return const Center(child: CircularProgressIndicator());
-        },
-      ),
+      body: pages[_currentIndex],
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           await checkLocationPermission();
@@ -144,11 +99,56 @@ class _RunningMenuScreenState extends State<RunningMenuScreen> {
         backgroundColor: Colors.red,
         child: const Icon(Icons.add),
       ),
-      bottomNavigationBar: const BottomAppBar(
+      bottomNavigationBar: BottomAppBar(
+        padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 4),
         color: Colors.red,
         notchMargin: 4,
-        shape: CircularNotchedRectangle(),
-        height: 45,
+        shape: const CircularNotchedRectangle(),
+        height: 50,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            GestureDetector(
+                onTap: () {
+                  setState(() {
+                    _currentIndex = 0;
+                  });
+                },
+                child: Column(
+                  children: [
+                    Icon(Icons.list,
+                        color: _currentIndex == 0
+                            ? Colors.white
+                            : Colors.white.withOpacity(0.7)),
+                    Text("Records",
+                        style: TextStyle(
+                            color: _currentIndex == 0
+                                ? Colors.white
+                                : Colors.white.withOpacity(0.7)))
+                  ],
+                )),
+            GestureDetector(
+                onTap: () {
+                  setState(() {
+                    _currentIndex = 1;
+                  });
+                },
+                child: Column(
+                  children: [
+                    Icon(Icons.track_changes,
+                        color: _currentIndex == 1
+                            ? Colors.white
+                            : Colors.white.withOpacity(0.7)),
+                    Text("Targets",
+                        style: TextStyle(
+                            color: _currentIndex == 1
+                                ? Colors.white
+                                : Colors.white.withOpacity(0.7)))
+                  ],
+                )),
+          ],
+        ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );

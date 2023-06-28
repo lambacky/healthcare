@@ -11,7 +11,7 @@ class RegistrationScreen extends StatefulWidget {
       : super(key: key);
 
   @override
-  _RegistrationScreenState createState() => _RegistrationScreenState();
+  State<RegistrationScreen> createState() => _RegistrationScreenState();
 }
 
 class _RegistrationScreenState extends State<RegistrationScreen> {
@@ -143,7 +143,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
             .createUserWithEmailAndPassword(email: email, password: password)
             .then((value) => {postDetailsToFirestore()})
             .catchError((e) {
-          Fluttertoast.showToast(msg: e!.message);
+          Fluttertoast.showToast(msg: e.message);
+          return <dynamic>{};
         });
       } on FirebaseAuthException catch (error) {
         switch (error.code) {
@@ -178,17 +179,16 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   postDetailsToFirestore() async {
     FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
     User? user = _auth.currentUser;
-    UserModel userModel = UserModel();
-
-    userModel.email = user!.email;
-    userModel.uid = user.uid;
-    userModel.firstName = controllers[0].text;
-    userModel.lastName = controllers[1].text;
+    UserModel userModel = UserModel(
+        uid: user!.uid,
+        email: user.email!,
+        firstName: controllers[0].text,
+        lastName: controllers[1].text);
 
     await firebaseFirestore
         .collection("users")
         .doc(user.uid)
-        .set(userModel.toMap());
+        .set(userModel.toJson());
     Fluttertoast.showToast(msg: "Account created successfully ");
   }
 }

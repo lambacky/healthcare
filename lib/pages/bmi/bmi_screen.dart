@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'dart:math';
 import '../../components/height_weight.dart';
 import 'score_screen.dart';
 import 'package:page_transition/page_transition.dart';
@@ -16,11 +15,6 @@ class _BMIScreenState extends State<BMIScreen> {
   int _height = 170;
   int _weight = 60;
   bool _isFinished = false;
-  double _bmiScore = 0;
-
-  void calculateBmi() {
-    _bmiScore = _weight / pow(_height / 100, 2);
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,9 +28,6 @@ class _BMIScreenState extends State<BMIScreen> {
           padding: const EdgeInsets.all(12),
           child: Column(
             children: [
-              const SizedBox(
-                height: 30,
-              ),
               HeightWeight(
                 onChange: (height) {
                   _height = height;
@@ -46,9 +37,6 @@ class _BMIScreenState extends State<BMIScreen> {
                 initValue: 170,
                 minValue: 100,
                 maxValue: 250,
-              ),
-              const SizedBox(
-                height: 30,
               ),
               HeightWeight(
                 onChange: (weight) {
@@ -60,7 +48,7 @@ class _BMIScreenState extends State<BMIScreen> {
                 minValue: 10,
                 maxValue: 200,
               ),
-              const SizedBox(height: 30),
+              const SizedBox(height: 20),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 60),
                 child: SwipeableButtonView(
@@ -69,7 +57,8 @@ class _BMIScreenState extends State<BMIScreen> {
                     await Navigator.push(
                         context,
                         PageTransition(
-                            child: ScoreScreen(bmiScore: _bmiScore),
+                            child:
+                                ScoreScreen(height: _height, weight: _weight),
                             type: PageTransitionType.fade));
 
                     setState(() {
@@ -77,9 +66,6 @@ class _BMIScreenState extends State<BMIScreen> {
                     });
                   },
                   onWaitingProcess: () {
-                    //Calculate BMI here
-                    calculateBmi();
-
                     Future.delayed(const Duration(seconds: 1), () {
                       setState(() {
                         _isFinished = true;
@@ -93,7 +79,13 @@ class _BMIScreenState extends State<BMIScreen> {
                   ),
                   buttonText: "CALCULATE",
                 ),
-              )
+              ),
+              const SizedBox(height: 30),
+              const Text(
+                "Note: BMI is not suitable for athletes, children, elderly individuals, and pregnant women",
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+              ),
             ],
           ),
         ),

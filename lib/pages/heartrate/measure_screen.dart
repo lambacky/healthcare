@@ -12,7 +12,7 @@ class MeasureScreen extends StatefulWidget {
   const MeasureScreen({this.cameras, Key? key}) : super(key: key);
 
   @override
-  _MeasureScreenState createState() => _MeasureScreenState();
+  State<MeasureScreen> createState() => _MeasureScreenState();
 }
 
 class _MeasureScreenState extends State<MeasureScreen> {
@@ -141,7 +141,6 @@ class _MeasureScreenState extends State<MeasureScreen> {
     }
     if (counter > 0) {
       bpm = bpm / counter;
-      print(bpm);
       _bpms.add(bpm);
     }
   }

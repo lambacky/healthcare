@@ -1,6 +1,6 @@
-import '/services/api_service.dart';
+import '../../services/article_api_service.dart';
 import 'package:flutter/material.dart';
-import '../../components/article_list_tile.dart';
+import '../../components/article_card.dart';
 import '/models/article_model.dart';
 
 class ArticleScreen extends StatefulWidget {
@@ -11,7 +11,7 @@ class ArticleScreen extends StatefulWidget {
 }
 
 class _ArticleScreenState extends State<ArticleScreen> {
-  ApiService client = ApiService();
+  ArticleApiService client = ArticleApiService();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,7 +27,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
             return ListView.builder(
               itemCount: articles!.length,
               itemBuilder: (context, index) =>
-                  ArticleListTile(article: articles[index]),
+                  ArticleCard(article: articles[index]),
             );
           }
           return const Center(

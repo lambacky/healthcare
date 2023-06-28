@@ -1,23 +1,27 @@
 class UserModel {
-  String? uid;
-  String? email;
-  String? firstName;
-  String? lastName;
+  String uid;
+  String email;
+  String firstName;
+  String lastName;
 
-  UserModel({this.uid, this.email, this.firstName, this.lastName});
+  UserModel(
+      {required this.uid,
+      required this.email,
+      required this.firstName,
+      required this.lastName});
 
   // receive data from server
-  factory UserModel.fromMap(map) {
+  factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
-      uid: map['uid'],
-      email: map['email'],
-      firstName: map['firstName'],
-      lastName: map['lastName'],
+      uid: json['uid'],
+      email: json['email'],
+      firstName: json['firstName'],
+      lastName: json['lastName'],
     );
   }
 
   // send data to server
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toJson() {
     return {
       'uid': uid,
       'email': email,

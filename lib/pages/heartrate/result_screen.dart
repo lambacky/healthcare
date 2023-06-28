@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 
+// ignore: must_be_immutable
 class ResultScreen extends StatelessWidget {
   final double bpm;
 

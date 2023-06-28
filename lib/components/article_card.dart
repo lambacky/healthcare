@@ -2,9 +2,9 @@ import '/models/article_model.dart';
 import '../pages/articles/article_detail_screen.dart';
 import 'package:flutter/material.dart';
 
-class ArticleListTile extends StatelessWidget {
+class ArticleCard extends StatelessWidget {
   final Article article;
-  const ArticleListTile({Key? key, required this.article}) : super(key: key);
+  const ArticleCard({Key? key, required this.article}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -38,8 +38,6 @@ class ArticleListTile extends StatelessWidget {
               height: 200.0,
               width: double.infinity,
               decoration: BoxDecoration(
-                //let's add the height
-
                 image: DecorationImage(
                     image: NetworkImage(article.urlToImage!),
                     fit: BoxFit.cover),

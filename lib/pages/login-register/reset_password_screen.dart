@@ -29,7 +29,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                   Fluttertoast.showToast(msg: "Password reset email sent"),
                 });
       } on FirebaseAuthException catch (e) {
-        print(e);
+        Fluttertoast.showToast(msg: e.code);
       }
     }
   }

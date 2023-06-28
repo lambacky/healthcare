@@ -3,7 +3,7 @@ import 'dart:convert';
 import '/models/article_model.dart';
 import 'package:http/http.dart';
 
-class ApiService {
+class ArticleApiService {
   final endPointUrl =
       "https://newsapi.org/v2/everything?q=health+exercise+diet&sortBy=popularity&apiKey=2b9b16291aa147558eef159456206f46";
 

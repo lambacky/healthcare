@@ -1,12 +1,18 @@
 import 'dart:async';
-
+import 'package:firebase_storage/firebase_storage.dart';
 import "package:flutter/material.dart";
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:provider/provider.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:geocoding/geocoding.dart';
+
+import '../../models/running_target.dart';
+import '../../models/track_model.dart';
+import '../../providers/user_firestore.dart';
 
 class TrackingScreen extends StatefulWidget {
   const TrackingScreen({Key? key}) : super(key: key);
@@ -30,6 +36,13 @@ class _TrackingScreenState extends State<TrackingScreen> {
   Polyline _polyLine = const Polyline(polylineId: PolylineId("route"));
   int _polyLineCount = 0;
   final List<List<LatLng>> _coordinates = [];
+  final _currentUser = FirebaseAuth.instance.currentUser?.uid;
+  final _storageReference = FirebaseStorage.instance.ref();
+  String _place = '';
+  late double north;
+  late double south;
+  late double west;
+  late double east;
 
   @override
   void initState() {
@@ -40,6 +53,10 @@ class _TrackingScreenState extends State<TrackingScreen> {
   void setInitialLocation() async {
     await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high)
         .then((Position position) {
+      north = position.latitude;
+      south = position.latitude;
+      east = position.longitude;
+      west = position.longitude;
       setState(() {
         _currentPosition = position;
       });
@@ -53,6 +70,16 @@ class _TrackingScreenState extends State<TrackingScreen> {
             locationSettings: const LocationSettings(
                 accuracy: LocationAccuracy.high, distanceFilter: 10))
         .listen((Position position) {
+      if (position.longitude > east) {
+        east = position.longitude;
+      } else if (position.longitude < west) {
+        west = position.longitude;
+      }
+      if (position.latitude > north) {
+        north = position.latitude;
+      } else if (position.latitude < south) {
+        south = position.latitude;
+      }
       setState(() {
         if (_runningState == "run") {
           _distance += Geolocator.distanceBetween(
@@ -76,8 +103,10 @@ class _TrackingScreenState extends State<TrackingScreen> {
           _polyLines.add(_polyLine);
         }
         _currentPosition = position;
-        controller.animateCamera(CameraUpdate.newLatLngZoom(
-            LatLng(position.latitude, position.longitude), 15));
+        if (_runningState != "finish") {
+          controller.animateCamera(CameraUpdate.newLatLngZoom(
+              LatLng(position.latitude, position.longitude), 15));
+        }
       });
     });
   }
@@ -152,19 +181,60 @@ class _TrackingScreenState extends State<TrackingScreen> {
           ),
           TextButton(
             onPressed: () async {
+              final userFireStore = context.read<UserFireStore>();
+              _runningState = "finish";
               var navigator = Navigator.of(context);
-              var track = {
-                "date": DateTime.now(),
-                "distance": _distance.toStringAsFixed(2),
-                "speed": _speed.toStringAsFixed(2),
-                "time": _displayTime,
-                "steps": (_distance * 1312.336).round()
-              };
-              await FirebaseFirestore.instance
-                  .collection("users")
-                  .doc(FirebaseAuth.instance.currentUser?.uid)
-                  .update({
-                "running": FieldValue.arrayUnion([track])
+              List<Placemark> placemarks = await placemarkFromCoordinates(
+                  _currentPosition!.latitude, _currentPosition!.longitude);
+              if (placemarks.isNotEmpty) {
+                _place =
+                    "${placemarks[0].subAdministrativeArea}, ${placemarks[0].administrativeArea}, ${placemarks[0].country}";
+              }
+              var controller = await _controller.future;
+              await controller.animateCamera(CameraUpdate.newLatLngBounds(
+                  LatLngBounds(
+                      southwest: LatLng(south, west),
+                      northeast: LatLng(north, east)),
+                  15));
+              var routeSnapshot = await controller.takeSnapshot();
+              String routeImageFile =
+                  DateTime.now().microsecondsSinceEpoch.toString();
+              String routeImagePath = '$_currentUser/$routeImageFile';
+              Reference imageReference =
+                  _storageReference.child(routeImagePath);
+              await imageReference.putData(routeSnapshot!);
+              String routeImageURL = await imageReference.getDownloadURL();
+              Track track = Track(
+                  date: DateTime.now(),
+                  distance: _distance,
+                  speed: _speed,
+                  time: _displayTime,
+                  steps: (_distance * 1312.336).round(),
+                  routeImageURL: routeImageURL,
+                  routeImagePath: routeImagePath,
+                  place: _place);
+              List<dynamic> targets = [];
+              final user = userFireStore.userData;
+              if (user.isNotEmpty) {
+                if (user.containsKey("targets") && user['targets'].length > 0) {
+                  targets = user['targets'];
+                  for (int i = 0; i < targets.length; i++) {
+                    RunningTarget runningTarget = RunningTarget.fromJson(
+                        Map<String, dynamic>.from(targets[i]));
+                    if (runningTarget.status == 'progress') {
+                      runningTarget.achievedDistance += track.distance;
+                      if (runningTarget.achievedDistance >=
+                          runningTarget.targetDistance) {
+                        runningTarget.status = 'done';
+                      }
+                    }
+                    targets[i] = runningTarget.toJson();
+                  }
+                }
+              }
+              userFireStore.updateData({
+                'running': FieldValue.arrayUnion([track.toJson()]),
+                'targets': targets
               });
               navigator.pop();
               navigator.pop();
