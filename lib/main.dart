@@ -3,9 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:healthcare/pages/main_screen.dart';
 import 'package:healthcare/providers/user_firestore.dart';
-import 'package:healthcare/services/firebase_messaging_sevice.dart';
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
+import 'package:timezone/data/latest_all.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
+import 'package:flutter_timezone/flutter_timezone.dart';
 
 // import 'package:dcdg/dcdg.dart';
 class MyHttpOverrides extends HttpOverrides {
@@ -22,6 +24,9 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  tz.initializeTimeZones();
+  final String? timeZoneName = await FlutterTimezone.getLocalTimezone();
+  tz.setLocalLocation(tz.getLocation(timeZoneName!));
   // await FireBaseMessagingService().initNotifications();
   // final String timeZone = await FlutterNativeTimezone.getLocalTimezone();
   // tz.setLocalLocation(tz.getLocation(timeZone));

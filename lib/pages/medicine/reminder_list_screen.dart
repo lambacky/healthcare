@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 
 import '../../components/medication_reminder_card.dart';
 import '../../providers/user_firestore.dart';
+import '../../services/notification_service.dart';
 
 class ReminderListScreen extends StatefulWidget {
   const ReminderListScreen({Key? key}) : super(key: key);
@@ -81,6 +82,9 @@ class _ReminderListScreenState extends State<ReminderListScreen> {
               context.read<UserFireStore>().updateData({
                 'medicine': FieldValue.arrayRemove([reminder.toJson()])
               });
+              for (var id in reminder.notificationIds) {
+                NotificationService().cancelNotification(id);
+              }
             },
             child: const Text('Yes'),
           ),

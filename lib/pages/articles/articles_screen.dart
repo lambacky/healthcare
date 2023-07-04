@@ -24,11 +24,18 @@ class _ArticleScreenState extends State<ArticleScreen> {
         builder: (BuildContext context, AsyncSnapshot<List<Article>> snapshot) {
           if (snapshot.hasData) {
             List<Article>? articles = snapshot.data;
-            return ListView.builder(
-              itemCount: articles!.length,
-              itemBuilder: (context, index) =>
-                  ArticleCard(article: articles[index]),
-            );
+            if (articles!.isNotEmpty) {
+              return ListView.builder(
+                itemCount: articles.length,
+                itemBuilder: (context, index) =>
+                    ArticleCard(article: articles[index]),
+              );
+            }
+            return Center(
+                child: Text(
+              'Data loading failed. Please check your network',
+              style: TextStyle(color: Colors.black.withOpacity(0.3)),
+            ));
           }
           return const Center(
             child: CircularProgressIndicator(),

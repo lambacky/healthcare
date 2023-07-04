@@ -21,17 +21,24 @@ class MedicationReminderCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        for (var scheduleTime in reminder.schedule) {
-          NotificationService().scheduleNotification(
-              id: Random().nextInt(10000),
-              title: 'hello',
-              body: 'hello',
-              scheduleTime: scheduleTime);
-        }
-        // NotificationService()
-        //     .scheduleNotification(scheduleTime: TimeOfDay(hour: 22, minute: 1));
+        // List<TimeOfDay> schedule = [
+        //   TimeOfDay(hour: 1, minute: 28),
+        //   TimeOfDay(hour: 1, minute: 30),
+        //   TimeOfDay(hour: 1, minute: 32),
+        // ];
+        // for (var scheduleTime in reminder.schedule) {
+        //   NotificationService().scheduleNotification(
+        //       id: Random().nextInt(10000),
+        //       title: 'hello',
+        //       body: 'hello',
+        //       scheduleTime: scheduleTime);
+        // }
         // NotificationService().scheduleNotification(
-        //     scheduleTime: const TimeOfDay(hour: 1, minute: 9));
+        //     id: Random().nextInt(10000),
+        //     scheduleTime: TimeOfDay(hour: 2, minute: 59));
+        // NotificationService().scheduleNotification(
+        //     id: Random().nextInt(10000), schedule: schedule);
+        // NotificationService().cancelAllNotifications();
       },
       child: Container(
           margin: const EdgeInsets.all(12.0),

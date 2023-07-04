@@ -9,6 +9,7 @@ import '../../models/recipe_steps.dart';
 import '../../providers/user_firestore.dart';
 import '/models/meal_model.dart';
 import '/models/meal_plan_model.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class MealListScreen extends StatefulWidget {
   final int? targetCalories;
@@ -25,14 +26,14 @@ class MealListScreen extends StatefulWidget {
 
 class _MealListScreenState extends State<MealListScreen> {
   MealPlan? mealPlan;
-  String _text = "Save the plan";
+  bool _isMealPlanSaved = false;
   @override
   void initState() {
     super.initState();
     if (widget.mealPlan != null) {
       setState(() {
         mealPlan = widget.mealPlan;
-        _text = "Change the diet";
+        _isMealPlanSaved = true;
       });
     } else {
       fetchData();
@@ -40,22 +41,24 @@ class _MealListScreenState extends State<MealListScreen> {
   }
 
   void fetchData() {
-    MealApiService()
-        .generateMealPlan(
-      targetCalories: widget.targetCalories!,
-      diet: widget.diet!,
-    )
-        .then((value) {
-      setState(() {
-        mealPlan = value;
+    if (!_isMealPlanSaved) {
+      MealApiService()
+          .generateMealPlan(
+        targetCalories: widget.targetCalories!,
+        diet: widget.diet!,
+      )
+          .then((value) {
+        setState(() {
+          mealPlan = value;
+        });
       });
-    });
+    }
   }
 
   _saveMealPlan() {
     context.read<UserFireStore>().updateData({'mealPlan': mealPlan!.toJson()});
     setState(() {
-      _text = "Change the diet";
+      _isMealPlanSaved = true;
     });
   }
 
@@ -174,44 +177,51 @@ class _MealListScreenState extends State<MealListScreen> {
 
         MealDetail mealDetail =
             await MealApiService().getMealInformation(meal.id.toString());
+        List<RecipeStepsModel> recipeSteps =
+            await MealApiService().fetchRecipeSteps(meal.id.toString());
         navigator.pop();
         navigator.push(
           MaterialPageRoute(
-            builder: (_) => MealDetailScreen(mealDetail: mealDetail),
+            builder: (_) => MealDetailScreen(
+                mealDetail: mealDetail, recipeSteps: recipeSteps),
           ),
         );
       },
       child: Stack(
         alignment: Alignment.center,
         children: <Widget>[
-          Container(
-            height: 220.0,
-            width: double.infinity,
-            margin: const EdgeInsets.symmetric(
-              horizontal: 20.0,
-              vertical: 10.0,
-            ),
-            padding: const EdgeInsets.symmetric(
-              horizontal: 15.0,
-              vertical: 10.0,
-            ),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              image: DecorationImage(
-                image: NetworkImage(
-                    'https://spoonacular.com/recipeImages/${meal.id}-556x370.${meal.imageType}'),
-                fit: BoxFit.cover,
-              ),
-              borderRadius: BorderRadius.circular(15.0),
-              boxShadow: const [
-                BoxShadow(
-                  color: Colors.black12,
-                  offset: Offset(0, 2),
-                  blurRadius: 6.0,
-                ),
-              ],
-            ),
-          ),
+          CachedNetworkImage(
+              imageUrl:
+                  'https://spoonacular.com/recipeImages/${meal.id}-556x370.${meal.imageType}',
+              imageBuilder: (context, imageProvider) {
+                return Container(
+                  height: 220.0,
+                  width: double.infinity,
+                  margin: const EdgeInsets.symmetric(
+                    horizontal: 20.0,
+                    vertical: 10.0,
+                  ),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 15.0,
+                    vertical: 10.0,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    image: DecorationImage(
+                      image: imageProvider,
+                      fit: BoxFit.cover,
+                    ),
+                    borderRadius: BorderRadius.circular(15.0),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Colors.black12,
+                        offset: Offset(0, 2),
+                        blurRadius: 6.0,
+                      ),
+                    ],
+                  ),
+                );
+              }),
           Container(
             margin: const EdgeInsets.all(60.0),
             padding: const EdgeInsets.all(10.0),
@@ -262,7 +272,15 @@ class _MealListScreenState extends State<MealListScreen> {
     return Scaffold(
         appBar: AppBar(
           centerTitle: true,
-          title: const Text("Health Articles"),
+          title: const Text("Meal Plan"),
+          leading: BackButton(onPressed: () {
+            if (_isMealPlanSaved && widget.mealPlan == null) {
+              Navigator.pop(context);
+              Navigator.pop(context);
+            } else {
+              Navigator.pop(context);
+            }
+          }),
         ),
         body: RefreshIndicator(
             onRefresh: () async {
@@ -284,15 +302,12 @@ class _MealListScreenState extends State<MealListScreen> {
                                 borderRadius: BorderRadius.circular(25),
                               ),
                             ),
-                            onPressed: () {
-                              if (_text == "Save the plan") {
-                                _saveMealPlan();
-                              } else {
-                                _changeDiet();
-                              }
-                            },
+                            onPressed:
+                                _isMealPlanSaved ? _changeDiet : _saveMealPlan,
                             child: Text(
-                              _text,
+                              _isMealPlanSaved
+                                  ? 'Change the diet'
+                                  : 'Save the plan',
                               style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 22.0,

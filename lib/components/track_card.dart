@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:healthcare/models/track_model.dart';
 import 'package:intl/intl.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class TrackCard extends StatelessWidget {
   final Function(Track) deleteAction;
@@ -73,14 +74,19 @@ class TrackCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 15),
-            Container(
-              height: 205.0,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                    image: NetworkImage(routeImageURL), fit: BoxFit.cover),
-                borderRadius: BorderRadius.circular(12.0),
-              ),
+            CachedNetworkImage(
+              imageUrl: routeImageURL,
+              imageBuilder: (context, imageProvider) {
+                return Container(
+                  height: 205.0,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                        image: imageProvider, fit: BoxFit.cover),
+                    borderRadius: BorderRadius.circular(12.0),
+                  ),
+                );
+              },
             ),
             const SizedBox(height: 20),
             Row(

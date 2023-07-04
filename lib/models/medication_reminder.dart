@@ -7,12 +7,14 @@ class MedicationReminder {
   String times;
   MedicationType medicationType;
   List<TimeOfDay> schedule;
+  List<int> notificationIds;
   MedicationReminder({
     required this.name,
     required this.doses,
     required this.times,
     required this.medicationType,
     required this.schedule,
+    required this.notificationIds,
   });
 
   factory MedicationReminder.fromJson(Map<String, dynamic> json) {
@@ -23,12 +25,18 @@ class MedicationReminder {
       int minute = int.parse(timeParts[1]);
       schedule.add(TimeOfDay(hour: hour, minute: minute));
     });
+    List<int> ids = [];
+    json['notificationIds'].forEach((value) {
+      int id = int.parse(value.toString());
+      ids.add(id);
+    });
     return MedicationReminder(
         name: json['name'],
         doses: json['doses'],
         times: json['times'],
         medicationType: MedicationType.fromJson(json['medicationType']),
-        schedule: schedule);
+        schedule: schedule,
+        notificationIds: ids);
   }
 
   Map<String, dynamic> toJson() {
@@ -41,7 +49,8 @@ class MedicationReminder {
       'doses': doses,
       'times': times,
       'medicationType': medicationType.toJson(),
-      'schedule': timeSchedule
+      'schedule': timeSchedule,
+      'notificationIds': notificationIds
     };
   }
 }

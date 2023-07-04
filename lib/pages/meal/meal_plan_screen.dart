@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../constants/constants.dart';
 import 'meal_list_screen.dart';
 
 class MealPlanScreen extends StatefulWidget {
@@ -8,17 +9,6 @@ class MealPlanScreen extends StatefulWidget {
 }
 
 class _MealPlanScreenState extends State<MealPlanScreen> {
-  final List<String> _diets = [
-    'None',
-    'Gluten Free',
-    'Ketogenic',
-    'Lacto-Vegetarian',
-    'Ovo-Vegetarian',
-    'Pescetarian',
-    'Paleo',
-    'Primal',
-  ];
-
   double _targetCalories = 2250;
   String _diet = 'None';
 
@@ -120,7 +110,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 30.0),
                     child: DropdownButtonFormField(
-                      items: _diets.map((String priority) {
+                      items: Constants.diets.map((String priority) {
                         return DropdownMenuItem(
                           value: priority,
                           child: Text(

@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +10,7 @@ import 'package:healthcare/models/medication_type.dart';
 import 'package:provider/provider.dart';
 
 import '../../providers/user_firestore.dart';
+import '../../services/notification_service.dart';
 
 class ReminderDescriptionScreen extends StatefulWidget {
   final MedicationReminder? reminder;
@@ -55,6 +58,7 @@ class _ReminderDescriptionScreenState extends State<ReminderDescriptionScreen> {
     _nameController.addListener(_updateButtonState);
     _dosesController.addListener(_updateButtonState);
     _timesController.addListener(_updateButtonState);
+    // NotificationService().cancelAllNotifications();
   }
 
   @override
@@ -234,18 +238,30 @@ class _ReminderDescriptionScreenState extends State<ReminderDescriptionScreen> {
     );
   }
 
-  void _saveReminder() {
+  void _saveReminder() async {
     _showMyDialog();
+    List<int> ids = [];
+    for (var scheduleTime in _schedule) {
+      int id = Random().nextInt(10000);
+      ids.add(id);
+      await NotificationService()
+          .scheduleNotification(id: id, scheduleTime: scheduleTime);
+    }
     MedicationReminder reminder = MedicationReminder(
         name: _nameController.text,
         doses: _dosesController.text,
         times: _timesController.text,
         medicationType: types[_selectedTypeIndex],
-        schedule: _schedule);
+        schedule: _schedule,
+        notificationIds: ids);
     if (widget.reminder == null) {
       context.read<UserFireStore>().updateData({
         'medicine': FieldValue.arrayUnion([reminder.toJson()])
       });
+    } else {
+      for (var id in widget.reminder!.notificationIds) {
+        await NotificationService().cancelNotification(id);
+      }
     }
     Navigator.pop(context);
     Navigator.pop(context, reminder.toJson());

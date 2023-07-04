@@ -1,5 +1,6 @@
-import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:healthcare/pages/addiction/addiction_list_screen.dart';
 import 'package:healthcare/pages/medicine/reminder_list_screen.dart';
 import 'package:healthcare/pages/meal/meal_screen.dart';
 import 'package:healthcare/providers/user_firestore.dart';
@@ -12,7 +13,7 @@ import '../bmi/bmi_screen.dart';
 import '../heartrate/heart_rate_screen.dart';
 import '../profile/profile_screen.dart';
 import '../running/running_menu_screen.dart';
-import 'package:timezone/data/latest.dart' as tz;
+
 // import 'package:cloud_firestore/cloud_firestore.dart';
 // import 'package:workmanager/workmanager.dart';
 // import 'dart:convert';
@@ -70,7 +71,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     NotificationService().initNotification();
-    tz.initializeTimeZones();
+
     context.read<UserFireStore>().fetchData();
     // FireBaseMessagingApi().initNotifications();
     // getToken();
@@ -107,7 +108,12 @@ class _HomeScreenState extends State<HomeScreen> {
         label: 'MEDICINE REMINDER',
         icon: Icons.medication_outlined,
         color: Colors.blueGrey,
-        widget: ReminderListScreen())
+        widget: ReminderListScreen()),
+    FeatureButton(
+        label: 'ADDICTION TRACKER',
+        icon: Icons.liquor,
+        color: Colors.green,
+        widget: AddictionListScreen())
   ];
 
   // void getToken() async {
@@ -139,6 +145,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
       body: GridView.count(
+        shrinkWrap: true,
         padding: const EdgeInsets.all(30),
         crossAxisCount: 2,
         crossAxisSpacing: 20,

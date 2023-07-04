@@ -1,11 +1,9 @@
-import 'dart:math';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:healthcare/models/physical_status.dart';
 import 'package:healthcare/models/user_model.dart';
-import 'package:healthcare/pages/home/home_screen.dart';
 import 'package:provider/provider.dart';
 
 import '../../providers/user_firestore.dart';
@@ -21,6 +19,122 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   UserModel? _userInfo;
   PhysicalStatus? _physicStat;
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  void deletePhysicStat() {
+    showDialog<String>(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: const Text('Delete your physical status ?'),
+        content: const Text('The data will be removed permanently'),
+        actions: <Widget>[
+          // if user deny again, we do nothing
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              context
+                  .read<UserFireStore>()
+                  .updateData({'physicStat': FieldValue.delete()});
+              Navigator.pop(context);
+            },
+            child: const Text('Yes'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void editProfile() {
+    final firstNameController = TextEditingController();
+    final lastNameController = TextEditingController();
+    firstNameController.text = _userInfo!.firstName;
+    lastNameController.text = _userInfo!.lastName;
+    bool isEnabled = true;
+    showDialog<String>(
+        context: context,
+        builder: (BuildContext context) {
+          return StatefulBuilder(builder: (context, setState) {
+            void updateButtonState() {
+              setState(() {
+                isEnabled = firstNameController.text.isNotEmpty &&
+                    lastNameController.text.isNotEmpty;
+              });
+            }
+
+            firstNameController.addListener(updateButtonState);
+            lastNameController.addListener(updateButtonState);
+
+            return Dialog(
+              child: Container(
+                height: 260,
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12.0),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text("First Name",
+                        style: TextStyle(fontWeight: FontWeight.bold)),
+                    TextField(
+                      controller: firstNameController,
+                    ),
+                    const SizedBox(height: 20),
+                    const Text("Last Name",
+                        style: TextStyle(fontWeight: FontWeight.bold)),
+                    TextField(
+                      controller: lastNameController,
+                    ),
+                    const SizedBox(height: 20),
+                    Align(
+                      alignment: Alignment.center,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.red,
+                          fixedSize: const Size(180, 45),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(25),
+                          ),
+                        ),
+                        onPressed: !isEnabled
+                            ? null
+                            : () {
+                                context.read<UserFireStore>().updateData({
+                                  'firstName': firstNameController.text,
+                                  'lastName': lastNameController.text
+                                });
+                                Navigator.pop(context);
+                              },
+                        child: const Text(
+                          'Save new profile',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18.0,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          });
+        });
+  }
 
   void openSignOutDialog() {
     showDialog<String>(
@@ -60,10 +174,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
       body: Consumer<UserFireStore>(builder: (context, userFireStore, child) {
         if (userFireStore.userData.isNotEmpty) {
           _userInfo = UserModel.fromJson(userFireStore.userData);
+
           if (userFireStore.userData.containsKey('physicStat') &&
               userFireStore.userData['physicStat'] != null) {
             _physicStat =
                 PhysicalStatus.fromJson(userFireStore.userData['physicStat']);
+          } else {
+            _physicStat = null;
           }
         }
         return SingleChildScrollView(
@@ -75,25 +192,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
               color: Colors.grey,
             ),
             const SizedBox(height: 10),
-            GestureDetector(
-              onTap: () {},
-              child: Container(
-                padding: const EdgeInsets.all(10),
-                width: 120,
-                decoration: BoxDecoration(
-                  color: Colors.grey.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(5.0),
-                ),
-                child: const Row(
-                  children: [
-                    Icon(Icons.edit),
-                    SizedBox(width: 5),
-                    Text('Edit profile',
-                        style: TextStyle(fontWeight: FontWeight.bold))
-                  ],
-                ),
-              ),
-            ),
+            const Text('My Account',
+                style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold)),
             const SizedBox(height: 20),
             Container(
               padding: const EdgeInsets.fromLTRB(30, 20, 0, 30),
@@ -106,9 +206,34 @@ class _ProfileScreenState extends State<ProfileScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Personal Info',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
+                  Row(
+                    children: [
+                      const Text(
+                        'Personal Info',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 25),
+                      ),
+                      const SizedBox(width: 15),
+                      GestureDetector(
+                        onTap: editProfile,
+                        child: Container(
+                          padding: const EdgeInsets.all(10),
+                          width: 80,
+                          decoration: BoxDecoration(
+                            color: Colors.grey.withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(5.0),
+                          ),
+                          child: const Row(
+                            children: [
+                              Icon(Icons.edit),
+                              SizedBox(width: 5),
+                              Text('Edit',
+                                  style: TextStyle(fontWeight: FontWeight.bold))
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 15),
                   Row(children: [
@@ -165,9 +290,37 @@ class _ProfileScreenState extends State<ProfileScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Physical Status',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
+                  Row(
+                    children: [
+                      const Text(
+                        'Physical Status',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 25),
+                      ),
+                      const SizedBox(width: 15),
+                      _physicStat == null
+                          ? const SizedBox()
+                          : GestureDetector(
+                              onTap: deletePhysicStat,
+                              child: Container(
+                                padding: const EdgeInsets.all(10),
+                                width: 90,
+                                decoration: BoxDecoration(
+                                  color: Colors.grey.withOpacity(0.2),
+                                  borderRadius: BorderRadius.circular(5.0),
+                                ),
+                                child: const Row(
+                                  children: [
+                                    Icon(Icons.delete),
+                                    SizedBox(width: 5),
+                                    Text('Delete',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold))
+                                  ],
+                                ),
+                              ),
+                            ),
+                    ],
                   ),
                   SizedBox(height: _physicStat == null ? 0 : 15),
                   _physicStat == null
@@ -204,12 +357,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(_physicStat!.height.toString(),
+                                Text('${_physicStat!.height.toString()} cm',
                                     style: const TextStyle(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 16)),
                                 const SizedBox(height: 10),
-                                Text(_physicStat!.weigth.toString(),
+                                Text('${_physicStat!.weigth.toString()} kg',
                                     style: const TextStyle(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 16)),
@@ -234,9 +387,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           MaterialPageRoute(
                               builder: (context) => const BMIScreen()));
                     },
-                    child: const Text(
-                      'Measure again?',
-                      style: TextStyle(color: Colors.blue, fontSize: 15),
+                    child: Text(
+                      _physicStat == null
+                          ? 'Measure your body?'
+                          : 'Measure again?',
+                      style: const TextStyle(color: Colors.blue, fontSize: 15),
                     ),
                   )
                 ],

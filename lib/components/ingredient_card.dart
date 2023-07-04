@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import '/models/ingredients_model.dart';
 
@@ -12,17 +13,18 @@ class IngredientCard extends StatelessWidget {
       width: 80,
       child: Column(
         children: <Widget>[
-          Container(
-            height: 40,
-            decoration: BoxDecoration(
-              shape: BoxShape.rectangle,
-              image: DecorationImage(
-                image: NetworkImage(
+          CachedNetworkImage(
+              imageUrl:
                   'https://spoonacular.com/cdn/ingredients_100x100/${ingredient.image}',
-                ),
-              ),
-            ),
-          ),
+              imageBuilder: (context, imageProvider) {
+                return Container(
+                  height: 40,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.rectangle,
+                    image: DecorationImage(image: imageProvider),
+                  ),
+                );
+              }),
           const SizedBox(height: 10 / 2),
           Text(
             ingredient.name,

@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:healthcare/components/track_card.dart';
 import 'package:healthcare/providers/user_firestore.dart';
 import 'package:provider/provider.dart';
-
 import '../../models/track_model.dart';
 
 class HistoryScreen extends StatefulWidget {

@@ -110,7 +110,7 @@ class RunningTargetCard extends StatelessWidget {
                     style: const TextStyle(
                         fontSize: 15, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 6),
-                Text('Achieved: ${achievedDistance.toString()} km',
+                Text('Achieved: ${achievedDistance.toStringAsFixed(1)} km',
                     style: const TextStyle(
                         fontSize: 15, fontWeight: FontWeight.bold)),
               ])

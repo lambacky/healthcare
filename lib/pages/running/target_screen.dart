@@ -16,9 +16,10 @@ class TargetScreen extends StatefulWidget {
 }
 
 class _TargetScreenState extends State<TargetScreen> {
-  final _distanceController = TextEditingController();
+  double _distance = 0;
   final _startDateController = TextEditingController();
   final _endDateController = TextEditingController();
+
   DateTime startDate = DateTime.now();
   DateTime endDate = DateTime.now();
   List<RunningTarget> _progress = [];
@@ -32,13 +33,14 @@ class _TargetScreenState extends State<TargetScreen> {
 
   @override
   void dispose() {
-    _distanceController.dispose();
+    _startDateController.dispose();
+    _endDateController.dispose();
     super.dispose();
   }
 
   void addTarget(BuildContext context) {
     RunningTarget runningTarget = RunningTarget(
-        targetDistance: double.parse(_distanceController.text),
+        targetDistance: _distance,
         achievedDistance: 0.0,
         startDate: startDate,
         endDate: endDate,
@@ -47,7 +49,7 @@ class _TargetScreenState extends State<TargetScreen> {
     context.read<UserFireStore>().updateData({
       'targets': FieldValue.arrayUnion([runningTarget.toJson()])
     });
-    Navigator.pop(context, 'save');
+    Navigator.pop(context);
   }
 
   void deleteTarget(RunningTarget runningTarget) {
@@ -88,7 +90,7 @@ class _TargetScreenState extends State<TargetScreen> {
           setState(() {
             if (type == 'start') {
               startDate = value;
-              _startDateController.text = _startDateController.text =
+              _startDateController.text =
                   DateFormat('dd/MM/yyyy').format(startDate);
               if (startDate.compareTo(endDate) > 0) {
                 endDate = startDate;
@@ -107,101 +109,124 @@ class _TargetScreenState extends State<TargetScreen> {
   }
 
   void openTargetDialog() {
+    final distanceController = TextEditingController();
+    bool isEnabled = false;
     showDialog<String>(
       context: context,
-      builder: (BuildContext context) => Dialog(
-        child: Container(
-          height: 280,
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12.0),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(children: [
-                const Text("Target distance:",
-                    style: TextStyle(fontWeight: FontWeight.bold)),
-                const SizedBox(width: 10),
-                SizedBox(
-                  width: 80,
-                  child: TextField(
-                    controller: _distanceController,
-                    textAlign: TextAlign.center,
-                    keyboardType:
-                        const TextInputType.numberWithOptions(decimal: true),
-                    inputFormatters: <TextInputFormatter>[
-                      FilteringTextInputFormatter.allow(
-                          RegExp(r'^(\d+)?\.?\d{0,1}'))
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 10),
-                const Text("km", style: TextStyle(fontWeight: FontWeight.bold)),
-              ]),
-              const SizedBox(height: 30),
-              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  const Text("Start date",
-                      style: TextStyle(fontWeight: FontWeight.bold)),
-                  SizedBox(
-                    width: 100,
-                    child: TextField(
-                      controller: _startDateController,
-                      onTap: () {
-                        openDatePicker(startDate, 'start');
-                      },
-                    ),
-                  )
-                ]),
-                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  const Text("End date",
-                      style: TextStyle(fontWeight: FontWeight.bold)),
-                  SizedBox(
-                    width: 100,
-                    child: TextField(
-                      controller: _endDateController,
-                      onTap: () {
-                        openDatePicker(endDate, 'end');
-                      },
-                    ),
-                  )
-                ])
-              ]),
-              const SizedBox(height: 30),
-              Align(
-                alignment: Alignment.center,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red,
-                    fixedSize: const Size(180, 45),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(25),
-                    ),
-                  ),
-                  onPressed: () {
-                    addTarget(context);
-                  },
-                  child: const Text(
-                    'Save new target',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18.0,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    ).then((value) => () {
-          if (value != null) {
-            setState(() {});
+      builder: (BuildContext context) {
+        return StatefulBuilder(builder: (context, setState) {
+          void updateButtonState() {
+            setState(() {
+              isEnabled = distanceController.text.isNotEmpty &&
+                  double.parse(distanceController.text) != 0;
+            });
           }
+
+          distanceController.addListener(updateButtonState);
+
+          return Dialog(
+            child: Container(
+              height: 280,
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12.0),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(children: [
+                    const Text("Target distance:",
+                        style: TextStyle(fontWeight: FontWeight.bold)),
+                    const SizedBox(width: 10),
+                    SizedBox(
+                      width: 80,
+                      child: TextField(
+                        controller: distanceController,
+                        textAlign: TextAlign.center,
+                        keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true),
+                        inputFormatters: <TextInputFormatter>[
+                          FilteringTextInputFormatter.allow(
+                              RegExp(r'^(\d+)?\.?\d{0,1}'))
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    const Text("km",
+                        style: TextStyle(fontWeight: FontWeight.bold)),
+                  ]),
+                  const SizedBox(height: 30),
+                  Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text("Start date",
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.bold)),
+                              SizedBox(
+                                width: 100,
+                                child: TextField(
+                                  controller: _startDateController,
+                                  onTap: () {
+                                    openDatePicker(startDate, 'start');
+                                  },
+                                ),
+                              )
+                            ]),
+                        Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text("End date",
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.bold)),
+                              SizedBox(
+                                width: 100,
+                                child: TextField(
+                                  controller: _endDateController,
+                                  onTap: () {
+                                    openDatePicker(endDate, 'end');
+                                  },
+                                ),
+                              )
+                            ])
+                      ]),
+                  const SizedBox(height: 30),
+                  Align(
+                    alignment: Alignment.center,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red,
+                        fixedSize: const Size(180, 45),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(25),
+                        ),
+                      ),
+                      onPressed: !isEnabled
+                          ? null
+                          : () {
+                              _distance = double.parse(distanceController.text);
+                              addTarget(context);
+                            },
+                      child: const Text(
+                        'Save new target',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18.0,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
         });
+      },
+    );
   }
 
   @override
