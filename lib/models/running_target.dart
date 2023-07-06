@@ -1,4 +1,6 @@
-class RunningTarget {
+import 'package:equatable/equatable.dart';
+
+class RunningTarget extends Equatable {
   double targetDistance;
   double achievedDistance;
   DateTime startDate;
@@ -28,4 +30,17 @@ class RunningTarget {
       "status": status
     };
   }
+
+  RunningTarget clone() {
+    return RunningTarget(
+        targetDistance: targetDistance,
+        achievedDistance: achievedDistance,
+        startDate: startDate,
+        endDate: endDate,
+        status: status);
+  }
+
+  @override
+  List<Object?> get props =>
+      [targetDistance, achievedDistance, startDate, endDate, status];
 }

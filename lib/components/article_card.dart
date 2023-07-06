@@ -1,20 +1,22 @@
-import '/models/article_model.dart';
-import '../pages/articles/article_detail_screen.dart';
+import 'package:healthcare/view-models/article_view_model.dart';
+import 'package:provider/provider.dart';
+import '../views/articles/article_detail_screen.dart';
 import 'package:flutter/material.dart';
 
 class ArticleCard extends StatelessWidget {
-  final Article article;
-  const ArticleCard({Key? key, required this.article}) : super(key: key);
+  final int index;
+  const ArticleCard({Key? key, required this.index}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final article = context.read<ArticleViewModel>().articles[index];
     return InkWell(
       onTap: () {
         Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => ArticlePage(
-                      article: article,
+                builder: (context) => ArticleDetailScreen(
+                      index: index,
                     )));
       },
       child: Container(

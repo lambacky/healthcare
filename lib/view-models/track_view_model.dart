@@ -1,0 +1,231 @@
+import 'dart:async';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/material.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:stop_watch_timer/stop_watch_timer.dart';
+import '../models/track_model.dart';
+import '../services/firebase_service.dart';
+
+class TrackViewModel extends ChangeNotifier {
+  List<Track> _tracks = [];
+  List<Track> get tracks => _tracks;
+  late Track _track;
+  Track get track => _track;
+  Position? _currentPosition;
+  Position? get currentPosition => _currentPosition;
+  StopWatchTimer? _stopWatchTimer;
+  StopWatchTimer? get stopWatchTimer => _stopWatchTimer;
+
+  StreamSubscription<Position>? _positionStreamSubscription;
+  StreamSubscription<Position>? get positionStreamSubscription =>
+      _positionStreamSubscription;
+  Completer<GoogleMapController>? _controller;
+  late String _runningState;
+  String get runningState => _runningState;
+  Set<Polyline> _polyLines = {};
+  Set<Polyline> get polyLines => _polyLines;
+  List<List<LatLng>> _coordinates = [];
+  // Polyline _polyLine = const Polyline(polylineId: PolylineId("route"));
+  late double _north;
+  late double _south;
+  late double _west;
+  late double _east;
+  late int _polyLineCount;
+
+  void onMapCreated(GoogleMapController mapController) async {
+    _controller!.complete(mapController);
+    var controller = await _controller!.future;
+    _positionStreamSubscription = Geolocator.getPositionStream(
+            locationSettings: const LocationSettings(
+                accuracy: LocationAccuracy.high, distanceFilter: 10))
+        .listen((Position position) {
+      if (_runningState == "run") {
+        if (position.longitude > _east) {
+          _east = position.longitude;
+        } else if (position.longitude < _west) {
+          _west = position.longitude;
+        }
+        if (position.latitude > _north) {
+          _north = position.latitude;
+        } else if (position.latitude < _south) {
+          _south = position.latitude;
+        }
+        _track.distance += Geolocator.distanceBetween(
+                _currentPosition!.latitude,
+                _currentPosition!.longitude,
+                position.latitude,
+                position.longitude) /
+            1000;
+        _track.speed = _stopWatchTimer!.secondTime.value > 0
+            ? 3600 * _track.distance / _stopWatchTimer!.secondTime.value
+            : 0;
+
+        _coordinates[_polyLineCount - 1]
+            .add(LatLng(position.latitude, position.longitude));
+        Polyline polyLine = Polyline(
+          polylineId: PolylineId(_polyLineCount.toString()),
+          points: _coordinates[_polyLineCount - 1],
+          color: Colors.blue,
+          width: 5,
+        );
+        _polyLines.add(polyLine);
+      }
+      _currentPosition = position;
+      if (runningState != 'finish') {
+        controller.animateCamera(CameraUpdate.newLatLngZoom(
+            LatLng(position.latitude, position.longitude), 15));
+        notifyListeners();
+      }
+    });
+    notifyListeners();
+  }
+
+  void setInitialLocation() {
+    try {
+      Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high)
+          .then((Position position) {
+        _north = position.latitude;
+        _south = position.latitude;
+        _east = position.longitude;
+        _west = position.longitude;
+        _currentPosition = position;
+        notifyListeners();
+      });
+    } catch (e) {
+      print('error: $e');
+    }
+  }
+
+  void getTracks(Map<String, dynamic>? data) {
+    if (data != null &&
+        data.containsKey('running') &&
+        data['running'].length > 0) {
+      List<dynamic> tracks = data['running'];
+      for (var item in tracks) {
+        _tracks.add(Track.fromJson(item));
+      }
+    }
+    notifyListeners();
+  }
+
+  void setTrack() {
+    _stopWatchTimer = StopWatchTimer();
+    _track = Track(
+        date: DateTime.now(),
+        distance: 0,
+        speed: 0,
+        time: '00:00:00',
+        steps: 0,
+        routeImageURL: '',
+        routeImagePath: '',
+        place: '');
+    _controller = Completer<GoogleMapController>();
+    _runningState = 'none';
+    _polyLines.clear();
+    _polyLineCount = 0;
+    _coordinates.clear();
+    notifyListeners();
+  }
+
+  void startRun() {
+    _runningState = "run";
+    _coordinates.add([]);
+    _polyLineCount++;
+    _stopWatchTimer!.onStartTimer();
+    notifyListeners();
+  }
+
+  void stopRun() {
+    _runningState = "stop";
+    _stopWatchTimer!.onStopTimer();
+    notifyListeners();
+  }
+
+  void restartRun() {
+    _track = Track(
+        date: DateTime.now(),
+        distance: 0,
+        speed: 0,
+        time: '00:00:00',
+        steps: 0,
+        routeImageURL: '',
+        routeImagePath: '',
+        place: '');
+    _stopWatchTimer!.onResetTimer();
+    _polyLines.clear();
+    _polyLineCount = 0;
+    _coordinates.clear();
+  }
+
+  Future<void> saveRun() async {
+    try {
+      _runningState = 'finish';
+      List<Placemark> placemarks = await placemarkFromCoordinates(
+          _currentPosition!.latitude, _currentPosition!.longitude);
+      if (placemarks.isNotEmpty) {
+        _track.place =
+            "${placemarks[0].subAdministrativeArea}, ${placemarks[0].administrativeArea}, ${placemarks[0].country}";
+      }
+    } catch (e) {}
+
+    var controller = await _controller!.future;
+    await controller.animateCamera(CameraUpdate.newLatLngBounds(
+        LatLngBounds(
+            southwest: LatLng(_south, _west), northeast: LatLng(_north, _east)),
+        15));
+    await Future.delayed(const Duration(seconds: 2), () async {
+      var routeSnapshot = await controller.takeSnapshot();
+      String routeImageFile = DateTime.now().microsecondsSinceEpoch.toString();
+      _track.routeImagePath =
+          '${FirebaseAuth.instance.currentUser?.uid}/$routeImageFile';
+      Reference imageReference =
+          FirebaseStorage.instance.ref().child(_track.routeImagePath);
+      await imageReference.putData(routeSnapshot!);
+      _track.routeImageURL = await imageReference.getDownloadURL();
+      _track.steps = (_track.distance * 1312.336).round();
+      _track.date = DateTime.now();
+      _track.time = StopWatchTimer.getDisplayTime(
+          _stopWatchTimer!.rawTime.value,
+          milliSecond: false);
+      addTrack();
+    });
+  }
+
+  Future<void> deleteTrack(int index) async {
+    try {
+      await FireBaseService().updateData({
+        'running': FieldValue.arrayRemove([_tracks[index].toJson()])
+      });
+      await FirebaseStorage.instance
+          .ref()
+          .child(_tracks[index].routeImagePath)
+          .delete();
+      _tracks.removeAt(index);
+      notifyListeners();
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future<void> addTrack() async {
+    try {
+      _tracks.add(_track);
+      await FireBaseService().updateData({
+        'running': FieldValue.arrayUnion([_track.toJson()])
+      });
+      notifyListeners();
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future<void> cancel() async {
+    await _positionStreamSubscription?.cancel();
+    await _stopWatchTimer!.dispose();
+  }
+}

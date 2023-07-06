@@ -1,24 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:healthcare/models/addiction_tracker.dart';
-import 'package:intl/intl.dart';
+import 'package:healthcare/view-models/addiction_track_view_model.dart';
+import 'package:provider/provider.dart';
 
 class AddictionTrackCard extends StatelessWidget {
-  final Function(AddictionTracker, int) clickAction;
-  final AddictionTracker addictionTracker;
+  final Function(int) clickAction;
   final int index;
   const AddictionTrackCard(
-      {Key? key,
-      required this.clickAction,
-      required this.addictionTracker,
-      required this.index})
+      {Key? key, required this.clickAction, required this.index})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final addictionTracker =
+        context.read<AddictionTrackViewModel>().addictionTracks[index];
     final days = DateTime.now().difference(addictionTracker.startDate).inDays;
     return InkWell(
       onTap: () {
-        clickAction(addictionTracker, index);
+        clickAction(index);
       },
       child: Container(
         margin: const EdgeInsets.all(12.0),

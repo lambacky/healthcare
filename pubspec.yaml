@@ -69,8 +69,8 @@ dependencies:
   workmanager: ^0.5.1
   provider: ^6.0.5
   cached_network_image: ^3.2.3
-  awesome_notifications: ^0.7.4+1
   flutter_timezone: ^1.0.7
+  equatable: ^2.0.5
 
 dev_dependencies:
   flutter_test:

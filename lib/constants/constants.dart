@@ -1,3 +1,6 @@
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:healthcare/models/medication_type.dart';
+
 class Constants {
   static List<String> diets = [
     'None',
@@ -18,6 +21,16 @@ class Constants {
     'Sweets',
     'Video Games',
     'Pornography'
+  ];
+
+  static List<MedicationType> medicationTypes = [
+    MedicationType(
+        name: 'Tablet', icon: FontAwesomeIcons.tablets, unit: 'pills'),
+    MedicationType(
+        name: 'Capsule', icon: FontAwesomeIcons.capsules, unit: 'pills'),
+    MedicationType(name: 'Syringe', icon: FontAwesomeIcons.syringe, unit: 'ml'),
+    MedicationType(
+        name: 'Drop', icon: FontAwesomeIcons.eyeDropper, unit: 'drops'),
   ];
   static List<int> mileStones = [
     1,

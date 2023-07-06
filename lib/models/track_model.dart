@@ -1,12 +1,12 @@
 class Track {
-  final DateTime date;
-  final double distance;
-  final double speed;
-  final String time;
-  final int steps;
-  final String routeImageURL;
-  final String routeImagePath;
-  final String place;
+  DateTime date;
+  double distance;
+  double speed;
+  String time;
+  int steps;
+  String routeImageURL;
+  String routeImagePath;
+  String place;
 
   Track(
       {required this.date,

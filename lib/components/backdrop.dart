@@ -1,31 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-//import 'package:flutter_svg/flutter_svg.dart';
-
-//import '../../../constants.dart';
+import 'package:provider/provider.dart';
+import '../view-models/meal_plan_view_model.dart';
 
 class Backdrop extends StatelessWidget {
   const Backdrop({
     Key? key,
-    required this.size,
-    required this.image,
-    required this.minutes,
-    required this.serves,
   }) : super(key: key);
-
-  final Size size;
-  final String minutes;
-  final String serves;
-  final String image;
 
   @override
   Widget build(BuildContext context) {
+    final mealDetail = context.read<MealPlanViewModel>().mealDetail!;
     return CachedNetworkImage(
-        imageUrl: image,
+        imageUrl: mealDetail.image,
         imageBuilder: (context, imageProvider) {
           return Container(
-            height: size.height / 2.7,
-            width: size.width,
+            height: 250,
+            width: double.infinity,
             decoration: BoxDecoration(
                 image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
                 color: Colors.black12,
@@ -33,65 +24,47 @@ class Backdrop extends StatelessWidget {
                 borderRadius: const BorderRadius.only(
                     bottomLeft: Radius.circular(30),
                     bottomRight: Radius.circular(30))),
-            child: Stack(
-              children: <Widget>[
-                Container(
-                    margin: EdgeInsets.only(top: size.height / 3.5),
-                    height: size.height / 4,
-                    width: size.width,
-                    decoration: const BoxDecoration(
-                        color: Colors.black87,
-                        borderRadius: BorderRadius.only(
-                            bottomLeft: Radius.circular(30),
-                            bottomRight: Radius.circular(30))),
-                    padding:
-                        const EdgeInsets.only(left: 40, right: 40, bottom: 10),
-                    alignment: Alignment.bottomCenter,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(
-                              top: 8, bottom: 8, right: 5),
-                          child: Text(
-                            'Preparation Time: $minutes min',
-                            style: const TextStyle(
-                              backgroundColor: Colors.black12,
-                              fontSize: 15,
-                              color: Colors.white,
-                            ),
-                          ),
+            child: Container(
+                margin: const EdgeInsets.only(top: 190),
+                height: 50,
+                width: double.infinity,
+                decoration: const BoxDecoration(
+                    color: Colors.black87,
+                    borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(30),
+                        bottomRight: Radius.circular(30))),
+                padding: const EdgeInsets.only(left: 40, right: 40, bottom: 10),
+                alignment: Alignment.bottomCenter,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Padding(
+                      padding:
+                          const EdgeInsets.only(top: 8, bottom: 8, right: 5),
+                      child: Text(
+                        'Preparation Time: ${mealDetail.readyInMinutes} min',
+                        style: const TextStyle(
+                          backgroundColor: Colors.black12,
+                          fontSize: 15,
+                          color: Colors.white,
                         ),
-                        Padding(
-                          padding:
-                              const EdgeInsets.only(top: 8, bottom: 8, left: 5),
-                          child: Text(
-                            'Served for: $serves',
-                            style: const TextStyle(
-                              backgroundColor: Colors.black12,
-                              fontSize: 15,
-                              color: Colors.white,
-                            ),
-                          ),
+                      ),
+                    ),
+                    Padding(
+                      padding:
+                          const EdgeInsets.only(top: 8, bottom: 8, left: 5),
+                      child: Text(
+                        'Served for: ${mealDetail.servings}',
+                        style: const TextStyle(
+                          backgroundColor: Colors.black12,
+                          fontSize: 15,
+                          color: Colors.white,
                         ),
-                      ],
-                    )),
-                // Back Button
-                // const SafeArea(
-                //   child: BackButton(
-                //     color: Colors.white,
-                //   ),
-                // )
-              ],
-            ),
+                      ),
+                    ),
+                  ],
+                )),
           );
         });
   }
 }
-
-//  decoration: BoxDecoration(
-//               borderRadius: BorderRadius.only(bottomLeft: Radius.circular(20), bottomRight: Radius.circular(20)),
-//               image: DecorationImage(
-//                 fit: BoxFit.cover,
-//                 image: NetworkImage(recipe.backdrop),
-//               ),

@@ -1,23 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
+import 'package:provider/provider.dart';
 
-import '../models/running_target.dart';
+import '../view-models/target_view_model.dart';
 
 class RunningTargetCard extends StatelessWidget {
-  final RunningTarget runningTarget;
-  final Function(RunningTarget) deleteAction;
+  final int index;
+
+  final Function(int) deleteAction;
   const RunningTargetCard(
-      {Key? key, required this.runningTarget, required this.deleteAction})
+      {Key? key, required this.index, required this.deleteAction})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final startDate = DateFormat('dd/MM/yyyy').format(runningTarget.startDate);
-    final endDate = DateFormat('dd/MM/yyyy').format(runningTarget.endDate);
-    final targetDistance = runningTarget.targetDistance;
-    final achievedDistance = runningTarget.achievedDistance;
-    final status = runningTarget.status;
+    final target = context.read<TargetViewModel>().targets[index];
+    final startDate = DateFormat('dd/MM/yyyy').format(target.startDate);
+    final endDate = DateFormat('dd/MM/yyyy').format(target.endDate);
+    final targetDistance = target.targetDistance;
+    final achievedDistance = target.achievedDistance;
+    final status = target.status;
     return Container(
         margin: const EdgeInsets.all(12.0),
         padding: const EdgeInsets.fromLTRB(8, 8, 8, 15),
@@ -64,7 +67,7 @@ class RunningTargetCard extends StatelessWidget {
                     const SizedBox(width: 20),
                     GestureDetector(
                       onTap: () {
-                        deleteAction(runningTarget);
+                        deleteAction(index);
                       },
                       child: const Icon(
                         Icons.delete,

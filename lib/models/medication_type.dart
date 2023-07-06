@@ -1,6 +1,7 @@
+import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
-class MedicationType {
+class MedicationType extends Equatable {
   final String name;
   final IconData icon;
   final String unit;
@@ -18,4 +19,11 @@ class MedicationType {
       'unit': unit,
     };
   }
+
+  MedicationType clone() {
+    return MedicationType(name: name, icon: icon, unit: unit);
+  }
+
+  @override
+  List<Object?> get props => [name, icon, unit];
 }

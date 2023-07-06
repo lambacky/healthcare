@@ -1,7 +1,8 @@
+import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:healthcare/models/medication_type.dart';
 
-class MedicationReminder {
+class MedicationReminder extends Equatable {
   String name;
   String doses;
   String times;
@@ -53,4 +54,18 @@ class MedicationReminder {
       'notificationIds': notificationIds
     };
   }
+
+  MedicationReminder clone() {
+    return MedicationReminder(
+        name: name,
+        doses: doses,
+        times: times,
+        medicationType: medicationType,
+        schedule: schedule,
+        notificationIds: notificationIds);
+  }
+
+  @override
+  List<Object?> get props =>
+      [name, doses, times, medicationType, schedule, notificationIds];
 }

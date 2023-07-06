@@ -40,7 +40,6 @@ class MealApiService {
 
   Future<MealDetail> getMealInformation(String id) async {
     Map<String, String> parameters = {
-      'includeNutrition': 'true',
       'apiKey': _apiKey,
     };
     Uri uri = Uri.https(

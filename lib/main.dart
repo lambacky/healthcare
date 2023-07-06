@@ -1,8 +1,16 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:healthcare/pages/main_screen.dart';
-import 'package:healthcare/providers/user_firestore.dart';
+import 'package:healthcare/views/main_screen.dart';
+import 'package:healthcare/view-models/addiction_track_view_model.dart';
+import 'package:healthcare/view-models/article_view_model.dart';
+import 'package:healthcare/view-models/heart_rate_view_model.dart';
+import 'package:healthcare/view-models/meal_plan_view_model.dart';
+import 'package:healthcare/view-models/medication_reminder_view_model.dart';
+import 'package:healthcare/view-models/physical_status_view_model.dart';
+import 'package:healthcare/view-models/target_view_model.dart';
+import 'package:healthcare/view-models/track_view_model.dart';
+import 'package:healthcare/view-models/user_view_model.dart';
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
@@ -25,8 +33,8 @@ Future<void> main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   tz.initializeTimeZones();
-  final String? timeZoneName = await FlutterTimezone.getLocalTimezone();
-  tz.setLocalLocation(tz.getLocation(timeZoneName!));
+  final String timeZoneName = await FlutterTimezone.getLocalTimezone();
+  tz.setLocalLocation(tz.getLocation(timeZoneName));
   // await FireBaseMessagingService().initNotifications();
   // final String timeZone = await FlutterNativeTimezone.getLocalTimezone();
   // tz.setLocalLocation(tz.getLocation(timeZone));
@@ -43,7 +51,22 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider<UserFireStore>(create: (_) => UserFireStore())
+        ChangeNotifierProvider<MedicationReminderViewModel>(
+            create: (_) => MedicationReminderViewModel()),
+        ChangeNotifierProvider<AddictionTrackViewModel>(
+            create: (_) => AddictionTrackViewModel()),
+        ChangeNotifierProvider<MealPlanViewModel>(
+            create: (_) => MealPlanViewModel()),
+        ChangeNotifierProvider<ArticleViewModel>(
+            create: (_) => ArticleViewModel()),
+        ChangeNotifierProvider<UserViewModel>(create: (_) => UserViewModel()),
+        ChangeNotifierProvider<PhysicStatViewModel>(
+            create: (_) => PhysicStatViewModel()),
+        ChangeNotifierProvider<TargetViewModel>(
+            create: (_) => TargetViewModel()),
+        ChangeNotifierProvider<TrackViewModel>(create: (_) => TrackViewModel()),
+        ChangeNotifierProvider<HeartRateViewModel>(
+            create: (_) => HeartRateViewModel())
       ],
       child: MaterialApp(
         title: 'Health Care App',

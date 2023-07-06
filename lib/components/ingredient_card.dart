@@ -1,13 +1,16 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import '/models/ingredients_model.dart';
+import 'package:provider/provider.dart';
+import '../view-models/meal_plan_view_model.dart';
 
 class IngredientCard extends StatelessWidget {
-  final Ingredient ingredient;
+  final int index;
 
-  const IngredientCard({Key? key, required this.ingredient}) : super(key: key);
+  const IngredientCard({Key? key, required this.index}) : super(key: key);
   @override
   Widget build(BuildContext context) {
+    final ingredient =
+        context.read<MealPlanViewModel>().mealDetail!.ingredients[index];
     return Container(
       margin: const EdgeInsets.only(right: 10),
       width: 80,

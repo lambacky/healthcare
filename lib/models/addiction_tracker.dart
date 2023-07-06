@@ -1,4 +1,6 @@
-class AddictionTracker {
+import 'package:equatable/equatable.dart';
+
+class AddictionTracker extends Equatable {
   String type;
   DateTime startDate;
 
@@ -15,4 +17,11 @@ class AddictionTracker {
       'startDate': startDate,
     };
   }
+
+  AddictionTracker clone() {
+    return AddictionTracker(type: type, startDate: startDate);
+  }
+
+  @override
+  List<Object?> get props => [type, startDate];
 }

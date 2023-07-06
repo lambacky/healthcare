@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:healthcare/models/track_model.dart';
 import 'package:intl/intl.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:provider/provider.dart';
+
+import '../view-models/track_view_model.dart';
 
 class TrackCard extends StatelessWidget {
-  final Function(Track) deleteAction;
-  final Track track;
-  const TrackCard({Key? key, required this.track, required this.deleteAction})
+  final Function(int) deleteAction;
+  final int index;
+  const TrackCard({Key? key, required this.index, required this.deleteAction})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final track = context.read<TrackViewModel>().tracks[index];
     final steps = track.steps.toString();
     final speed = track.speed.toStringAsFixed(2);
     final distance = track.distance.toStringAsFixed(2);
@@ -63,7 +66,7 @@ class TrackCard extends StatelessWidget {
                 ),
                 GestureDetector(
                   onTap: () {
-                    deleteAction(track);
+                    deleteAction(index);
                   },
                   child: const Icon(
                     Icons.delete,
