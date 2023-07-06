@@ -33,19 +33,42 @@ class TargetViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> checkDueDate() async {
+    List<dynamic> targets = [];
+    bool isChange = false;
+    final now = DateTime.now();
+    for (var target in _targets) {
+      if (target.status == 'progress') {
+        if (now.compareTo(target.endDate) > 0) {
+          target.status = 'finished';
+          isChange = true;
+        }
+      }
+      targets.add(target.toJson());
+    }
+    if (isChange) {
+      await FireBaseService().updateData({'targets': targets});
+      notifyListeners();
+    }
+  }
+
   Future<void> updateTargets(Track track) async {
     List<dynamic> targets = [];
+    bool isChange = false;
     for (var target in _targets) {
       if (target.status == 'progress') {
         target.achievedDistance += track.distance;
         if (target.achievedDistance > target.targetDistance) {
           target.status = 'finished';
         }
+        isChange = true;
       }
       targets.add(target.toJson());
     }
-    await FireBaseService().updateData({'targets': targets});
-    notifyListeners();
+    if (isChange) {
+      await FireBaseService().updateData({'targets': targets});
+      notifyListeners();
+    }
   }
 
   Future<void> deleteRunningTarget(int index) async {

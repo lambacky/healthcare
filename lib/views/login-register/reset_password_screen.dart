@@ -36,22 +36,6 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final emailForm = TextInput(
-        title: 'Email',
-        icon: Icons.email,
-        textEditingController: _emailController);
-
-    final resetPasswordButton = ElevatedButton(
-        onPressed: resetPassword,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.red,
-          fixedSize: const Size(200, 50),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(25),
-          ),
-        ),
-        child: const Text("Reset Password", style: TextStyle(fontSize: 20)));
-
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -72,8 +56,21 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                   style: TextStyle(fontSize: 20),
                 ),
                 const SizedBox(height: 20),
-                emailForm,
-                resetPasswordButton
+                TextInput(
+                    title: 'Email',
+                    icon: Icons.email,
+                    textEditingController: _emailController),
+                ElevatedButton(
+                    onPressed: resetPassword,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red,
+                      fixedSize: const Size(200, 50),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(25),
+                      ),
+                    ),
+                    child: const Text("Reset Password",
+                        style: TextStyle(fontSize: 20)))
               ],
             ),
           ),

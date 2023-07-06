@@ -4,6 +4,7 @@ import 'package:healthcare/views/running/history_screen.dart';
 import 'package:healthcare/views/running/target_screen.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
+import '../../view-models/target_view_model.dart';
 import '../../view-models/track_view_model.dart';
 import 'tracking_screen.dart';
 
@@ -18,25 +19,11 @@ class _RunningMenuScreenState extends State<RunningMenuScreen> {
   final List pages = const [HistoryScreen(), TargetScreen()];
   int _currentIndex = 0;
 
-  // void checkTargetDueDate() {
-  //   final userFireStore = context.read<UserFireStore>();
-  //   final user = userFireStore.userData;
-  //   if (user.isNotEmpty) {
-  //     if (user.containsKey("targets") && user['targets'].length > 0) {
-  //       List<dynamic> targets = user['targets'];
-  //       DateTime now = DateTime.now();
-  //       for (int i = 0; i < targets.length; i++) {
-  //         RunningTarget runningTarget =
-  //             RunningTarget.fromJson(Map<String, dynamic>.from(targets[i]));
-  //         if (now.compareTo(runningTarget.endDate) > 0) {
-  //           runningTarget.status = 'done';
-  //           targets[i] = runningTarget.toJson();
-  //         }
-  //       }
-  //       userFireStore.updateData({'targets': targets});
-  //     }
-  //   }
-  // }
+  @override
+  void initState() {
+    super.initState();
+    context.read<TargetViewModel>().checkDueDate();
+  }
 
   checkLocationPermission() async {
     LocationPermission permission;
