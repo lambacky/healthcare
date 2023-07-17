@@ -1,4 +1,5 @@
 import 'package:healthcare/views/login-register/reset_password_screen.dart';
+import '../../components/submit_button.dart';
 import '../../components/text_input.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -60,19 +61,11 @@ class _LoginScreenState extends State<LoginScreen> {
                       children: List.generate(
                           formInputs.length, (index) => formInputs[index]),
                     ),
-                    ElevatedButton(
+                    SubmitButton(
+                        text: 'Log In',
                         onPressed: () {
                           signIn(controllers[0].text, controllers[1].text);
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.red,
-                          fixedSize: const Size(200, 50),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(25),
-                          ),
-                        ),
-                        child: const Text("Log In",
-                            style: TextStyle(fontSize: 20))),
+                        }),
                     const SizedBox(height: 20),
                     Row(
                         mainAxisAlignment: MainAxisAlignment.center,

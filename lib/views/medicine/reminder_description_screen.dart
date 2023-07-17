@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:healthcare/components/submit_button.dart';
 import 'package:healthcare/constants/constants.dart';
 import 'package:healthcare/models/medication_type.dart';
 import 'package:healthcare/view-models/medication_reminder_view_model.dart';
@@ -15,9 +16,16 @@ class ReminderDescriptionScreen extends StatefulWidget {
 }
 
 class _ReminderDescriptionScreenState extends State<ReminderDescriptionScreen> {
+  final _nameController = TextEditingController();
+  final _dosesController = TextEditingController();
+  final _timesController = TextEditingController();
   @override
   void initState() {
     super.initState();
+    final reminder = context.read<MedicationReminderViewModel>().reminder;
+    _nameController.text = reminder.name;
+    _dosesController.text = reminder.doses;
+    _timesController.text = reminder.times;
   }
 
   @override
@@ -192,8 +200,7 @@ class _ReminderDescriptionScreenState extends State<ReminderDescriptionScreen> {
                           fontSize: 18,
                           color: Colors.blueGrey)),
                   TextField(
-                    controller: TextEditingController(
-                        text: reminderViewModel.reminder.name),
+                    controller: _nameController,
                     onChanged: (value) {
                       reminderViewModel.updateName(value.toString());
                     },
@@ -213,8 +220,7 @@ class _ReminderDescriptionScreenState extends State<ReminderDescriptionScreen> {
                               SizedBox(
                                 width: 60,
                                 child: TextField(
-                                  controller: TextEditingController(
-                                      text: reminderViewModel.reminder.doses),
+                                  controller: _dosesController,
                                   onChanged: (value) {
                                     reminderViewModel
                                         .updateDoses(value.toString());
@@ -249,8 +255,7 @@ class _ReminderDescriptionScreenState extends State<ReminderDescriptionScreen> {
                           SizedBox(
                             width: 60,
                             child: TextField(
-                              controller: TextEditingController(
-                                  text: reminderViewModel.reminder.times),
+                              controller: _timesController,
                               onChanged: (value) {
                                 reminderViewModel.updateTimes(value.toString());
                               },
@@ -274,6 +279,7 @@ class _ReminderDescriptionScreenState extends State<ReminderDescriptionScreen> {
                   SizedBox(
                     height: 90,
                     child: ListView.builder(
+                      shrinkWrap: true,
                       scrollDirection: Axis.horizontal,
                       itemCount: Constants.medicationTypes.length,
                       itemBuilder: (context, index) => _buildMedicationTypeCard(
@@ -314,30 +320,14 @@ class _ReminderDescriptionScreenState extends State<ReminderDescriptionScreen> {
                   ),
                   const SizedBox(height: 30),
                   Align(
-                    alignment: Alignment.center,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red,
-                        fixedSize: const Size(200, 50),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(25),
-                        ),
-                      ),
-                      onPressed: reminderViewModel.isEnabled
-                          ? () {
-                              _saveReminder();
-                            }
-                          : null,
-                      child: const Text(
-                        'Add Reminder',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 22.0,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ),
+                      alignment: Alignment.center,
+                      child: SubmitButton(
+                          text: 'Add reminder',
+                          onPressed: reminderViewModel.isEnabled
+                              ? () {
+                                  _saveReminder();
+                                }
+                              : null)),
                 ],
               )),
         ));

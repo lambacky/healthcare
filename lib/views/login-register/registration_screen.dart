@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '../../components/submit_button.dart';
 import '../../models/user_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -96,19 +97,11 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     ),
                     confirmPasswordField,
                     const SizedBox(height: 20),
-                    ElevatedButton(
+                    SubmitButton(
+                        text: 'Sign Up',
                         onPressed: () {
                           signUp(controllers[2].text, controllers[3].text);
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.red,
-                          fixedSize: const Size(200, 50),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(25),
-                          ),
-                        ),
-                        child: const Text("Sign Up",
-                            style: TextStyle(fontSize: 20))),
+                        }),
                     const SizedBox(height: 20),
                     Row(
                         mainAxisAlignment: MainAxisAlignment.center,

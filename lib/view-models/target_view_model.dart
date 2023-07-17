@@ -1,8 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:healthcare/models/running_target.dart';
-
-import '../models/track_model.dart';
 import '../services/firebase_service.dart';
 
 class TargetViewModel extends ChangeNotifier {
@@ -36,13 +34,9 @@ class TargetViewModel extends ChangeNotifier {
   Future<void> checkDueDate() async {
     List<dynamic> targets = [];
     bool isChange = false;
-    final now = DateTime.now();
     for (var target in _targets) {
-      if (target.status == 'progress') {
-        if (now.compareTo(target.endDate) > 0) {
-          target.status = 'finished';
-          isChange = true;
-        }
+      if (target.checkDueDate()) {
+        isChange = true;
       }
       targets.add(target.toJson());
     }
@@ -52,15 +46,11 @@ class TargetViewModel extends ChangeNotifier {
     }
   }
 
-  Future<void> updateTargets(Track track) async {
+  Future<void> updateTargets(double distance) async {
     List<dynamic> targets = [];
     bool isChange = false;
     for (var target in _targets) {
-      if (target.status == 'progress') {
-        target.achievedDistance += track.distance;
-        if (target.achievedDistance > target.targetDistance) {
-          target.status = 'finished';
-        }
+      if (target.checkDistance(distance)) {
         isChange = true;
       }
       targets.add(target.toJson());
@@ -109,38 +99,28 @@ class TargetViewModel extends ChangeNotifier {
   }
 
   void updateDistance(String distance) {
-    _target.targetDistance =
-        (distance.isEmpty || distance == '.') ? 0 : double.parse(distance);
+    _target.updateDistance(distance);
     checkButtonState();
   }
 
   void updateDate(DateTime dateTime, String type) {
-    if (type == 'start') {
-      _target.startDate = dateTime;
-      if (_target.startDate.compareTo(_target.endDate) > 0) {
-        _target.endDate = _target.startDate;
-      }
-    } else {
-      _target.endDate = dateTime;
-    }
+    _target.updateDate(dateTime, type);
     checkButtonState();
   }
 
   Future<void> updateRunningTarget() async {
     try {
-      _target.startDate = DateTime(_target.startDate.year,
-          _target.startDate.month, target.startDate.day, 0, 0, 0);
-      _target.endDate = DateTime(_target.endDate.year, _target.endDate.month,
-          target.endDate.day, 23, 59, 59);
       if (_currentIndex < _targets.length) {
         _targets[_currentIndex] = _target;
       } else {
         _targets.add(_target);
+        _progress++;
       }
       List<dynamic> targets = [];
       for (var target in _targets) {
         targets.add(target.toJson());
       }
+
       await FireBaseService().updateData({'targets': targets});
       notifyListeners();
     } catch (e) {

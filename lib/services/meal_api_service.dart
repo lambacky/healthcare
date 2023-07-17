@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:healthcare/models/meal_detail.dart';
 import '../models/recipe_steps.dart';
-import '/models/meal_plan_model.dart';
+import '../models/meal_plan.dart';
 import 'package:http/http.dart' as http;
 
 class MealApiService {

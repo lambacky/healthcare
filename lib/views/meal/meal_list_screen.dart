@@ -3,6 +3,7 @@ import 'package:healthcare/views/meal/meal_detail_screen.dart';
 import 'package:healthcare/services/meal_api_service.dart';
 import 'package:healthcare/view-models/meal_plan_view_model.dart';
 import 'package:provider/provider.dart';
+import '../../components/submit_button.dart';
 import '../../models/meal_detail.dart';
 import '../../models/recipe_steps.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -244,32 +245,17 @@ class _MealListScreenState extends State<MealListScreen> {
                     if (index == 0) {
                       return Padding(
                         padding: const EdgeInsets.fromLTRB(60, 20, 60, 0),
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.red,
-                            fixedSize: const Size(200, 50),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(25),
-                            ),
-                          ),
-                          onPressed: mealPlanViewModel.isSaved
-                              ? () {
-                                  mealPlanViewModel.changeMealPlan();
-                                }
-                              : () {
-                                  mealPlanViewModel.saveMealPlan();
-                                },
-                          child: Text(
-                            mealPlanViewModel.isSaved
+                        child: SubmitButton(
+                            text: mealPlanViewModel.isSaved
                                 ? 'Change the diet'
                                 : 'Save the plan',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 22.0,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
+                            onPressed: mealPlanViewModel.isSaved
+                                ? () {
+                                    mealPlanViewModel.changeMealPlan();
+                                  }
+                                : () {
+                                    mealPlanViewModel.saveMealPlan();
+                                  }),
                       );
                     }
                     if (index == 1) {

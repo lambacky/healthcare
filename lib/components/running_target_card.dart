@@ -56,14 +56,16 @@ class RunningTargetCard extends StatelessWidget {
                 ),
                 Row(
                   children: [
-                    GestureDetector(
-                      onTap: () {},
-                      child: const Icon(
-                        Icons.edit,
-                        color: Colors.red,
-                        size: 30,
-                      ),
-                    ),
+                    status == 'finished'
+                        ? const SizedBox()
+                        : GestureDetector(
+                            onTap: () {},
+                            child: const Icon(
+                              Icons.edit,
+                              color: Colors.red,
+                              size: 30,
+                            ),
+                          ),
                     const SizedBox(width: 20),
                     GestureDetector(
                       onTap: () {
@@ -112,10 +114,13 @@ class RunningTargetCard extends StatelessWidget {
                 Text('Target: ${targetDistance.toString()} km',
                     style: const TextStyle(
                         fontSize: 15, fontWeight: FontWeight.bold)),
-                const SizedBox(height: 6),
-                Text('Achieved: ${achievedDistance.toStringAsFixed(1)} km',
-                    style: const TextStyle(
-                        fontSize: 15, fontWeight: FontWeight.bold)),
+                SizedBox(height: achievedDistance < targetDistance ? 6 : 0),
+                achievedDistance < targetDistance
+                    ? Text(
+                        'Achieved: ${achievedDistance.toStringAsFixed(1)} km',
+                        style: const TextStyle(
+                            fontSize: 15, fontWeight: FontWeight.bold))
+                    : const SizedBox(),
               ])
             ])
           ],

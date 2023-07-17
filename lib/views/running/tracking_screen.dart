@@ -74,7 +74,7 @@ class _TrackingScreenState extends State<TrackingScreen> {
               await context.read<TrackViewModel>().saveRun();
               await context
                   .read<TargetViewModel>()
-                  .updateTargets(context.read<TrackViewModel>().track);
+                  .updateTargets(context.read<TrackViewModel>().track.distance);
               navigator.pop();
               navigator.pop();
               Fluttertoast.showToast(msg: "Running track saved successfully");

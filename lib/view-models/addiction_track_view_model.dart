@@ -117,17 +117,17 @@ class AddictionTrackViewModel extends ChangeNotifier {
   }
 
   void updateType(String type) {
-    _addictionTracker.type = type;
+    _addictionTracker.updateType(type);
     checkButtonState();
   }
 
   void updateStartDate(DateTime startDate) {
-    _addictionTracker.startDate = startDate;
+    _addictionTracker.updateStartDate(startDate);
     checkButtonState();
   }
 
   void restartAddictionTrack() {
-    _addictionTracker.startDate = DateTime.now();
+    _addictionTracker.restartAddictionTrack();
     updateAddictionTracker();
   }
 }

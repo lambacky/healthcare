@@ -5,6 +5,8 @@ import 'package:healthcare/view-models/target_view_model.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
+import '../../components/submit_button.dart';
+
 class TargetScreen extends StatefulWidget {
   const TargetScreen({Key? key}) : super(key: key);
 
@@ -150,31 +152,15 @@ class _TargetScreenState extends State<TargetScreen> {
                     ]),
                 const SizedBox(height: 30),
                 Align(
-                  alignment: Alignment.center,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red,
-                      fixedSize: const Size(180, 45),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(25),
-                      ),
-                    ),
-                    onPressed: !targetViewModel.isEnabled
-                        ? null
-                        : () {
-                            targetViewModel.updateRunningTarget();
-                            Navigator.pop(context);
-                          },
-                    child: const Text(
-                      'Save new target',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18.0,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ),
+                    alignment: Alignment.center,
+                    child: SubmitButton(
+                        text: 'Save new target',
+                        onPressed: !targetViewModel.isEnabled
+                            ? null
+                            : () {
+                                targetViewModel.updateRunningTarget();
+                                Navigator.pop(context);
+                              })),
               ],
             ),
           ),
@@ -198,7 +184,7 @@ class _TargetScreenState extends State<TargetScreen> {
             children: [
               const SizedBox(height: 20),
               Row(children: [
-                const SizedBox(width: 12),
+                const SizedBox(width: 20),
                 const Text('In Progress',
                     style:
                         TextStyle(fontSize: 25, fontWeight: FontWeight.bold)),
@@ -240,7 +226,7 @@ class _TargetScreenState extends State<TargetScreen> {
                           return RunningTargetCard(
                               index: index, deleteAction: deleteRunningTarget);
                         }
-                        return null;
+                        return const SizedBox();
                       },
                     ),
               const SizedBox(height: 20),
@@ -250,15 +236,15 @@ class _TargetScreenState extends State<TargetScreen> {
                     style:
                         TextStyle(fontSize: 25, fontWeight: FontWeight.bold)),
                 const SizedBox(width: 20),
-                GestureDetector(
-                  onTap: () {},
-                  child: Container(
-                    padding: const EdgeInsets.all(3),
-                    decoration: const BoxDecoration(
-                        color: Colors.blueGrey, shape: BoxShape.circle),
-                    child: const Icon(Icons.add, color: Colors.white),
-                  ),
-                )
+                // GestureDetector(
+                //   onTap: () {},
+                //   child: Container(
+                //     padding: const EdgeInsets.all(3),
+                //     decoration: const BoxDecoration(
+                //         color: Colors.blueGrey, shape: BoxShape.circle),
+                //     child: const Icon(Icons.add, color: Colors.white),
+                //   ),
+                // )
               ]),
               targetViewModel.progress == targetViewModel.targets.length
                   ? Container(
@@ -284,7 +270,7 @@ class _TargetScreenState extends State<TargetScreen> {
                           return RunningTargetCard(
                               index: index, deleteAction: deleteRunningTarget);
                         }
-                        return null;
+                        return const SizedBox();
                       },
                     ),
             ],

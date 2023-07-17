@@ -61,11 +61,53 @@ class MedicationReminder extends Equatable {
         doses: doses,
         times: times,
         medicationType: medicationType,
-        schedule: schedule,
-        notificationIds: notificationIds);
+        schedule: List.from(schedule),
+        notificationIds: List.from(notificationIds));
   }
 
   @override
   List<Object?> get props =>
       [name, doses, times, medicationType, schedule, notificationIds];
+
+  void updateName(String medicationName) {
+    name = medicationName;
+  }
+
+  void updateDoses(String medicationDoses) {
+    doses = medicationDoses;
+  }
+
+  void updateTimes(String medicationTimes) {
+    times = medicationTimes;
+  }
+
+  void updateType(MedicationType type) {
+    medicationType = type;
+  }
+
+  void deleteScheduleTime(TimeOfDay scheduleTime) {
+    schedule.remove(scheduleTime);
+  }
+
+  void addScheduleTime(DateTime dateTime, TimeOfDay? scheduleTime) {
+    TimeOfDay newScheduleTime = TimeOfDay.fromDateTime(dateTime);
+    if (scheduleTime != null && scheduleTime != newScheduleTime) {
+      schedule.remove(scheduleTime);
+    }
+    int insertIndex = schedule.length;
+    for (int i = 0; i < schedule.length; i++) {
+      int compare = schedule[i].toString().compareTo(scheduleTime.toString());
+      if (compare == 0) {
+        return;
+      } else if (compare > 0) {
+        insertIndex = i;
+        break;
+      }
+    }
+    schedule.insert(insertIndex, newScheduleTime);
+  }
+
+  void updateNotificationIds(List<int> ids) {
+    notificationIds = ids;
+  }
 }

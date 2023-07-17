@@ -8,7 +8,7 @@ import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
-import '../models/track_model.dart';
+import '../models/track.dart';
 import '../services/firebase_service.dart';
 
 class TrackViewModel extends ChangeNotifier {
@@ -30,7 +30,6 @@ class TrackViewModel extends ChangeNotifier {
   Set<Polyline> _polyLines = {};
   Set<Polyline> get polyLines => _polyLines;
   List<List<LatLng>> _coordinates = [];
-  // Polyline _polyLine = const Polyline(polylineId: PolylineId("route"));
   late double _north;
   late double _south;
   late double _west;
@@ -43,40 +42,42 @@ class TrackViewModel extends ChangeNotifier {
     _positionStreamSubscription = Geolocator.getPositionStream(
             locationSettings: const LocationSettings(
                 accuracy: LocationAccuracy.high, distanceFilter: 10))
-        .listen((Position position) {
-      if (_runningState == "run") {
-        if (position.longitude > _east) {
-          _east = position.longitude;
-        } else if (position.longitude < _west) {
-          _west = position.longitude;
+        .listen((Position position) async {
+      if (_runningState == 'finish') {
+        await _positionStreamSubscription!.cancel();
+      } else {
+        if (_runningState == "run") {
+          if (position.longitude > _east) {
+            _east = position.longitude;
+          } else if (position.longitude < _west) {
+            _west = position.longitude;
+          }
+          if (position.latitude > _north) {
+            _north = position.latitude;
+          } else if (position.latitude < _south) {
+            _south = position.latitude;
+          }
+          double distance = Geolocator.distanceBetween(
+                  _currentPosition!.latitude,
+                  _currentPosition!.longitude,
+                  position.latitude,
+                  position.longitude) /
+              1000;
+          double speed = _stopWatchTimer!.secondTime.value > 0
+              ? 3600 * _track.distance / _stopWatchTimer!.secondTime.value
+              : 0;
+          _track.updateDistanceAndSpeed(distance, speed);
+          _coordinates[_polyLineCount - 1]
+              .add(LatLng(position.latitude, position.longitude));
+          Polyline polyLine = Polyline(
+            polylineId: PolylineId(_polyLineCount.toString()),
+            points: _coordinates[_polyLineCount - 1],
+            color: Colors.blue,
+            width: 5,
+          );
+          _polyLines.add(polyLine);
         }
-        if (position.latitude > _north) {
-          _north = position.latitude;
-        } else if (position.latitude < _south) {
-          _south = position.latitude;
-        }
-        _track.distance += Geolocator.distanceBetween(
-                _currentPosition!.latitude,
-                _currentPosition!.longitude,
-                position.latitude,
-                position.longitude) /
-            1000;
-        _track.speed = _stopWatchTimer!.secondTime.value > 0
-            ? 3600 * _track.distance / _stopWatchTimer!.secondTime.value
-            : 0;
-
-        _coordinates[_polyLineCount - 1]
-            .add(LatLng(position.latitude, position.longitude));
-        Polyline polyLine = Polyline(
-          polylineId: PolylineId(_polyLineCount.toString()),
-          points: _coordinates[_polyLineCount - 1],
-          color: Colors.blue,
-          width: 5,
-        );
-        _polyLines.add(polyLine);
-      }
-      _currentPosition = position;
-      if (runningState != 'finish') {
+        _currentPosition = position;
         controller.animateCamera(CameraUpdate.newLatLngZoom(
             LatLng(position.latitude, position.longitude), 15));
         notifyListeners();
@@ -163,12 +164,13 @@ class TrackViewModel extends ChangeNotifier {
   }
 
   Future<void> saveRun() async {
+    String place = '';
+    _runningState = 'finish';
     try {
-      _runningState = 'finish';
       List<Placemark> placemarks = await placemarkFromCoordinates(
           _currentPosition!.latitude, _currentPosition!.longitude);
       if (placemarks.isNotEmpty) {
-        _track.place =
+        place =
             "${placemarks[0].subAdministrativeArea}, ${placemarks[0].administrativeArea}, ${placemarks[0].country}";
       }
     } catch (e) {}
@@ -181,17 +183,14 @@ class TrackViewModel extends ChangeNotifier {
     await Future.delayed(const Duration(seconds: 2), () async {
       var routeSnapshot = await controller.takeSnapshot();
       String routeImageFile = DateTime.now().microsecondsSinceEpoch.toString();
-      _track.routeImagePath =
+      String routeImagePath =
           '${FirebaseAuth.instance.currentUser?.uid}/$routeImageFile';
-      Reference imageReference =
-          FirebaseStorage.instance.ref().child(_track.routeImagePath);
-      await imageReference.putData(routeSnapshot!);
-      _track.routeImageURL = await imageReference.getDownloadURL();
-      _track.steps = (_track.distance * 1312.336).round();
-      _track.date = DateTime.now();
-      _track.time = StopWatchTimer.getDisplayTime(
+      String routeImageURL = await FireBaseService()
+          .uploadAndGetURL(routeImagePath, routeSnapshot!);
+      String time = StopWatchTimer.getDisplayTime(
           _stopWatchTimer!.rawTime.value,
           milliSecond: false);
+      _track.updateTrack(time, place, routeImageURL, routeImagePath);
       addTrack();
     });
   }

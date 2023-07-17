@@ -1,4 +1,4 @@
-import 'source_model.dart';
+import 'source.dart';
 
 class Article {
   Source source;

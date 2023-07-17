@@ -39,4 +39,12 @@ class UserModel extends Equatable {
 
   @override
   List<Object?> get props => [firstName, lastName];
+
+  void setFirstName(String name) {
+    firstName = name;
+  }
+
+  void setLastName(String name) {
+    lastName = name;
+  }
 }

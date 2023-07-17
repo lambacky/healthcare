@@ -45,13 +45,18 @@ class MedicationReminderViewModel extends ChangeNotifier {
 
   Future<void> updateReminder() async {
     try {
-      _reminder.notificationIds = [];
+      List<int> notificationIds = [];
       for (var scheduleTime in _reminder.schedule) {
         int id = Random().nextInt(10000);
-        _reminder.notificationIds.add(id);
-        await NotificationService()
-            .scheduleNotification(id: id, scheduleTime: scheduleTime);
+        notificationIds.add(id);
+        await NotificationService().scheduleNotification(
+            id: id,
+            scheduleTime: scheduleTime,
+            title: "Medication",
+            body:
+                'Drink ${_reminder.doses} ${_reminder.medicationType.unit} of ${_reminder.name}');
       }
+      _reminder.updateNotificationIds(notificationIds);
       if (_currentReminder.notificationIds.isNotEmpty) {
         for (var id in _currentReminder.notificationIds) {
           await NotificationService().cancelNotification(id);
@@ -93,57 +98,48 @@ class MedicationReminderViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void checkButtonState() {
-    _isEnabled = _reminder.name.isNotEmpty &&
+  void checkValid() {
+    bool buttonState = _reminder.name.isNotEmpty &&
         _reminder.doses.isNotEmpty &&
         _reminder.times.isNotEmpty &&
         _reminder.schedule.isNotEmpty &&
         _reminder != _currentReminder;
+
+    _isEnabled = buttonState;
     notifyListeners();
   }
 
   void updateName(String name) {
-    _reminder.name = name;
-    checkButtonState();
+    _reminder.updateName(name);
+    checkValid();
   }
 
   void updateDoses(String doses) {
-    _reminder.doses = doses;
-    checkButtonState();
+    _reminder.updateDoses(doses);
+    checkValid();
   }
 
   void updateTimes(String times) {
-    _reminder.times = times;
-    checkButtonState();
+    _reminder.updateTimes(times);
+    checkValid();
   }
 
   void updateType(MedicationType type) {
-    _reminder.medicationType = type;
-    checkButtonState();
+    _reminder.updateType(type);
+    checkValid();
   }
 
   void deleteScheduleTime(TimeOfDay scheduleTime) {
-    _reminder.schedule.remove(scheduleTime);
-    checkButtonState();
+    _reminder.deleteScheduleTime(scheduleTime);
+    print(_reminder.schedule);
+    print(_currentReminder.schedule);
+    checkValid();
   }
 
   void addScheduleTime(DateTime dateTime, TimeOfDay? scheduleTime) {
-    TimeOfDay newScheduleTime = TimeOfDay.fromDateTime(dateTime);
-    if (scheduleTime != null && scheduleTime != newScheduleTime) {
-      _reminder.schedule.remove(scheduleTime);
-    }
-    int insertIndex = _reminder.schedule.length;
-    for (int i = 0; i < _reminder.schedule.length; i++) {
-      int compare =
-          _reminder.schedule[i].toString().compareTo(scheduleTime.toString());
-      if (compare == 0) {
-        return;
-      } else if (compare > 0) {
-        insertIndex = i;
-        break;
-      }
-    }
-    _reminder.schedule.insert(insertIndex, newScheduleTime);
-    checkButtonState();
+    _reminder.addScheduleTime(dateTime, scheduleTime);
+    print(_reminder.schedule);
+    print(_currentReminder.schedule);
+    checkValid();
   }
 }

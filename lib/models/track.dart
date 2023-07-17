@@ -42,4 +42,19 @@ class Track {
       "place": place
     };
   }
+
+  void updateDistanceAndSpeed(double trackDistance, double trackSpeed) {
+    distance += trackDistance;
+    speed = trackSpeed;
+  }
+
+  void updateTrack(
+      String trackTime, String trackPlace, String url, String path) {
+    time = trackTime;
+    place = trackPlace;
+    routeImagePath = path;
+    routeImageURL = url;
+    date = DateTime.now();
+    steps = (distance * 1312.336).round();
+  }
 }

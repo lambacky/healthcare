@@ -7,15 +7,15 @@ import 'package:syncfusion_flutter_charts/charts.dart';
 import '../../view-models/heart_rate_view_model.dart';
 import 'result_screen.dart';
 
-class MeasureScreen extends StatefulWidget {
+class MonitorScreen extends StatefulWidget {
   final List<CameraDescription> cameras;
-  const MeasureScreen({required this.cameras, Key? key}) : super(key: key);
+  const MonitorScreen({required this.cameras, Key? key}) : super(key: key);
 
   @override
-  State<MeasureScreen> createState() => _MeasureScreenState();
+  State<MonitorScreen> createState() => _MeasureScreenState();
 }
 
-class _MeasureScreenState extends State<MeasureScreen> {
+class _MeasureScreenState extends State<MonitorScreen> {
   @override
   void initState() {
     super.initState();

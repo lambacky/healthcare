@@ -1,3 +1,4 @@
+import '../../components/submit_button.dart';
 import '../../components/text_input.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -60,17 +61,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                     title: 'Email',
                     icon: Icons.email,
                     textEditingController: _emailController),
-                ElevatedButton(
-                    onPressed: resetPassword,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red,
-                      fixedSize: const Size(200, 50),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(25),
-                      ),
-                    ),
-                    child: const Text("Reset Password",
-                        style: TextStyle(fontSize: 20)))
+                SubmitButton(text: "Reset Password", onPressed: resetPassword)
               ],
             ),
           ),

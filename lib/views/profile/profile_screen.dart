@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:healthcare/view-models/user_view_model.dart';
 import 'package:provider/provider.dart';
+import '../../components/submit_button.dart';
 import '../../view-models/physical_status_view_model.dart';
 import '../bmi/bmi_screen.dart';
 
@@ -51,6 +52,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void editProfile() {
     final userViewModel = context.read<UserViewModel>();
     userViewModel.setNewUserModel();
+    final firstNameController =
+        TextEditingController(text: userViewModel.newUserModel.firstName);
+    final lastNameController =
+        TextEditingController(text: userViewModel.newUserModel.lastName);
     showDialog<String>(
         context: context,
         builder: (BuildContext context) {
@@ -69,8 +74,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   const Text("First Name",
                       style: TextStyle(fontWeight: FontWeight.bold)),
                   TextField(
-                    controller: TextEditingController(
-                        text: userViewModel.newUserModel.firstName),
+                    controller: firstNameController,
                     onChanged: (value) {
                       userViewModel.setFirstName(value.toString());
                     },
@@ -79,39 +83,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   const Text("Last Name",
                       style: TextStyle(fontWeight: FontWeight.bold)),
                   TextField(
-                    controller: TextEditingController(
-                        text: userViewModel.newUserModel.lastName),
+                    controller: lastNameController,
                     onChanged: (value) {
                       userViewModel.setLastName(value.toString());
                     },
                   ),
                   const SizedBox(height: 20),
                   Align(
-                    alignment: Alignment.center,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red,
-                        fixedSize: const Size(180, 45),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(25),
-                        ),
-                      ),
-                      onPressed: !userViewModel.isValid
-                          ? null
-                          : () {
-                              userViewModel.updateUserModel();
-                              Navigator.pop(context);
-                            },
-                      child: const Text(
-                        'Save new profile',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18.0,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ),
+                      alignment: Alignment.center,
+                      child: SubmitButton(
+                          text: 'Save new profile',
+                          onPressed: !userViewModel.isValid
+                              ? null
+                              : () {
+                                  userViewModel.updateUserModel();
+                                  Navigator.pop(context);
+                                })),
                 ],
               ),
             ),
@@ -369,16 +356,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
           ),
           const SizedBox(height: 20),
-          ElevatedButton(
-              onPressed: openSignOutDialog,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red,
-                fixedSize: const Size(150, 50),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(25),
-                ),
-              ),
-              child: const Text("Sign Out", style: TextStyle(fontSize: 20))),
+          SubmitButton(text: 'Sign Out', onPressed: openSignOutDialog),
           const SizedBox(height: 20),
         ]),
       ),

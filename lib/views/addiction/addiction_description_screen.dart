@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:healthcare/components/submit_button.dart';
 import 'package:healthcare/view-models/addiction_track_view_model.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -106,31 +107,16 @@ class _AddictionDescriptionScreenState
                   ),
                   const SizedBox(height: 20),
                   Align(
-                    alignment: Alignment.center,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red,
-                        fixedSize: const Size(180, 45),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(25),
-                        ),
-                      ),
-                      onPressed: addictionTrackViewModel.isEnabled
-                          ? () {
-                              addictionTrackViewModel.updateAddictionTracker();
-                              Navigator.pop(context);
-                            }
-                          : null,
-                      child: const Text(
-                        'Save new tracker',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18.0,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ),
+                      alignment: Alignment.center,
+                      child: SubmitButton(
+                          text: 'Save new tracker',
+                          onPressed: addictionTrackViewModel.isEnabled
+                              ? () {
+                                  addictionTrackViewModel
+                                      .updateAddictionTracker();
+                                  Navigator.pop(context);
+                                }
+                              : null)),
                 ],
               ),
             ),

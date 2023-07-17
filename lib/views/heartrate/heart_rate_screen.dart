@@ -2,7 +2,7 @@ import 'package:breathing_collection/breathing_collection.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:camera/camera.dart';
-import 'package:healthcare/views/heartrate/measure_screen.dart';
+import 'package:healthcare/views/heartrate/monitor_screen.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class HeartRateScreen extends StatefulWidget {
@@ -22,7 +22,7 @@ class _HeartRateScreenState extends State<HeartRateScreen> {
       openDialog();
       return;
     }
-    openMeasureScreen(value);
+    openMonitorScreen(value);
   }
 
   openDialog() {
@@ -50,11 +50,11 @@ class _HeartRateScreenState extends State<HeartRateScreen> {
     );
   }
 
-  openMeasureScreen(List<CameraDescription> value) {
+  openMonitorScreen(List<CameraDescription> value) {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => MeasureScreen(
+        builder: (context) => MonitorScreen(
           cameras: value,
         ),
       ),

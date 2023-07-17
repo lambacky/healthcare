@@ -1,4 +1,4 @@
-import 'meal_model.dart';
+import 'meal.dart';
 
 class MealPlan {
   final List<Meal> meals;

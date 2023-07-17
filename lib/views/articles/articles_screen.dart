@@ -29,7 +29,6 @@ class _ArticleScreenState extends State<ArticleScreen> {
         if (articleViewModel.articles.isNotEmpty) {
           return ListView.builder(
             shrinkWrap: true,
-            reverse: true,
             itemCount: articleViewModel.articles.length,
             itemBuilder: (context, index) {
               return ArticleCard(index: index);

@@ -24,4 +24,16 @@ class AddictionTracker extends Equatable {
 
   @override
   List<Object?> get props => [type, startDate];
+
+  void updateType(String addictionType) {
+    type = addictionType;
+  }
+
+  void updateStartDate(DateTime addictionStartDate) {
+    startDate = addictionStartDate;
+  }
+
+  void restartAddictionTrack() {
+    startDate = DateTime.now();
+  }
 }

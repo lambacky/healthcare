@@ -18,6 +18,7 @@ class HeartRateViewModel extends ChangeNotifier {
   double get value => _value;
 
   Future<void> initialize(CameraDescription camera) async {
+    _text = "Place your finger on camera";
     _value = 0;
     _isProcessing = false;
     _data.clear();
@@ -45,8 +46,10 @@ class HeartRateViewModel extends ChangeNotifier {
     double avg2 = cameraImage.planes[2].bytes
             .reduce((value, element) => value + element) /
         cameraImage.planes[2].bytes.length;
+    print(
+        '${avg.toStringAsFixed(1)}, ${avg1.toStringAsFixed(1)}, ${avg2.toStringAsFixed(1)}');
 
-    if (avg < 120 && avg > 80 && avg1 > 150 && avg2 > 150) {
+    if (avg < 120 && avg1 > 150 && avg2 > 150) {
       if (_data.isEmpty) {
         _bpmTimer = Timer.periodic(const Duration(milliseconds: 1650), (timer) {
           updateBPM();

@@ -22,12 +22,12 @@ class UserViewModel extends ChangeNotifier {
   }
 
   void setFirstName(String firstName) {
-    _newUserModel.firstName = firstName;
+    _newUserModel.setFirstName(firstName);
     checkValid();
   }
 
   void setLastName(String lastName) {
-    _newUserModel.lastName = lastName;
+    _newUserModel.setLastName(lastName);
     checkValid();
   }
 

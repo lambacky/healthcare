@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:healthcare/models/meal_detail.dart';
-import 'package:healthcare/models/meal_plan_model.dart';
+import 'package:healthcare/models/meal_plan.dart';
 import 'package:healthcare/models/recipe_steps.dart';
 
 import '../services/firebase_service.dart';

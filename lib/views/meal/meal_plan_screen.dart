@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../components/submit_button.dart';
 import '../../constants/constants.dart';
 import '../../view-models/meal_plan_view_model.dart';
 import 'meal_list_screen.dart';
@@ -140,24 +141,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
               ),
             ),
             const SizedBox(height: 30.0),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red,
-                fixedSize: const Size(200, 50),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(25),
-                ),
-              ),
-              onPressed: _searchMealPlan,
-              child: const Text(
-                'Search',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 22.0,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
+            SubmitButton(text: 'Search', onPressed: _searchMealPlan),
           ],
         ),
       ),

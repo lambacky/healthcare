@@ -1,4 +1,4 @@
-import 'ingredients_model.dart';
+import 'ingredients.dart';
 
 class MealDetail {
   final String title;

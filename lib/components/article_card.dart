@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:healthcare/view-models/article_view_model.dart';
 import 'package:provider/provider.dart';
 import '../views/articles/article_detail_screen.dart';
@@ -36,16 +37,19 @@ class ArticleCard extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              height: 200.0,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                    image: NetworkImage(article.urlToImage!),
-                    fit: BoxFit.cover),
-                borderRadius: BorderRadius.circular(12.0),
-              ),
-            ),
+            CachedNetworkImage(
+                imageUrl: article.urlToImage!,
+                imageBuilder: (context, imageProvider) {
+                  return Container(
+                    height: 200.0,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                          image: imageProvider, fit: BoxFit.cover),
+                      borderRadius: BorderRadius.circular(12.0),
+                    ),
+                  );
+                }),
             const SizedBox(
               height: 8.0,
             ),
