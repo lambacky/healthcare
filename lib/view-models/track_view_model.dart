@@ -161,6 +161,8 @@ class TrackViewModel extends ChangeNotifier {
     _polyLines.clear();
     _polyLineCount = 0;
     _coordinates.clear();
+    _runningState = 'none';
+    notifyListeners();
   }
 
   Future<void> saveRun() async {

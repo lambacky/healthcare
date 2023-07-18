@@ -18,6 +18,8 @@ class MealPlanViewModel extends ChangeNotifier {
   MealDetail? get mealDetail => _mealDetail;
   List<RecipeStepsModel>? _recipeSteps;
   List<RecipeStepsModel>? get recipeSteps => _recipeSteps;
+  bool _loading = false;
+  bool get loading => _loading;
 
   void getMealPlan(Map<String, dynamic>? data) {
     if (data != null &&
@@ -35,6 +37,7 @@ class MealPlanViewModel extends ChangeNotifier {
   }
 
   Future<void> fetchMealPlan() async {
+    _loading = true;
     try {
       if (!_isSaved) {
         _mealPlan = await MealApiService().generateMealPlan(
@@ -42,20 +45,23 @@ class MealPlanViewModel extends ChangeNotifier {
           diet: _diet,
         );
       }
-      notifyListeners();
     } catch (e) {
       print("error network connection");
     }
+    _loading = false;
+    notifyListeners();
   }
 
   Future<void> fetchMealInfo(int id) async {
+    _loading = true;
     try {
       _mealDetail = await MealApiService().getMealInformation(id.toString());
       _recipeSteps = await MealApiService().fetchRecipeSteps(id.toString());
-      notifyListeners();
     } catch (e) {
       print("error network connection");
     }
+    _loading = false;
+    notifyListeners();
   }
 
   Future<void> saveMealPlan() async {

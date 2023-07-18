@@ -229,40 +229,42 @@ class _MealListScreenState extends State<MealListScreen> {
             }
           }),
         ),
-        body: mealPlanViewModel.mealPlan == null
-            ? Center(
-                child: Text(
-                'Data loading failed. Please check your network',
-                style: TextStyle(color: Colors.black.withOpacity(0.3)),
-              ))
-            : RefreshIndicator(
-                onRefresh: () async {
-                  mealPlanViewModel.fetchMealPlan();
-                },
-                child: ListView.builder(
-                  itemCount: 2 + mealPlanViewModel.mealPlan!.meals.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    if (index == 0) {
-                      return Padding(
-                        padding: const EdgeInsets.fromLTRB(60, 20, 60, 0),
-                        child: SubmitButton(
-                            text: mealPlanViewModel.isSaved
-                                ? 'Change the diet'
-                                : 'Save the plan',
-                            onPressed: mealPlanViewModel.isSaved
-                                ? () {
-                                    mealPlanViewModel.changeMealPlan();
-                                  }
-                                : () {
-                                    mealPlanViewModel.saveMealPlan();
-                                  }),
-                      );
-                    }
-                    if (index == 1) {
-                      return _buildTotalNutrientsCard();
-                    }
-                    return _buildMealCard(index - 2);
-                  },
-                )));
+        body: mealPlanViewModel.loading
+            ? const Center(child: CircularProgressIndicator())
+            : mealPlanViewModel.mealPlan == null
+                ? Center(
+                    child: Text(
+                    'Data loading failed. Please check your network',
+                    style: TextStyle(color: Colors.black.withOpacity(0.3)),
+                  ))
+                : RefreshIndicator(
+                    onRefresh: () async {
+                      mealPlanViewModel.fetchMealPlan();
+                    },
+                    child: ListView.builder(
+                      itemCount: 2 + mealPlanViewModel.mealPlan!.meals.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        if (index == 0) {
+                          return Padding(
+                            padding: const EdgeInsets.fromLTRB(60, 20, 60, 0),
+                            child: SubmitButton(
+                                text: mealPlanViewModel.isSaved
+                                    ? 'Change the diet'
+                                    : 'Save the plan',
+                                onPressed: mealPlanViewModel.isSaved
+                                    ? () {
+                                        mealPlanViewModel.changeMealPlan();
+                                      }
+                                    : () {
+                                        mealPlanViewModel.saveMealPlan();
+                                      }),
+                          );
+                        }
+                        if (index == 1) {
+                          return _buildTotalNutrientsCard();
+                        }
+                        return _buildMealCard(index - 2);
+                      },
+                    )));
   }
 }

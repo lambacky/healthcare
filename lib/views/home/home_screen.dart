@@ -74,7 +74,7 @@ class _HomeScreenState extends State<HomeScreen> {
         color: Color.fromARGB(255, 212, 133, 104),
         widget: MealScreen()),
     FeatureButton(
-        label: 'MEDICINE REMINDER',
+        label: 'MEDICATION REMINDER',
         icon: Icons.medication_outlined,
         color: Colors.blueGrey,
         widget: ReminderListScreen()),

@@ -86,6 +86,43 @@ class _TrackingScreenState extends State<TrackingScreen> {
     );
   }
 
+  void closeScreen() {
+    showDialog<String>(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: const Text('Save the track before closing?'),
+        content: const Text('All the current data will be saved'),
+        actions: <Widget>[
+          // if user deny again, we do nothing
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              Navigator.pop(context);
+            },
+            child: const Text('No'),
+          ),
+          TextButton(
+            onPressed: () async {
+              var navigator = Navigator.of(context);
+              await context.read<TrackViewModel>().saveRun();
+              await context
+                  .read<TargetViewModel>()
+                  .updateTargets(context.read<TrackViewModel>().track.distance);
+              navigator.pop();
+              navigator.pop();
+              Fluttertoast.showToast(msg: "Running track saved successfully");
+            },
+            child: const Text('Save'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final trackViewModel = context.watch<TrackViewModel>();
@@ -93,6 +130,13 @@ class _TrackingScreenState extends State<TrackingScreen> {
       appBar: AppBar(
         centerTitle: true,
         title: const Text("Running"),
+        leading: BackButton(onPressed: () {
+          if (trackViewModel.runningState != 'none') {
+            closeScreen();
+          } else {
+            Navigator.pop(context);
+          }
+        }),
       ),
       body: trackViewModel.currentPosition == null
           ? const Center(child: CircularProgressIndicator())
@@ -169,7 +213,7 @@ class _TrackingScreenState extends State<TrackingScreen> {
                         children: [
                           trackViewModel.runningState == "stop"
                               ? TextButton(
-                                  onPressed: trackViewModel.startRun,
+                                  onPressed: trackViewModel.restartRun,
                                   style: TextButton.styleFrom(
                                       textStyle: const TextStyle(
                                           fontSize: 15,

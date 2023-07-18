@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/services.dart';
 import 'package:healthcare/views/main_screen.dart';
 import 'package:healthcare/view-models/addiction_track_view_model.dart';
 import 'package:healthcare/view-models/article_view_model.dart';
@@ -41,6 +42,10 @@ Future<void> main() async {
   // NotificationService().initNotification();
 
   HttpOverrides.global = MyHttpOverrides();
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
   runApp(const MyApp());
 }
 

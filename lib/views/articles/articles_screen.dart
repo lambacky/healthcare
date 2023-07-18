@@ -26,20 +26,24 @@ class _ArticleScreenState extends State<ArticleScreen> {
       ),
       body: Consumer<ArticleViewModel>(
           builder: (context, articleViewModel, child) {
-        if (articleViewModel.articles.isNotEmpty) {
-          return ListView.builder(
-            shrinkWrap: true,
-            itemCount: articleViewModel.articles.length,
-            itemBuilder: (context, index) {
-              return ArticleCard(index: index);
-            },
-          );
+        if (articleViewModel.loading) {
+          return const Center(child: CircularProgressIndicator());
+        } else {
+          if (articleViewModel.articles.isNotEmpty) {
+            return ListView.builder(
+              shrinkWrap: true,
+              itemCount: articleViewModel.articles.length,
+              itemBuilder: (context, index) {
+                return ArticleCard(index: index);
+              },
+            );
+          }
+          return Center(
+              child: Text(
+            'Data loading failed. Please check your network',
+            style: TextStyle(color: Colors.black.withOpacity(0.3)),
+          ));
         }
-        return Center(
-            child: Text(
-          'Data loading failed. Please check your network',
-          style: TextStyle(color: Colors.black.withOpacity(0.3)),
-        ));
       }),
     );
   }

@@ -17,7 +17,7 @@ class _MealScreenState extends State<MealScreen> {
     return Scaffold(
       body: Consumer<MealPlanViewModel>(
           builder: (context, mealPlanViewModel, child) {
-        if (mealPlanViewModel.mealPlan != null) {
+        if (mealPlanViewModel.isSaved) {
           return const MealListScreen();
         }
         return const MealPlanScreen();

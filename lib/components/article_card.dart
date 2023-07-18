@@ -37,19 +37,45 @@ class ArticleCard extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            CachedNetworkImage(
-                imageUrl: article.urlToImage!,
-                imageBuilder: (context, imageProvider) {
-                  return Container(
+            article.urlToImage == null
+                ? Container(
                     height: 200.0,
                     width: double.infinity,
                     decoration: BoxDecoration(
-                      image: DecorationImage(
-                          image: imageProvider, fit: BoxFit.cover),
+                      color: Colors.grey,
                       borderRadius: BorderRadius.circular(12.0),
                     ),
-                  );
-                }),
+                  )
+                : CachedNetworkImage(
+                    imageUrl: article.urlToImage!,
+                    imageBuilder: (context, imageProvider) {
+                      return Container(
+                        height: 200.0,
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                              image: imageProvider, fit: BoxFit.cover),
+                          borderRadius: BorderRadius.circular(12.0),
+                        ),
+                      );
+                    },
+                    placeholder: (context, url) => Container(
+                      height: 200.0,
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: Colors.grey,
+                        borderRadius: BorderRadius.circular(12.0),
+                      ),
+                    ),
+                    errorWidget: (context, url, error) => Container(
+                      height: 200.0,
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: Colors.grey,
+                        borderRadius: BorderRadius.circular(12.0),
+                      ),
+                    ),
+                  ),
             const SizedBox(
               height: 8.0,
             ),
