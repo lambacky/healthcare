@@ -1,31 +1,16 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:healthcare/view-models/auth_view_model.dart';
 import 'package:healthcare/view-models/user_view_model.dart';
 import 'package:provider/provider.dart';
 import '../../components/submit_button.dart';
 import '../../view-models/physical_status_view_model.dart';
 import '../bmi/bmi_screen.dart';
 
-class ProfileScreen extends StatefulWidget {
+class ProfileScreen extends StatelessWidget {
   const ProfileScreen({Key? key}) : super(key: key);
 
-  @override
-  State<ProfileScreen> createState() => _ProfileScreenState();
-}
-
-class _ProfileScreenState extends State<ProfileScreen> {
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
-  void deletePhysicStat() {
+  void deletePhysicStat(BuildContext context) {
     showDialog<String>(
       context: context,
       builder: (BuildContext context) => AlertDialog(
@@ -49,7 +34,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  void editProfile() {
+  void editProfile(BuildContext context) {
     final userViewModel = context.read<UserViewModel>();
     userViewModel.setNewUserModel();
     final firstNameController =
@@ -106,7 +91,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         });
   }
 
-  void openSignOutDialog() {
+  void openSignOutDialog(BuildContext context) {
     showDialog<String>(
       context: context,
       builder: (BuildContext context) => AlertDialog(
@@ -120,12 +105,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
           TextButton(
             onPressed: () async {
               Navigator.pop(context);
-              await FirebaseAuth.instance
-                  .signOut()
-                  .then((value) => Navigator.pop(context))
-                  .catchError((e) {
-                Fluttertoast.showToast(msg: "Sign out error");
-              });
+              String message = await context.read<AuthViewModel>().signOut();
+              if (message == "Sign out successful") {
+                Navigator.pop(context);
+              }
+              Fluttertoast.showToast(msg: message);
             },
             child: const Text('Yes'),
           ),
@@ -174,7 +158,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                     const SizedBox(width: 15),
                     GestureDetector(
-                      onTap: editProfile,
+                      onTap: () {
+                        editProfile(context);
+                      },
                       child: Container(
                         padding: const EdgeInsets.all(10),
                         width: 80,
@@ -255,7 +241,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     !physicStatViewModel.isSaved
                         ? const SizedBox()
                         : GestureDetector(
-                            onTap: deletePhysicStat,
+                            onTap: () {
+                              deletePhysicStat(context);
+                            },
                             child: Container(
                               padding: const EdgeInsets.all(10),
                               width: 90,
@@ -356,7 +344,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
           ),
           const SizedBox(height: 20),
-          SubmitButton(text: 'Sign Out', onPressed: openSignOutDialog),
+          SubmitButton(
+              text: 'Sign Out',
+              onPressed: () {
+                openSignOutDialog(context);
+              }),
           const SizedBox(height: 20),
         ]),
       ),

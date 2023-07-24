@@ -35,6 +35,13 @@ class TrackViewModel extends ChangeNotifier {
   late double _west;
   late double _east;
   late int _polyLineCount;
+  bool _isHistoryScreen = true;
+  bool get isHistoryScreen => _isHistoryScreen;
+
+  void changeScreen(bool value) {
+    _isHistoryScreen = value;
+    notifyListeners();
+  }
 
   void onMapCreated(GoogleMapController mapController) async {
     _controller!.complete(mapController);
@@ -103,13 +110,12 @@ class TrackViewModel extends ChangeNotifier {
   }
 
   void getTracks(Map<String, dynamic>? data) {
+    _tracks.clear();
     if (data != null &&
         data.containsKey('running') &&
         data['running'].length > 0) {
       List<dynamic> tracks = data['running'];
-      for (var item in tracks) {
-        _tracks.add(Track.fromJson(item));
-      }
+      _tracks = tracks.map((item) => Track.fromJson(item)).toList();
     }
     notifyListeners();
   }
@@ -219,6 +225,7 @@ class TrackViewModel extends ChangeNotifier {
       await FireBaseService().updateData({
         'running': FieldValue.arrayUnion([_track.toJson()])
       });
+      _isHistoryScreen = true;
       notifyListeners();
     } catch (e) {
       print(e);

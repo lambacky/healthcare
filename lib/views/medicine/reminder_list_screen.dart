@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:healthcare/services/notification_service.dart';
 import 'package:healthcare/views/medicine/reminder_description_screen.dart';
 import 'package:healthcare/view-models/medication_reminder_view_model.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -6,28 +7,18 @@ import 'package:provider/provider.dart';
 
 import '../../components/medication_reminder_card.dart';
 
-class ReminderListScreen extends StatefulWidget {
+class ReminderListScreen extends StatelessWidget {
   const ReminderListScreen({Key? key}) : super(key: key);
 
-  @override
-  State<ReminderListScreen> createState() => _ReminderListScreenState();
-}
-
-class _ReminderListScreenState extends State<ReminderListScreen> {
-  checkNotificationPermission() {
-    // LocationPermission permission;
-    // permission = await Geolocator.checkPermission();
-    // if (permission == LocationPermission.denied) {
-    //   permission = await Geolocator.requestPermission();
-    //   if (permission == LocationPermission.denied) {
-    //     return;
-    //   }
-    // }
-    // if (permission == LocationPermission.deniedForever) {
-    //   openDialog();
-    //   return;
-    // }
-    // if (!context.mounted) return;
+  void checkNotificationPermission(BuildContext context) async {
+    bool isGranted = await NotificationService().isAndroidPermissionGranted();
+    if (!isGranted) {
+      bool request = await NotificationService().requestPermissions();
+      if (!request) {
+        openAppSettings();
+        return;
+      }
+    }
     final reminderViewModel = context.read<MedicationReminderViewModel>();
     reminderViewModel.getReminder(reminderViewModel.reminders.length);
     Navigator.push(
@@ -37,7 +28,7 @@ class _ReminderListScreenState extends State<ReminderListScreen> {
     );
   }
 
-  openDialog() {
+  openDialog(BuildContext context) {
     showDialog<String>(
       context: context,
       builder: (BuildContext context) => AlertDialog(
@@ -62,7 +53,7 @@ class _ReminderListScreenState extends State<ReminderListScreen> {
     );
   }
 
-  void deleteReminder(int index) {
+  void deleteReminder(int index, BuildContext context) {
     final reminderViewModel = context.read<MedicationReminderViewModel>();
     showDialog<String>(
       context: context,
@@ -87,7 +78,7 @@ class _ReminderListScreenState extends State<ReminderListScreen> {
     );
   }
 
-  void editReminder(int index) async {
+  void editReminder(int index, BuildContext context) async {
     final reminderViewModel = context.read<MedicationReminderViewModel>();
     reminderViewModel.getReminder(index);
     Navigator.push(
@@ -123,7 +114,7 @@ class _ReminderListScreenState extends State<ReminderListScreen> {
       }),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          checkNotificationPermission();
+          checkNotificationPermission(context);
         },
         backgroundColor: Colors.red,
         child: const Icon(Icons.add),

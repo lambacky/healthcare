@@ -5,91 +5,147 @@ import '../../components/ingredient_card.dart';
 import '../../components/recipe_step_card.dart';
 import '/components/backdrop.dart';
 
-class MealDetailScreen extends StatefulWidget {
-  const MealDetailScreen({Key? key}) : super(key: key);
-
-  @override
-  State<MealDetailScreen> createState() => _MealDetailScreenState();
-}
-
-class _MealDetailScreenState extends State<MealDetailScreen> {
+class MealDetailScreen extends StatelessWidget {
+  final int id;
+  const MealDetailScreen({Key? key, required this.id}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    final mealPlanViewModel = context.read<MealPlanViewModel>();
-    Size size = MediaQuery.of(context).size;
+    context.read<MealPlanViewModel>().fetchMealInfo(id);
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Recipe Detail'),
-        centerTitle: true,
-      ),
-      body: mealPlanViewModel.mealDetail == null
-          ? Center(
-              child: Text(
-              'Data loading failed. Please check your network',
-              style: TextStyle(color: Colors.black.withOpacity(0.3)),
-            ))
-          : SingleChildScrollView(
-              child: SizedBox(
-                  height: size.height * 1.5,
-                  width: size.width * 1.5,
-                  child: Column(children: [
-                    const Backdrop(),
-                    const SizedBox(height: 10),
+        appBar: AppBar(
+          title: const Text('Recipe Detail'),
+          centerTitle: true,
+        ),
+        body: Consumer<MealPlanViewModel>(
+            builder: (context, mealPlanViewModel, child) {
+          if (mealPlanViewModel.loading) {
+            return const Center(child: CircularProgressIndicator());
+          } else {
+            if (mealPlanViewModel.mealDetail == null) {
+              return Center(
+                  child: Text(
+                'Data loading failed. Please check your network',
+                style: TextStyle(color: Colors.black.withOpacity(0.3)),
+              ));
+            }
+            return SingleChildScrollView(
+                child: Column(children: [
+              const Backdrop(),
+              const SizedBox(height: 10),
+              Text(
+                mealPlanViewModel.mealDetail!.title,
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.headlineSmall,
+              ),
+              const SizedBox(height: 10),
+              Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Ingredients",
+                        style: Theme.of(context).textTheme.headlineSmall,
+                      ),
+                      const SizedBox(height: 20),
+                      SizedBox(
+                        height: 105,
+                        child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount:
+                              mealPlanViewModel.mealDetail!.ingredients.length,
+                          itemBuilder: (context, index) =>
+                              IngredientCard(index: index),
+                        ),
+                      )
+                    ],
+                  )),
+              Padding(
+                padding: const EdgeInsets.all(10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
                     Text(
-                      mealPlanViewModel.mealDetail!.title,
-                      textAlign: TextAlign.center,
+                      "Recipe Instructions",
                       style: Theme.of(context).textTheme.headlineSmall,
                     ),
                     const SizedBox(height: 10),
-                    Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              "Ingredients",
-                              style: Theme.of(context).textTheme.headlineSmall,
-                            ),
-                            const SizedBox(height: 20),
-                            SizedBox(
-                              height: 105,
-                              child: ListView.builder(
-                                scrollDirection: Axis.horizontal,
-                                itemCount: mealPlanViewModel
-                                    .mealDetail!.ingredients.length,
-                                itemBuilder: (context, index) =>
-                                    IngredientCard(index: index),
-                              ),
-                            )
-                          ],
-                        )),
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.all(10),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Text(
-                              "Recipe Instructions",
-                              style: Theme.of(context).textTheme.headlineSmall,
-                            ),
-                            const SizedBox(height: 10),
-                            Expanded(
-                              child: ListView.builder(
-                                shrinkWrap: true,
-                                primary: false,
-                                //  physics: NeverScrollableScrollPhysics(),
-                                itemCount:
-                                    mealPlanViewModel.recipeSteps!.length,
-                                itemBuilder: (context, index) =>
-                                    RecipeCard(index: index),
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
+                    ListView.builder(
+                      shrinkWrap: true,
+                      primary: false,
+                      //  physics: NeverScrollableScrollPhysics(),
+                      itemCount: mealPlanViewModel.recipeSteps!.length,
+                      itemBuilder: (context, index) => RecipeCard(index: index),
                     )
-                  ]))),
-    );
+                  ],
+                ),
+              )
+            ]));
+          }
+        })
+
+        // mealPlanViewModel.loading
+        //     ? const Center(child: CircularProgressIndicator())
+        //     : mealPlanViewModel.mealDetail == null
+        //         ? Center(
+        //             child: Text(
+        //             'Data loading failed. Please check your network',
+        //             style: TextStyle(color: Colors.black.withOpacity(0.3)),
+        //           ))
+        //         : SingleChildScrollView(
+        //             child: Column(children: [
+        //             const Backdrop(),
+        //             const SizedBox(height: 10),
+        //             Text(
+        //               mealPlanViewModel.mealDetail!.title,
+        //               textAlign: TextAlign.center,
+        //               style: Theme.of(context).textTheme.headlineSmall,
+        //             ),
+        //             const SizedBox(height: 10),
+        //             Padding(
+        //                 padding: const EdgeInsets.symmetric(horizontal: 10),
+        //                 child: Column(
+        //                   crossAxisAlignment: CrossAxisAlignment.start,
+        //                   children: [
+        //                     Text(
+        //                       "Ingredients",
+        //                       style: Theme.of(context).textTheme.headlineSmall,
+        //                     ),
+        //                     const SizedBox(height: 20),
+        //                     SizedBox(
+        //                       height: 105,
+        //                       child: ListView.builder(
+        //                         scrollDirection: Axis.horizontal,
+        //                         itemCount: mealPlanViewModel
+        //                             .mealDetail!.ingredients.length,
+        //                         itemBuilder: (context, index) =>
+        //                             IngredientCard(index: index),
+        //                       ),
+        //                     )
+        //                   ],
+        //                 )),
+        //             Padding(
+        //               padding: const EdgeInsets.all(10),
+        //               child: Column(
+        //                 crossAxisAlignment: CrossAxisAlignment.start,
+        //                 children: <Widget>[
+        //                   Text(
+        //                     "Recipe Instructions",
+        //                     style: Theme.of(context).textTheme.headlineSmall,
+        //                   ),
+        //                   const SizedBox(height: 10),
+        //                   ListView.builder(
+        //                     shrinkWrap: true,
+        //                     primary: false,
+        //                     //  physics: NeverScrollableScrollPhysics(),
+        //                     itemCount: mealPlanViewModel.recipeSteps!.length,
+        //                     itemBuilder: (context, index) =>
+        //                         RecipeCard(index: index),
+        //                   )
+        //                 ],
+        //               ),
+        //             )
+        //           ])),
+        );
   }
 }

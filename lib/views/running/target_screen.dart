@@ -7,25 +7,10 @@ import 'package:provider/provider.dart';
 
 import '../../components/submit_button.dart';
 
-class TargetScreen extends StatefulWidget {
+class TargetScreen extends StatelessWidget {
   const TargetScreen({Key? key}) : super(key: key);
 
-  @override
-  State<TargetScreen> createState() => _TargetScreenState();
-}
-
-class _TargetScreenState extends State<TargetScreen> {
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
-  void deleteRunningTarget(index) {
+  void deleteRunningTarget(index, BuildContext context) {
     showDialog<String>(
       context: context,
       builder: (BuildContext context) => AlertDialog(
@@ -49,7 +34,7 @@ class _TargetScreenState extends State<TargetScreen> {
     );
   }
 
-  void openDatePicker(DateTime date, String type) {
+  void openDatePicker(DateTime date, String type, BuildContext context) {
     showDatePicker(
             context: context,
             initialDate: date,
@@ -62,7 +47,7 @@ class _TargetScreenState extends State<TargetScreen> {
     });
   }
 
-  void openTargetDialog() {
+  void openTargetDialog(BuildContext context) {
     final targetViewModel = context.read<TargetViewModel>();
     targetViewModel.getRunningTarget(targetViewModel.targets.length);
     final distanceController = TextEditingController(
@@ -125,7 +110,8 @@ class _TargetScreenState extends State<TargetScreen> {
                                 onTap: () {
                                   openDatePicker(
                                       targetViewModel.target.startDate,
-                                      'start');
+                                      'start',
+                                      context);
                                 },
                               ),
                             )
@@ -143,8 +129,8 @@ class _TargetScreenState extends State<TargetScreen> {
                                     text: DateFormat('dd/MM/yyyy').format(
                                         targetViewModel.target.endDate)),
                                 onTap: () {
-                                  openDatePicker(
-                                      targetViewModel.target.endDate, 'end');
+                                  openDatePicker(targetViewModel.target.endDate,
+                                      'end', context);
                                 },
                               ),
                             )
@@ -191,7 +177,7 @@ class _TargetScreenState extends State<TargetScreen> {
                 const SizedBox(width: 20),
                 GestureDetector(
                   onTap: () {
-                    openTargetDialog();
+                    openTargetDialog(context);
                   },
                   child: Container(
                     padding: const EdgeInsets.all(3),

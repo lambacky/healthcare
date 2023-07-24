@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:healthcare/views/main_screen.dart';
 import 'package:healthcare/view-models/addiction_track_view_model.dart';
 import 'package:healthcare/view-models/article_view_model.dart';
+import 'package:healthcare/view-models/auth_view_model.dart';
 import 'package:healthcare/view-models/heart_rate_view_model.dart';
 import 'package:healthcare/view-models/meal_plan_view_model.dart';
 import 'package:healthcare/view-models/medication_reminder_view_model.dart';
@@ -56,6 +57,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        ChangeNotifierProvider<AuthViewModel>(
+            create: (_) => AuthViewModel()),
         ChangeNotifierProvider<MedicationReminderViewModel>(
             create: (_) => MedicationReminderViewModel()),
         ChangeNotifierProvider<AddictionTrackViewModel>(

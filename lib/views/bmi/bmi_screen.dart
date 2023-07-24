@@ -1,25 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:healthcare/components/submit_button.dart';
 import 'package:healthcare/view-models/physical_status_view_model.dart';
 import 'package:provider/provider.dart';
 import '../../components/height_weight.dart';
 import 'score_screen.dart';
-import 'package:page_transition/page_transition.dart';
-import 'package:swipeable_button_view/swipeable_button_view.dart';
 
-class BMIScreen extends StatefulWidget {
+class BMIScreen extends StatelessWidget {
   const BMIScreen({Key? key}) : super(key: key);
 
   @override
-  State<BMIScreen> createState() => _BMIScreenState();
-}
-
-class _BMIScreenState extends State<BMIScreen> {
-  int _height = 170;
-  int _weight = 60;
-  bool _isFinished = false;
-
-  @override
   Widget build(BuildContext context) {
+    int height = 170;
+    int weight = 60;
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -31,8 +23,8 @@ class _BMIScreenState extends State<BMIScreen> {
           child: Column(
             children: [
               HeightWeight(
-                onChange: (height) {
-                  _height = height;
+                onChange: (value) {
+                  height = value;
                 },
                 title: 'Height',
                 unit: 'cm',
@@ -41,8 +33,8 @@ class _BMIScreenState extends State<BMIScreen> {
                 maxValue: 250,
               ),
               HeightWeight(
-                onChange: (weight) {
-                  _weight = weight;
+                onChange: (value) {
+                  weight = value;
                 },
                 title: 'Weight',
                 unit: 'kg',
@@ -51,39 +43,18 @@ class _BMIScreenState extends State<BMIScreen> {
                 maxValue: 200,
               ),
               const SizedBox(height: 20),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 60),
-                child: SwipeableButtonView(
-                  isFinished: _isFinished,
-                  onFinish: () async {
+              SubmitButton(
+                  text: 'CALCULATE',
+                  onPressed: () {
                     context
                         .read<PhysicStatViewModel>()
-                        .setPhysicStat(_height, _weight);
-                    await Navigator.push(
-                        context,
-                        PageTransition(
-                            child: ScoreScreen(),
-                            type: PageTransitionType.fade));
-
-                    setState(() {
-                      _isFinished = false;
-                    });
-                  },
-                  onWaitingProcess: () {
-                    Future.delayed(const Duration(seconds: 1), () {
-                      setState(() {
-                        _isFinished = true;
-                      });
-                    });
-                  },
-                  activeColor: Colors.red,
-                  buttonWidget: const Icon(
-                    Icons.arrow_forward_ios_rounded,
-                    color: Colors.black,
-                  ),
-                  buttonText: "CALCULATE",
-                ),
-              ),
+                        .setPhysicStat(height, weight);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const ScoreScreen()),
+                    );
+                  }),
               const SizedBox(height: 30),
               const Text(
                 "Note: BMI is not suitable for athletes, children, elderly individuals, and pregnant women",

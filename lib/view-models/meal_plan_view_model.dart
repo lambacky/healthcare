@@ -12,8 +12,10 @@ class MealPlanViewModel extends ChangeNotifier {
   MealPlan? get mealPlan => _mealPlan;
   bool _isSaved = false;
   bool get isSaved => _isSaved;
-  late double _targetCalories;
-  late String _diet;
+  double _targetCalories = 2250;
+  double get targetCalories => _targetCalories;
+  String _diet = 'None';
+  String get diet => _diet;
   MealDetail? _mealDetail;
   MealDetail? get mealDetail => _mealDetail;
   List<RecipeStepsModel>? _recipeSteps;
@@ -22,6 +24,8 @@ class MealPlanViewModel extends ChangeNotifier {
   bool get loading => _loading;
 
   void getMealPlan(Map<String, dynamic>? data) {
+    _isSaved = false;
+    _mealPlan = null;
     if (data != null &&
         data.containsKey('mealPlan') &&
         data['mealPlan'] != null) {
@@ -31,9 +35,19 @@ class MealPlanViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setMealPlanInfo(double targetCalories, String diet) {
+  // void setMealPlanInfo(double targetCalories, String diet) {
+  //   _targetCalories = targetCalories;
+  //   _diet = diet;
+  // }
+
+  void setTargetCalories(double targetCalories) {
     _targetCalories = targetCalories;
+    notifyListeners();
+  }
+
+  void setDiet(String diet) {
     _diet = diet;
+    notifyListeners();
   }
 
   Future<void> fetchMealPlan() async {

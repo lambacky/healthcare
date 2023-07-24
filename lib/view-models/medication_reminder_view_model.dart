@@ -18,13 +18,26 @@ class MedicationReminderViewModel extends ChangeNotifier {
   late bool _isEnabled;
   bool get isEnabled => _isEnabled;
 
-  void getReminders(Map<String, dynamic>? data) {
+  void getReminders(Map<String, dynamic>? data) async {
+    _reminders.clear();
     if (data != null &&
         data.containsKey('medicine') &&
         data['medicine'].length > 0) {
       List<dynamic> reminders = data['medicine'];
-      for (var item in reminders) {
-        _reminders.add(MedicationReminder.fromJson(item));
+      _reminders =
+          reminders.map((item) => MedicationReminder.fromJson(item)).toList();
+      bool isPending = await NotificationService().checkPendingNotications();
+      if (!isPending) {
+        for (var reminder in _reminders) {
+          for (int i = 0; i < reminder.schedule.length; i++) {
+            await NotificationService().scheduleNotification(
+                id: reminder.notificationIds[i],
+                scheduleTime: reminder.schedule[i],
+                title: "Medication",
+                body:
+                    'Take ${reminder.doses} ${reminder.medicationType.unit} of ${reminder.name}');
+          }
+        }
       }
     }
     notifyListeners();
@@ -54,7 +67,7 @@ class MedicationReminderViewModel extends ChangeNotifier {
             scheduleTime: scheduleTime,
             title: "Medication",
             body:
-                'Drink ${_reminder.doses} ${_reminder.medicationType.unit} of ${_reminder.name}');
+                'Take ${_reminder.doses} ${_reminder.medicationType.unit} of ${_reminder.name}');
       }
       _reminder.updateNotificationIds(notificationIds);
       if (_currentReminder.notificationIds.isNotEmpty) {
@@ -68,10 +81,8 @@ class MedicationReminderViewModel extends ChangeNotifier {
         _reminders.add(_reminder);
       }
 
-      List<dynamic> reminders = [];
-      for (var reminder in _reminders) {
-        reminders.add(reminder.toJson());
-      }
+      List<dynamic> reminders =
+          _reminders.map((item) => item.toJson()).toList();
       await FireBaseService().updateData({'medicine': reminders});
       notifyListeners();
     } catch (e) {
@@ -131,15 +142,11 @@ class MedicationReminderViewModel extends ChangeNotifier {
 
   void deleteScheduleTime(TimeOfDay scheduleTime) {
     _reminder.deleteScheduleTime(scheduleTime);
-    print(_reminder.schedule);
-    print(_currentReminder.schedule);
     checkValid();
   }
 
   void addScheduleTime(DateTime dateTime, TimeOfDay? scheduleTime) {
     _reminder.addScheduleTime(dateTime, scheduleTime);
-    print(_reminder.schedule);
-    print(_currentReminder.schedule);
     checkValid();
   }
 }

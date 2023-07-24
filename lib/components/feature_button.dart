@@ -19,7 +19,7 @@ class FeatureButton extends StatelessWidget {
       style: ElevatedButton.styleFrom(
         foregroundColor: Colors.black,
         backgroundColor: Colors.white,
-        padding: const EdgeInsets.all(10),
+        padding: const EdgeInsets.symmetric(vertical: 10),
         side: const BorderSide(
           color: Color.fromARGB(255, 231, 226, 226),
         ),

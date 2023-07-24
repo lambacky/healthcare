@@ -16,17 +16,19 @@ class TargetViewModel extends ChangeNotifier {
   int get progress => _progress;
 
   void getTargets(Map<String, dynamic>? data) {
+    _targets.clear();
+    _progress = 0;
     if (data != null &&
         data.containsKey('targets') &&
         data['targets'].length > 0) {
       List<dynamic> targets = data['targets'];
-      for (var item in targets) {
+      _targets = targets.map((item) {
         RunningTarget target = RunningTarget.fromJson(item);
-        _targets.add(target);
         if (target.status == 'progress') {
           _progress++;
         }
-      }
+        return target;
+      }).toList();
     }
     notifyListeners();
   }
@@ -116,11 +118,7 @@ class TargetViewModel extends ChangeNotifier {
         _targets.add(_target);
         _progress++;
       }
-      List<dynamic> targets = [];
-      for (var target in _targets) {
-        targets.add(target.toJson());
-      }
-
+      List<dynamic> targets = _targets.map((item) => item.toJson()).toList();
       await FireBaseService().updateData({'targets': targets});
       notifyListeners();
     } catch (e) {

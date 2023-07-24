@@ -1,27 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:healthcare/views/meal/meal_detail_screen.dart';
-import 'package:healthcare/services/meal_api_service.dart';
 import 'package:healthcare/view-models/meal_plan_view_model.dart';
 import 'package:provider/provider.dart';
 import '../../components/submit_button.dart';
-import '../../models/meal_detail.dart';
-import '../../models/recipe_steps.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
-class MealListScreen extends StatefulWidget {
+class MealListScreen extends StatelessWidget {
   const MealListScreen({Key? key}) : super(key: key);
 
-  @override
-  State<MealListScreen> createState() => _MealListScreenState();
-}
-
-class _MealListScreenState extends State<MealListScreen> {
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  _buildTotalNutrientsCard() {
+  _buildTotalNutrientsCard(BuildContext context) {
     final mealPlan = context.read<MealPlanViewModel>().mealPlan;
     return Container(
       height: 140.0,
@@ -96,7 +83,7 @@ class _MealListScreenState extends State<MealListScreen> {
     );
   }
 
-  Future<void> _showMyDialog() {
+  Future<void> _showMyDialog(BuildContext context) {
     return showDialog<void>(
       context: context,
       barrierDismissible: false, // user must tap button!
@@ -119,18 +106,18 @@ class _MealListScreenState extends State<MealListScreen> {
     );
   }
 
-  _buildMealCard(int index) {
+  _buildMealCard(int index, BuildContext context) {
     final meal = context.read<MealPlanViewModel>().mealPlan!.meals[index];
     String mealType = _mealType(index);
     return GestureDetector(
       onTap: () async {
         var navigator = Navigator.of(context);
-        _showMyDialog();
-        await context.read<MealPlanViewModel>().fetchMealInfo(meal.id);
-        navigator.pop();
+        // _showMyDialog(context);
+        // await context.read<MealPlanViewModel>().fetchMealInfo(meal.id);
+        // navigator.pop();
         navigator.push(
           MaterialPageRoute(
-            builder: (_) => const MealDetailScreen(),
+            builder: (_) => MealDetailScreen(id: meal.id),
           ),
         );
       },
@@ -138,37 +125,54 @@ class _MealListScreenState extends State<MealListScreen> {
         alignment: Alignment.center,
         children: <Widget>[
           CachedNetworkImage(
-              imageUrl:
-                  'https://spoonacular.com/recipeImages/${meal.id}-556x370.${meal.imageType}',
-              imageBuilder: (context, imageProvider) {
-                return Container(
-                  height: 220.0,
-                  width: double.infinity,
-                  margin: const EdgeInsets.symmetric(
-                    horizontal: 20.0,
-                    vertical: 10.0,
+            imageUrl:
+                'https://spoonacular.com/recipeImages/${meal.id}-556x370.${meal.imageType}',
+            imageBuilder: (context, imageProvider) {
+              return Container(
+                height: 220.0,
+                width: double.infinity,
+                margin: const EdgeInsets.symmetric(
+                  horizontal: 20.0,
+                  vertical: 10.0,
+                ),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 15.0,
+                  vertical: 10.0,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  image: DecorationImage(
+                    image: imageProvider,
+                    fit: BoxFit.cover,
                   ),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 15.0,
-                    vertical: 10.0,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    image: DecorationImage(
-                      image: imageProvider,
-                      fit: BoxFit.cover,
+                  borderRadius: BorderRadius.circular(15.0),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Colors.black12,
+                      offset: Offset(0, 2),
+                      blurRadius: 6.0,
                     ),
-                    borderRadius: BorderRadius.circular(15.0),
-                    boxShadow: const [
-                      BoxShadow(
-                        color: Colors.black12,
-                        offset: Offset(0, 2),
-                        blurRadius: 6.0,
-                      ),
-                    ],
-                  ),
-                );
-              }),
+                  ],
+                ),
+              );
+            },
+            placeholder: (context, url) => Container(
+              height: 220.0,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: Colors.grey,
+                borderRadius: BorderRadius.circular(12.0),
+              ),
+            ),
+            errorWidget: (context, url, error) => Container(
+              height: 220.0,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: Colors.grey,
+                borderRadius: BorderRadius.circular(12.0),
+              ),
+            ),
+          ),
           Container(
             margin: const EdgeInsets.all(60.0),
             padding: const EdgeInsets.all(10.0),
@@ -217,6 +221,7 @@ class _MealListScreenState extends State<MealListScreen> {
   @override
   Widget build(BuildContext context) {
     final mealPlanViewModel = context.watch<MealPlanViewModel>();
+    // context.read<MealPlanViewModel>().fetchMealPlan();
     return Scaffold(
         appBar: AppBar(
           centerTitle: true,
@@ -261,9 +266,9 @@ class _MealListScreenState extends State<MealListScreen> {
                           );
                         }
                         if (index == 1) {
-                          return _buildTotalNutrientsCard();
+                          return _buildTotalNutrientsCard(context);
                         }
-                        return _buildMealCard(index - 2);
+                        return _buildMealCard(index - 2, context);
                       },
                     )));
   }

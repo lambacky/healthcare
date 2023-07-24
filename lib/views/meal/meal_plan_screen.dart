@@ -5,18 +5,10 @@ import '../../constants/constants.dart';
 import '../../view-models/meal_plan_view_model.dart';
 import 'meal_list_screen.dart';
 
-class MealPlanScreen extends StatefulWidget {
+class MealPlanScreen extends StatelessWidget {
   const MealPlanScreen({Key? key}) : super(key: key);
-  @override
-  State<MealPlanScreen> createState() => _MealPlanScreenState();
-}
 
-class _MealPlanScreenState extends State<MealPlanScreen> {
-  double _targetCalories = 2250;
-  String _diet = 'None';
-
-  void _searchMealPlan() async {
-    context.read<MealPlanViewModel>().setMealPlanInfo(_targetCalories, _diet);
+  void searchMealPlan(BuildContext context) async {
     await context.read<MealPlanViewModel>().fetchMealPlan();
     Navigator.push(
       context,
@@ -28,6 +20,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final mealPlanViewModel = context.watch<MealPlanViewModel>();
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -80,7 +73,9 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                           .copyWith(fontSize: 25),
                       children: [
                         TextSpan(
-                          text: _targetCalories.truncate().toString(),
+                          text: mealPlanViewModel.targetCalories
+                              .truncate()
+                              .toString(),
                           style: TextStyle(
                             color: Theme.of(context).primaryColor,
                             fontWeight: FontWeight.bold,
@@ -105,10 +100,10 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                     child: Slider(
                       min: 0.0,
                       max: 4500.0,
-                      value: _targetCalories,
-                      onChanged: (value) => setState(() {
-                        _targetCalories = value.round().toDouble();
-                      }),
+                      value: mealPlanViewModel.targetCalories,
+                      onChanged: (value) {
+                        mealPlanViewModel.setTargetCalories(value);
+                      },
                     ),
                   ),
                   Padding(
@@ -130,18 +125,20 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                         labelStyle: TextStyle(fontSize: 18.0),
                       ),
                       onChanged: (value) {
-                        setState(() {
-                          _diet = value.toString();
-                        });
+                        mealPlanViewModel.setDiet(value.toString());
                       },
-                      value: _diet,
+                      value: mealPlanViewModel.diet,
                     ),
                   ),
                 ],
               ),
             ),
             const SizedBox(height: 30.0),
-            SubmitButton(text: 'Search', onPressed: _searchMealPlan),
+            SubmitButton(
+                text: 'Search',
+                onPressed: () {
+                  searchMealPlan(context);
+                }),
           ],
         ),
       ),

@@ -49,7 +49,7 @@ class HeartRateViewModel extends ChangeNotifier {
     print(
         '${avg.toStringAsFixed(1)}, ${avg1.toStringAsFixed(1)}, ${avg2.toStringAsFixed(1)}');
 
-    if (avg < 120 && avg1 > 150 && avg2 > 150) {
+    if (avg < 100 && avg1 > 150 && avg2 > 150) {
       if (_data.isEmpty) {
         _bpmTimer = Timer.periodic(const Duration(milliseconds: 1650), (timer) {
           updateBPM();

@@ -4,8 +4,8 @@ import 'package:provider/provider.dart';
 import '../view-models/medication_reminder_view_model.dart';
 
 class MedicationReminderCard extends StatelessWidget {
-  final Function(int) deleteAction;
-  final Function(int) editAction;
+  final Function(int, BuildContext) deleteAction;
+  final Function(int, BuildContext) editAction;
   final int index;
   const MedicationReminderCard(
       {Key? key,
@@ -55,7 +55,7 @@ class MedicationReminderCard extends StatelessWidget {
                 children: [
                   GestureDetector(
                     onTap: () {
-                      editAction(index);
+                      editAction(index, context);
                     },
                     child: const Icon(
                       Icons.edit,
@@ -66,7 +66,7 @@ class MedicationReminderCard extends StatelessWidget {
                   const SizedBox(width: 20),
                   GestureDetector(
                     onTap: () {
-                      deleteAction(index);
+                      deleteAction(index, context);
                     },
                     child: const Icon(
                       Icons.delete,

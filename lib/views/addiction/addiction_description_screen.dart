@@ -4,22 +4,10 @@ import 'package:healthcare/view-models/addiction_track_view_model.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
-class AddictionDescriptionScreen extends StatefulWidget {
+class AddictionDescriptionScreen extends StatelessWidget {
   const AddictionDescriptionScreen({Key? key}) : super(key: key);
 
-  @override
-  State<AddictionDescriptionScreen> createState() =>
-      _AddictionDescriptionScreenState();
-}
-
-class _AddictionDescriptionScreenState
-    extends State<AddictionDescriptionScreen> {
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  void restartAddictionTrack() {
+  void restartAddictionTrack(BuildContext context) {
     showDialog<String>(
       context: context,
       builder: (BuildContext context) => AlertDialog(
@@ -43,7 +31,7 @@ class _AddictionDescriptionScreenState
     );
   }
 
-  void editAddictionTrack() {
+  void editAddictionTrack(BuildContext context) {
     context.read<AddictionTrackViewModel>().getEditAddictionTypes();
     showDialog<String>(
         context: context,
@@ -124,7 +112,7 @@ class _AddictionDescriptionScreenState
         });
   }
 
-  void deleteAddictionTrack() {
+  void deleteAddictionTrack(BuildContext context) {
     showDialog<String>(
       context: context,
       builder: (BuildContext context) => AlertDialog(
@@ -149,7 +137,7 @@ class _AddictionDescriptionScreenState
     );
   }
 
-  Widget _buildMileStoneCard(int milestone, int index) {
+  Widget _buildMileStoneCard(int milestone, int index, BuildContext context) {
     final currentmilestone =
         context.read<AddictionTrackViewModel>().currentMilestone;
     return Container(
@@ -191,7 +179,7 @@ class _AddictionDescriptionScreenState
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text(addictionTrackViewModel.addictionTracker.type),
+        title: Text(addictionTrackViewModel.currentAddictionTracker.type),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -199,7 +187,7 @@ class _AddictionDescriptionScreenState
           child: Center(
             child: Column(children: [
               Text(
-                'You have been ${addictionTrackViewModel.addictionTracker.type} free for',
+                'You have been ${addictionTrackViewModel.currentAddictionTracker.type} free for',
                 style: const TextStyle(fontSize: 18),
               ),
               const SizedBox(height: 30),
@@ -235,8 +223,8 @@ class _AddictionDescriptionScreenState
               ),
               const SizedBox(height: 20),
               Text(
-                  DateFormat.yMMMd().add_jm().format(
-                      addictionTrackViewModel.addictionTracker.startDate),
+                  DateFormat.yMMMd().add_jm().format(addictionTrackViewModel
+                      .currentAddictionTracker.startDate),
                   style: const TextStyle(fontSize: 22)),
               const SizedBox(height: 30),
               const Align(
@@ -247,7 +235,7 @@ class _AddictionDescriptionScreenState
               ),
               const SizedBox(height: 7),
               _buildMileStoneCard(addictionTrackViewModel.currentMilestone,
-                  addictionTrackViewModel.lastMileStones.length),
+                  addictionTrackViewModel.lastMileStones.length, context),
               const SizedBox(height: 20),
               const Align(
                 alignment: Alignment.centerLeft,
@@ -264,7 +252,9 @@ class _AddictionDescriptionScreenState
                     itemCount: addictionTrackViewModel.lastMileStones.length,
                     itemBuilder: (context, index) {
                       return _buildMileStoneCard(
-                          addictionTrackViewModel.lastMileStones[index], index);
+                          addictionTrackViewModel.lastMileStones[index],
+                          index,
+                          context);
                     }),
               ),
               const SizedBox(height: 30),
@@ -272,7 +262,9 @@ class _AddictionDescriptionScreenState
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   GestureDetector(
-                      onTap: restartAddictionTrack,
+                      onTap: () {
+                        restartAddictionTrack(context);
+                      },
                       child: const Column(children: [
                         Icon(
                           Icons.refresh,
@@ -283,7 +275,9 @@ class _AddictionDescriptionScreenState
                             style: TextStyle(color: Colors.blueGrey))
                       ])),
                   GestureDetector(
-                      onTap: editAddictionTrack,
+                      onTap: () {
+                        editAddictionTrack(context);
+                      },
                       child: const Column(children: [
                         Icon(
                           Icons.edit,
@@ -293,7 +287,9 @@ class _AddictionDescriptionScreenState
                         Text('Edit', style: TextStyle(color: Colors.blueGrey))
                       ])),
                   GestureDetector(
-                      onTap: deleteAddictionTrack,
+                      onTap: () {
+                        deleteAddictionTrack(context);
+                      },
                       child: const Column(children: [
                         Icon(Icons.delete, color: Colors.blueGrey),
                         SizedBox(height: 5),

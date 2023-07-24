@@ -6,27 +6,10 @@ import 'package:provider/provider.dart';
 import '../../components/addiction_track_card.dart';
 import '../../components/submit_button.dart';
 
-class AddictionListScreen extends StatefulWidget {
+class AddictionListScreen extends StatelessWidget {
   const AddictionListScreen({Key? key}) : super(key: key);
 
-  @override
-  State<AddictionListScreen> createState() => _AddictionListScreenState();
-}
-
-class _AddictionListScreenState extends State<AddictionListScreen> {
-  List<dynamic> addictionTracks = [];
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
-  void openAddictionScreen(int index) {
+  void openAddictionScreen(int index, BuildContext context) {
     context.read<AddictionTrackViewModel>().getAddictionTracker(index);
     context.read<AddictionTrackViewModel>().getDaysAndMilestones();
     Navigator.push(
@@ -36,7 +19,7 @@ class _AddictionListScreenState extends State<AddictionListScreen> {
     );
   }
 
-  void openAddictionTrackerDialog() {
+  void openAddictionTrackerDialog(BuildContext context) {
     final addictionTrackViewModel = context.read<AddictionTrackViewModel>();
     addictionTrackViewModel.getAddictionTypes();
     addictionTrackViewModel
@@ -142,7 +125,7 @@ class _AddictionListScreenState extends State<AddictionListScreen> {
       }),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          openAddictionTrackerDialog();
+          openAddictionTrackerDialog(context);
         },
         backgroundColor: Colors.red,
         child: const Icon(Icons.add),

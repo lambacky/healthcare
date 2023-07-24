@@ -5,27 +5,30 @@ import 'package:camera/camera.dart';
 import 'package:healthcare/views/heartrate/monitor_screen.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-class HeartRateScreen extends StatefulWidget {
+class HeartRateScreen extends StatelessWidget {
   const HeartRateScreen({Key? key}) : super(key: key);
 
-  @override
-  State<HeartRateScreen> createState() => _HeartRateScreenState();
-}
-
-class _HeartRateScreenState extends State<HeartRateScreen> {
-  checkCameraPermission(List<CameraDescription> value) async {
+  checkCameraPermission(
+      List<CameraDescription> value, BuildContext context) async {
     var cameraStatus = await Permission.camera.request();
     if (cameraStatus.isDenied) {
       return;
     }
     if (cameraStatus.isPermanentlyDenied) {
-      openDialog();
+      openDialog(context);
       return;
     }
-    openMonitorScreen(value);
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => MonitorScreen(
+          cameras: value,
+        ),
+      ),
+    );
   }
 
-  openDialog() {
+  openDialog(BuildContext context) {
     showDialog<String>(
       context: context,
       builder: (BuildContext context) => AlertDialog(
@@ -46,17 +49,6 @@ class _HeartRateScreenState extends State<HeartRateScreen> {
             child: const Text('Allow'),
           ),
         ],
-      ),
-    );
-  }
-
-  openMonitorScreen(List<CameraDescription> value) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => MonitorScreen(
-          cameras: value,
-        ),
       ),
     );
   }
@@ -92,7 +84,7 @@ class _HeartRateScreenState extends State<HeartRateScreen> {
               icon: FontAwesomeIcons.heartPulse,
               onTap: () async {
                 await availableCameras()
-                    .then((value) => checkCameraPermission(value));
+                    .then((value) => checkCameraPermission(value, context));
               },
             ),
           ],

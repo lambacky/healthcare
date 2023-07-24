@@ -8,7 +8,7 @@ import '../view-models/target_view_model.dart';
 class RunningTargetCard extends StatelessWidget {
   final int index;
 
-  final Function(int) deleteAction;
+  final Function(int, BuildContext) deleteAction;
   const RunningTargetCard(
       {Key? key, required this.index, required this.deleteAction})
       : super(key: key);
@@ -69,7 +69,7 @@ class RunningTargetCard extends StatelessWidget {
                     const SizedBox(width: 20),
                     GestureDetector(
                       onTap: () {
-                        deleteAction(index);
+                        deleteAction(index, context);
                       },
                       child: const Icon(
                         Icons.delete,

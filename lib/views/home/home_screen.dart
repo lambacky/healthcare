@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:healthcare/view-models/home_view_model.dart';
 import 'package:healthcare/views/addiction/addiction_list_screen.dart';
 import 'package:healthcare/views/medicine/reminder_list_screen.dart';
 import 'package:healthcare/views/meal/meal_screen.dart';
@@ -20,73 +21,49 @@ import '../heartrate/heart_rate_screen.dart';
 import '../profile/profile_screen.dart';
 import '../running/running_menu_screen.dart';
 
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen> {
-  @override
-  void initState() {
-    super.initState();
-    NotificationService().initNotification();
-    fetchData();
-  }
-
-  void fetchData() async {
-    await FireBaseService().fetchData().then((data) {
-      context.read<MedicationReminderViewModel>().getReminders(data);
-      context.read<AddictionTrackViewModel>().getAddictionTracks(data);
-      context.read<MealPlanViewModel>().getMealPlan(data);
-      context.read<UserViewModel>().getUserModel(data);
-      context.read<PhysicStatViewModel>().getPhysicStat(data);
-      context.read<TrackViewModel>().getTracks(data);
-      context.read<TargetViewModel>().getTargets(data);
-    });
-  }
-
-  final List<FeatureButton> features = const [
-    FeatureButton(
-        label: 'HEART RATE MONITOR',
-        icon: FontAwesomeIcons.heartPulse,
-        color: Colors.red,
-        widget: HeartRateScreen()),
-    FeatureButton(
-        label: 'BMI CALCULATOR',
-        icon: Icons.speed,
-        color: Colors.green,
-        widget: BMIScreen()),
-    FeatureButton(
-        label: 'RUN TRACKER',
-        icon: Icons.directions_run,
-        color: Colors.blue,
-        widget: RunningMenuScreen()),
-    FeatureButton(
-        label: 'ARTICLES',
-        icon: FontAwesomeIcons.newspaper,
-        color: Color.fromARGB(255, 202, 131, 131),
-        widget: ArticleScreen()),
-    FeatureButton(
-        label: 'MEAL PLANNER',
-        icon: Icons.restaurant_menu,
-        color: Color.fromARGB(255, 212, 133, 104),
-        widget: MealScreen()),
-    FeatureButton(
-        label: 'MEDICATION REMINDER',
-        icon: Icons.medication_outlined,
-        color: Colors.blueGrey,
-        widget: ReminderListScreen()),
-    FeatureButton(
-        label: 'ADDICTION TRACKER',
-        icon: Icons.liquor,
-        color: Colors.green,
-        widget: AddictionListScreen())
-  ];
-
-  @override
   Widget build(BuildContext context) {
+    HomeViewModel().initizalize(context);
+    const List<FeatureButton> features = [
+      FeatureButton(
+          label: 'HEART RATE MONITOR',
+          icon: FontAwesomeIcons.heartPulse,
+          color: Colors.red,
+          widget: HeartRateScreen()),
+      FeatureButton(
+          label: 'BMI CALCULATOR',
+          icon: Icons.speed,
+          color: Colors.green,
+          widget: BMIScreen()),
+      FeatureButton(
+          label: 'RUN TRACKER',
+          icon: Icons.directions_run,
+          color: Colors.blue,
+          widget: RunningMenuScreen()),
+      FeatureButton(
+          label: 'ARTICLES',
+          icon: FontAwesomeIcons.newspaper,
+          color: Color.fromARGB(255, 202, 131, 131),
+          widget: ArticleScreen()),
+      FeatureButton(
+          label: 'MEAL PLANNER',
+          icon: Icons.restaurant_menu,
+          color: Color.fromARGB(255, 212, 133, 104),
+          widget: MealScreen()),
+      FeatureButton(
+          label: 'MEDICATION REMINDER',
+          icon: Icons.medication_outlined,
+          color: Colors.blueGrey,
+          widget: ReminderListScreen()),
+      FeatureButton(
+          label: 'ADDICTION TRACKER',
+          icon: Icons.liquor,
+          color: Colors.green,
+          widget: AddictionListScreen())
+    ];
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,

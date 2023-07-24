@@ -1,73 +1,51 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:healthcare/view-models/auth_view_model.dart';
+import 'package:provider/provider.dart';
 import '../../components/submit_button.dart';
-import '../../models/user_model.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import '../../components/text_input.dart';
 
-class RegistrationScreen extends StatefulWidget {
-  final VoidCallback showLoginPage;
-  const RegistrationScreen({Key? key, required this.showLoginPage})
-      : super(key: key);
+class RegistrationScreen extends StatelessWidget {
+  const RegistrationScreen({Key? key}) : super(key: key);
 
-  @override
-  State<RegistrationScreen> createState() => _RegistrationScreenState();
-}
-
-class _RegistrationScreenState extends State<RegistrationScreen> {
-  final _auth = FirebaseAuth.instance;
-
-  String? errorMessage;
-
-  final _formKey = GlobalKey<FormState>();
-  final List<TextEditingController> controllers =
-      List.generate(4, (i) => TextEditingController());
-  final confirmPasswordEditingController = TextEditingController();
+  void signUp(BuildContext context) async {
+    String? message = await context.read<AuthViewModel>().signUp();
+    if (message != null) {
+      Fluttertoast.showToast(msg: message);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    final authViewModel = context.read<AuthViewModel>();
+
     final List<TextInput> formInputs = <TextInput>[
       TextInput(
-          title: 'First Name',
-          icon: Icons.account_circle,
-          textEditingController: controllers[0]),
+        title: 'First Name',
+        icon: Icons.account_circle,
+        onChanged: authViewModel.updateFirstName,
+      ),
       TextInput(
-          title: 'Last Name',
-          icon: Icons.account_circle,
-          textEditingController: controllers[1]),
+        title: 'Last Name',
+        icon: Icons.account_circle,
+        onChanged: authViewModel.updateLastName,
+      ),
       TextInput(
-          title: 'Email',
-          icon: Icons.email,
-          textEditingController: controllers[2]),
+        title: 'Email',
+        icon: Icons.email,
+        onChanged: authViewModel.updateEmail,
+      ),
       TextInput(
-          title: 'Password',
-          icon: Icons.lock,
-          textEditingController: controllers[3]),
+        title: 'Password',
+        icon: Icons.lock,
+        onChanged: authViewModel.updatePassword,
+      ),
+      TextInput(
+        title: 'Confirm Password',
+        icon: Icons.lock,
+        onChanged: authViewModel.updateConfirmPassword,
+      ),
     ];
-    //confirm password field
-    final confirmPasswordField = TextFormField(
-        autofocus: false,
-        controller: confirmPasswordEditingController,
-        obscureText: true,
-        validator: (value) {
-          if (confirmPasswordEditingController.text != controllers[3].text) {
-            return "Password don't match";
-          }
-          return null;
-        },
-        onSaved: (value) {
-          confirmPasswordEditingController.text = value!;
-        },
-        textInputAction: TextInputAction.done,
-        decoration: InputDecoration(
-          prefixIcon: const Icon(Icons.lock),
-          contentPadding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
-          hintText: "Confirm Password",
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-        ));
 
     return Scaffold(
       body: Center(
@@ -77,7 +55,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
             child: Padding(
               padding: const EdgeInsets.fromLTRB(40, 20, 36, 40),
               child: Form(
-                key: _formKey,
+                key: authViewModel.registerFormKey,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -95,12 +73,12 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                       children: List.generate(
                           formInputs.length, (index) => formInputs[index]),
                     ),
-                    confirmPasswordField,
+                    // confirmPasswordField,
                     const SizedBox(height: 20),
                     SubmitButton(
                         text: 'Sign Up',
                         onPressed: () {
-                          signUp(controllers[2].text, controllers[3].text);
+                          signUp(context);
                         }),
                     const SizedBox(height: 20),
                     Row(
@@ -108,7 +86,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                         children: <Widget>[
                           const Text("I am a member! "),
                           GestureDetector(
-                            onTap: widget.showLoginPage,
+                            onTap: authViewModel.toggle,
                             child: const Text(
                               "Log In",
                               style: TextStyle(
@@ -126,61 +104,5 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         ),
       ),
     );
-  }
-
-  void signUp(String email, String password) async {
-    if (_formKey.currentState!.validate()) {
-      try {
-        await _auth
-            .createUserWithEmailAndPassword(email: email, password: password)
-            .then((value) => {postDetailsToFirestore()})
-            .catchError((e) {
-          Fluttertoast.showToast(msg: e.message);
-          return <dynamic>{};
-        });
-      } on FirebaseAuthException catch (error) {
-        switch (error.code) {
-          case "invalid-email":
-            errorMessage = "Your email address appears to be malformed.";
-            break;
-          case "wrong-password":
-            errorMessage = "Your password is wrong.";
-            break;
-          case "user-not-found":
-            errorMessage = "User with this email doesn't exist.";
-            break;
-          case "user-disabled":
-            errorMessage = "User with this email has been disabled.";
-            break;
-          case "too-many-requests":
-            errorMessage = "Too many requests";
-            break;
-          case "operation-not-allowed":
-            errorMessage = "Signing in with Email and Password is not enabled.";
-            break;
-          default:
-            errorMessage = "An undefined Error happened.";
-        }
-        Fluttertoast.showToast(msg: errorMessage!);
-        // ignore: avoid_print
-        print(error.code);
-      }
-    }
-  }
-
-  postDetailsToFirestore() async {
-    FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
-    User? user = _auth.currentUser;
-    UserModel userModel = UserModel(
-        uid: user!.uid,
-        email: user.email!,
-        firstName: controllers[0].text,
-        lastName: controllers[1].text);
-
-    await firebaseFirestore
-        .collection("users")
-        .doc(user.uid)
-        .set(userModel.toJson());
-    Fluttertoast.showToast(msg: "Account created successfully ");
   }
 }

@@ -3,22 +3,12 @@ import 'package:flutter/material.dart';
 import '../../components/article_card.dart';
 import '../../view-models/article_view_model.dart';
 
-class ArticleScreen extends StatefulWidget {
+class ArticleScreen extends StatelessWidget {
   const ArticleScreen({Key? key}) : super(key: key);
 
   @override
-  State<ArticleScreen> createState() => _ArticleScreenState();
-}
-
-class _ArticleScreenState extends State<ArticleScreen> {
-  @override
-  void initState() {
-    super.initState();
-    context.read<ArticleViewModel>().fetchArticle();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    context.read<ArticleViewModel>().fetchArticle();
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,

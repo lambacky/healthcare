@@ -6,7 +6,7 @@ import 'package:provider/provider.dart';
 import '../view-models/track_view_model.dart';
 
 class TrackCard extends StatelessWidget {
-  final Function(int) deleteAction;
+  final Function(int, BuildContext) deleteAction;
   final int index;
   const TrackCard({Key? key, required this.index, required this.deleteAction})
       : super(key: key);
@@ -66,7 +66,7 @@ class TrackCard extends StatelessWidget {
                 ),
                 GestureDetector(
                   onTap: () {
-                    deleteAction(index);
+                    deleteAction(index, context);
                   },
                   child: const Icon(
                     Icons.delete,
@@ -90,6 +90,22 @@ class TrackCard extends StatelessWidget {
                   ),
                 );
               },
+              placeholder: (context, url) => Container(
+                height: 200.0,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: Colors.grey,
+                  borderRadius: BorderRadius.circular(12.0),
+                ),
+              ),
+              errorWidget: (context, url, error) => Container(
+                height: 200.0,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: Colors.grey,
+                  borderRadius: BorderRadius.circular(12.0),
+                ),
+              ),
             ),
             const SizedBox(height: 20),
             Row(

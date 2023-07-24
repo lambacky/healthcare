@@ -1,28 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:healthcare/views/login-register/login_screen.dart';
 import 'package:healthcare/views/login-register/registration_screen.dart';
+import 'package:provider/provider.dart';
+import '../../view-models/auth_view_model.dart';
 
-class AuthScreen extends StatefulWidget {
+class AuthScreen extends StatelessWidget {
   const AuthScreen({Key? key}) : super(key: key);
 
   @override
-  State<AuthScreen> createState() => _AuthScreenState();
-}
-
-class _AuthScreenState extends State<AuthScreen> {
-  bool showLoginPage = true;
-  void toggleScreens() {
-    setState(() {
-      showLoginPage = !showLoginPage;
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
-    if (showLoginPage) {
-      return LoginScreen(showRegisterPage: toggleScreens);
+    final isLogin = context.watch<AuthViewModel>().showLoginPage;
+    if (isLogin) {
+      return const LoginScreen();
     } else {
-      return RegistrationScreen(showLoginPage: toggleScreens);
+      return const RegistrationScreen();
     }
   }
 }

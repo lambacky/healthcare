@@ -3,15 +3,9 @@ import 'package:healthcare/components/track_card.dart';
 import 'package:healthcare/view-models/track_view_model.dart';
 import 'package:provider/provider.dart';
 
-class HistoryScreen extends StatefulWidget {
+class HistoryScreen extends StatelessWidget {
   const HistoryScreen({Key? key}) : super(key: key);
-
-  @override
-  State<HistoryScreen> createState() => _HistoryScreenState();
-}
-
-class _HistoryScreenState extends State<HistoryScreen> {
-  deleteTrack(int index) {
+  deleteTrack(int index, BuildContext context) {
     showDialog<String>(
       context: context,
       builder: (BuildContext context) => AlertDialog(

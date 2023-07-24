@@ -3,7 +3,7 @@ import 'package:healthcare/view-models/addiction_track_view_model.dart';
 import 'package:provider/provider.dart';
 
 class AddictionTrackCard extends StatelessWidget {
-  final Function(int) clickAction;
+  final Function(int, BuildContext) clickAction;
   final int index;
   const AddictionTrackCard(
       {Key? key, required this.clickAction, required this.index})
@@ -16,7 +16,7 @@ class AddictionTrackCard extends StatelessWidget {
     final days = DateTime.now().difference(addictionTracker.startDate).inDays;
     return InkWell(
       onTap: () {
-        clickAction(index);
+        clickAction(index, context);
       },
       child: Container(
         margin: const EdgeInsets.all(12.0),

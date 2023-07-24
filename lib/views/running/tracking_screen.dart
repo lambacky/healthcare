@@ -1,4 +1,3 @@
-import 'dart:async';
 import "package:flutter/material.dart";
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:healthcare/view-models/track_view_model.dart';
@@ -71,10 +70,7 @@ class _TrackingScreenState extends State<TrackingScreen> {
           TextButton(
             onPressed: () async {
               var navigator = Navigator.of(context);
-              await context.read<TrackViewModel>().saveRun();
-              await context
-                  .read<TargetViewModel>()
-                  .updateTargets(context.read<TrackViewModel>().track.distance);
+              await saveRun(context);
               navigator.pop();
               navigator.pop();
               Fluttertoast.showToast(msg: "Running track saved successfully");
@@ -84,6 +80,13 @@ class _TrackingScreenState extends State<TrackingScreen> {
         ],
       ),
     );
+  }
+
+  Future<void> saveRun(BuildContext context) async {
+    await context.read<TrackViewModel>().saveRun();
+    await context
+        .read<TargetViewModel>()
+        .updateTargets(context.read<TrackViewModel>().track.distance);
   }
 
   void closeScreen() {
@@ -108,10 +111,7 @@ class _TrackingScreenState extends State<TrackingScreen> {
           TextButton(
             onPressed: () async {
               var navigator = Navigator.of(context);
-              await context.read<TrackViewModel>().saveRun();
-              await context
-                  .read<TargetViewModel>()
-                  .updateTargets(context.read<TrackViewModel>().track.distance);
+              await saveRun(context);
               navigator.pop();
               navigator.pop();
               Fluttertoast.showToast(msg: "Running track saved successfully");

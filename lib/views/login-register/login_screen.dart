@@ -1,39 +1,35 @@
 import 'package:healthcare/views/login-register/reset_password_screen.dart';
+import 'package:provider/provider.dart';
 import '../../components/submit_button.dart';
 import '../../components/text_input.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
-class LoginScreen extends StatefulWidget {
-  final VoidCallback showRegisterPage;
-  const LoginScreen({Key? key, required this.showRegisterPage})
-      : super(key: key);
+import '../../view-models/auth_view_model.dart';
 
-  @override
-  State<LoginScreen> createState() => _LoginScreenState();
-}
+class LoginScreen extends StatelessWidget {
+  const LoginScreen({Key? key}) : super(key: key);
 
-class _LoginScreenState extends State<LoginScreen> {
-  final _formKey = GlobalKey<FormState>();
-  final List<TextEditingController> controllers =
-      List.generate(2, (i) => TextEditingController());
-
-  final _auth = FirebaseAuth.instance;
-
-  String? errorMessage;
+  void signIn(BuildContext context) async {
+    String? message = await context.read<AuthViewModel>().signIn();
+    if (message != null) {
+      Fluttertoast.showToast(msg: message);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    final authViewModel = context.read<AuthViewModel>();
     final List<TextInput> formInputs = <TextInput>[
       TextInput(
-          title: 'Email',
-          icon: Icons.email,
-          textEditingController: controllers[0]),
+        title: 'Email',
+        icon: Icons.email,
+        onChanged: authViewModel.updateEmail,
+      ),
       TextInput(
           title: 'Password',
           icon: Icons.lock,
-          textEditingController: controllers[1]),
+          onChanged: authViewModel.updatePassword),
     ];
     return Scaffold(
       body: Center(
@@ -43,7 +39,7 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Padding(
               padding: const EdgeInsets.all(36.0),
               child: Form(
-                key: _formKey,
+                key: authViewModel.loginFormKey,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -64,7 +60,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     SubmitButton(
                         text: 'Log In',
                         onPressed: () {
-                          signIn(controllers[0].text, controllers[1].text);
+                          signIn(context);
                         }),
                     const SizedBox(height: 20),
                     Row(
@@ -72,7 +68,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         children: <Widget>[
                           const Text("Don't have an account? "),
                           GestureDetector(
-                            onTap: widget.showRegisterPage,
+                            onTap: authViewModel.toggle,
                             child: const Text(
                               "SignUp",
                               style: TextStyle(
@@ -108,39 +104,5 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       ),
     );
-  }
-
-  void signIn(String email, String password) async {
-    if (_formKey.currentState!.validate()) {
-      try {
-        await _auth
-            .signInWithEmailAndPassword(email: email, password: password)
-            .then((uid) => {
-                  Fluttertoast.showToast(msg: "Login Successful"),
-                });
-      } on FirebaseAuthException catch (error) {
-        switch (error.code) {
-          case "invalid-email":
-          case "wrong-password":
-          case "user-not-found":
-            errorMessage = "Your email or password is wrong.";
-            break;
-          case "user-disabled":
-            errorMessage = "User with this email has been disabled.";
-            break;
-          case "too-many-requests":
-            errorMessage = "Too many requests";
-            break;
-          case "operation-not-allowed":
-            errorMessage = "Signing in with Email and Password is not enabled.";
-            break;
-          default:
-            errorMessage = "An undefined Error happened.";
-        }
-        Fluttertoast.showToast(msg: errorMessage!);
-        // ignore: avoid_print
-        print(error.code);
-      }
-    }
   }
 }

@@ -10,6 +10,7 @@ class AddictionTrackViewModel extends ChangeNotifier {
   late AddictionTracker _addictionTracker;
   AddictionTracker get addictionTracker => _addictionTracker;
   late AddictionTracker _currentAddictionTracker;
+  AddictionTracker get currentAddictionTracker => _currentAddictionTracker;
   late int _currentIndex;
   late bool _isEnabled;
   bool get isEnabled => _isEnabled;
@@ -56,13 +57,14 @@ class AddictionTrackViewModel extends ChangeNotifier {
   }
 
   void getAddictionTracks(Map<String, dynamic>? data) {
+    _addictionTracks.clear();
     if (data != null &&
         data.containsKey('addiction') &&
         data['addiction'].length > 0) {
       List<dynamic> addictionTracks = data['addiction'];
-      for (var item in addictionTracks) {
-        _addictionTracks.add(AddictionTracker.fromJson(item));
-      }
+      _addictionTracks = addictionTracks
+          .map((item) => AddictionTracker.fromJson(item))
+          .toList();
     }
     notifyListeners();
   }
@@ -79,16 +81,15 @@ class AddictionTrackViewModel extends ChangeNotifier {
 
   Future<void> updateAddictionTracker() async {
     try {
+      _currentAddictionTracker = _addictionTracker;
       if (_currentIndex < _addictionTracks.length) {
         _addictionTracks[_currentIndex] = _addictionTracker;
       } else {
         _addictionTracks.add(_addictionTracker);
       }
 
-      List<dynamic> addictionTracks = [];
-      for (var addictionTracker in _addictionTracks) {
-        addictionTracks.add(addictionTracker.toJson());
-      }
+      List<dynamic> addictionTracks =
+          _addictionTracks.map((item) => item.toJson()).toList();
 
       await FireBaseService().updateData({'addiction': addictionTracks});
       getDaysAndMilestones();
@@ -128,6 +129,7 @@ class AddictionTrackViewModel extends ChangeNotifier {
 
   void restartAddictionTrack() {
     _addictionTracker.restartAddictionTrack();
+    _currentAddictionTracker = _addictionTracker;
     updateAddictionTracker();
   }
 }

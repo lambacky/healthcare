@@ -8,24 +8,10 @@ import '../../view-models/target_view_model.dart';
 import '../../view-models/track_view_model.dart';
 import 'tracking_screen.dart';
 
-class RunningMenuScreen extends StatefulWidget {
+class RunningMenuScreen extends StatelessWidget {
   const RunningMenuScreen({Key? key}) : super(key: key);
 
-  @override
-  State<RunningMenuScreen> createState() => _RunningMenuScreenState();
-}
-
-class _RunningMenuScreenState extends State<RunningMenuScreen> {
-  final List pages = const [HistoryScreen(), TargetScreen()];
-  int _currentIndex = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    context.read<TargetViewModel>().checkDueDate();
-  }
-
-  checkLocationPermission() async {
+  checkLocationPermission(BuildContext context) async {
     LocationPermission permission;
     permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
@@ -35,13 +21,17 @@ class _RunningMenuScreenState extends State<RunningMenuScreen> {
       }
     }
     if (permission == LocationPermission.deniedForever) {
-      openDialog();
+      openDialog(context);
       return;
     }
-    openTrackingScreen();
+    context.read<TrackViewModel>().setTrack();
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const TrackingScreen()),
+    );
   }
 
-  openDialog() {
+  openDialog(BuildContext context) {
     showDialog<String>(
       context: context,
       builder: (BuildContext context) => AlertDialog(
@@ -66,21 +56,17 @@ class _RunningMenuScreenState extends State<RunningMenuScreen> {
     );
   }
 
-  openTrackingScreen() {
-    context.read<TrackViewModel>().setTrack();
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const TrackingScreen()),
-    ).then((value) => setState(() {}));
-  }
-
   @override
   Widget build(BuildContext context) {
+    context.read<TargetViewModel>().checkDueDate();
+    final trackViewModel = context.watch<TrackViewModel>();
     return Scaffold(
-      body: pages[_currentIndex],
+      body: trackViewModel.isHistoryScreen
+          ? const HistoryScreen()
+          : const TargetScreen(),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          await checkLocationPermission();
+          await checkLocationPermission(context);
         },
         backgroundColor: Colors.red,
         child: const Icon(Icons.add),
@@ -97,38 +83,34 @@ class _RunningMenuScreenState extends State<RunningMenuScreen> {
           children: [
             GestureDetector(
                 onTap: () {
-                  setState(() {
-                    _currentIndex = 0;
-                  });
+                  trackViewModel.changeScreen(true);
                 },
                 child: Column(
                   children: [
                     Icon(Icons.list,
-                        color: _currentIndex == 0
+                        color: trackViewModel.isHistoryScreen
                             ? Colors.white
                             : Colors.white.withOpacity(0.7)),
                     Text("Records",
                         style: TextStyle(
-                            color: _currentIndex == 0
+                            color: trackViewModel.isHistoryScreen
                                 ? Colors.white
                                 : Colors.white.withOpacity(0.7)))
                   ],
                 )),
             GestureDetector(
                 onTap: () {
-                  setState(() {
-                    _currentIndex = 1;
-                  });
+                  trackViewModel.changeScreen(false);
                 },
                 child: Column(
                   children: [
                     Icon(Icons.track_changes,
-                        color: _currentIndex == 1
+                        color: !trackViewModel.isHistoryScreen
                             ? Colors.white
                             : Colors.white.withOpacity(0.7)),
                     Text("Targets",
                         style: TextStyle(
-                            color: _currentIndex == 1
+                            color: !trackViewModel.isHistoryScreen
                                 ? Colors.white
                                 : Colors.white.withOpacity(0.7)))
                   ],

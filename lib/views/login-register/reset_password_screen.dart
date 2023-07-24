@@ -1,42 +1,23 @@
+import 'package:provider/provider.dart';
 import '../../components/submit_button.dart';
 import '../../components/text_input.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import '../../view-models/auth_view_model.dart';
 
-class ResetPasswordScreen extends StatefulWidget {
+class ResetPasswordScreen extends StatelessWidget {
   const ResetPasswordScreen({Key? key}) : super(key: key);
 
-  @override
-  State<ResetPasswordScreen> createState() => _ResetPasswordScreenState();
-}
-
-class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
-  final _emailController = TextEditingController();
-  final _formKey = GlobalKey<FormState>();
-
-  @override
-  void dispose() {
-    _emailController.dispose();
-    super.dispose();
-  }
-
-  void resetPassword() async {
-    if (_formKey.currentState!.validate()) {
-      try {
-        await FirebaseAuth.instance
-            .sendPasswordResetEmail(email: _emailController.text.trim())
-            .then((uid) => {
-                  Fluttertoast.showToast(msg: "Password reset email sent"),
-                });
-      } on FirebaseAuthException catch (e) {
-        Fluttertoast.showToast(msg: e.code);
-      }
+  void resetPassword(BuildContext context) async {
+    String? message = await context.read<AuthViewModel>().resetPassword();
+    if (message != null) {
+      Fluttertoast.showToast(msg: message);
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final authViewModel = context.read<AuthViewModel>();
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -46,7 +27,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
         child: Padding(
           padding: const EdgeInsets.all(30.0),
           child: Form(
-            key: _formKey,
+            key: authViewModel.resetPasswordFormKey,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -58,10 +39,15 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                 ),
                 const SizedBox(height: 20),
                 TextInput(
-                    title: 'Email',
-                    icon: Icons.email,
-                    textEditingController: _emailController),
-                SubmitButton(text: "Reset Password", onPressed: resetPassword)
+                  title: 'Email',
+                  icon: Icons.email,
+                  onChanged: (value) {},
+                ),
+                SubmitButton(
+                    text: "Reset Password",
+                    onPressed: () {
+                      resetPassword(context);
+                    })
               ],
             ),
           ),

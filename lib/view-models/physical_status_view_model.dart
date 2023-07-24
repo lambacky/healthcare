@@ -43,6 +43,8 @@ class PhysicStatViewModel extends ChangeNotifier {
   }
 
   void getPhysicStat(Map<String, dynamic>? data) {
+    _isSaved = false;
+    _physicStat = null;
     if (data != null &&
         data.containsKey('physicStat') &&
         data['physicStat'] != null) {
