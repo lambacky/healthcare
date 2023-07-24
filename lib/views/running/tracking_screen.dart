@@ -32,7 +32,7 @@ class _TrackingScreenState extends State<TrackingScreen> {
     await context.read<TrackViewModel>().cancel();
   }
 
-  void restartRun() {
+  void _restartRun() {
     showDialog<String>(
       context: context,
       builder: (BuildContext context) => AlertDialog(
@@ -55,7 +55,7 @@ class _TrackingScreenState extends State<TrackingScreen> {
     );
   }
 
-  void finishRun() {
+  void _finishRun() {
     showDialog<String>(
       context: context,
       builder: (BuildContext context) => AlertDialog(
@@ -70,7 +70,7 @@ class _TrackingScreenState extends State<TrackingScreen> {
           TextButton(
             onPressed: () async {
               var navigator = Navigator.of(context);
-              await saveRun(context);
+              await _saveRun(context);
               navigator.pop();
               navigator.pop();
               Fluttertoast.showToast(msg: "Running track saved successfully");
@@ -82,14 +82,14 @@ class _TrackingScreenState extends State<TrackingScreen> {
     );
   }
 
-  Future<void> saveRun(BuildContext context) async {
+  Future<void> _saveRun(BuildContext context) async {
     await context.read<TrackViewModel>().saveRun();
     await context
         .read<TargetViewModel>()
         .updateTargets(context.read<TrackViewModel>().track.distance);
   }
 
-  void closeScreen() {
+  void _closeScreen() {
     showDialog<String>(
       context: context,
       builder: (BuildContext context) => AlertDialog(
@@ -111,7 +111,7 @@ class _TrackingScreenState extends State<TrackingScreen> {
           TextButton(
             onPressed: () async {
               var navigator = Navigator.of(context);
-              await saveRun(context);
+              await _saveRun(context);
               navigator.pop();
               navigator.pop();
               Fluttertoast.showToast(msg: "Running track saved successfully");
@@ -132,7 +132,7 @@ class _TrackingScreenState extends State<TrackingScreen> {
         title: const Text("Running"),
         leading: BackButton(onPressed: () {
           if (trackViewModel.runningState != 'none') {
-            closeScreen();
+            _closeScreen();
           } else {
             Navigator.pop(context);
           }
@@ -213,7 +213,7 @@ class _TrackingScreenState extends State<TrackingScreen> {
                         children: [
                           trackViewModel.runningState == "stop"
                               ? TextButton(
-                                  onPressed: trackViewModel.restartRun,
+                                  onPressed: _restartRun,
                                   style: TextButton.styleFrom(
                                       textStyle: const TextStyle(
                                           fontSize: 15,
@@ -226,11 +226,9 @@ class _TrackingScreenState extends State<TrackingScreen> {
                                   fixedSize: const Size(90, 90),
                                   shape: const CircleBorder(),
                                   backgroundColor: Colors.red),
-                              onPressed: () {
-                                trackViewModel.runningState != "run"
-                                    ? trackViewModel.startRun()
-                                    : trackViewModel.stopRun();
-                              },
+                              onPressed: trackViewModel.runningState != "run"
+                                  ? trackViewModel.startRun
+                                  : trackViewModel.stopRun,
                               child: trackViewModel.runningState == "none"
                                   ? const Text("START",
                                       style: TextStyle(fontSize: 13))
@@ -241,7 +239,7 @@ class _TrackingScreenState extends State<TrackingScreen> {
                                           style: TextStyle(fontSize: 13))),
                           trackViewModel.runningState == "stop"
                               ? TextButton(
-                                  onPressed: finishRun,
+                                  onPressed: _finishRun,
                                   style: TextButton.styleFrom(
                                       textStyle: const TextStyle(
                                           fontSize: 15,

@@ -7,7 +7,7 @@ import 'package:provider/provider.dart';
 class AddictionDescriptionScreen extends StatelessWidget {
   const AddictionDescriptionScreen({Key? key}) : super(key: key);
 
-  void restartAddictionTrack(BuildContext context) {
+  void _restartAddictionTrack(BuildContext context) {
     showDialog<String>(
       context: context,
       builder: (BuildContext context) => AlertDialog(
@@ -31,7 +31,7 @@ class AddictionDescriptionScreen extends StatelessWidget {
     );
   }
 
-  void editAddictionTrack(BuildContext context) {
+  void _editAddictionTrack(BuildContext context) {
     context.read<AddictionTrackViewModel>().getEditAddictionTypes();
     showDialog<String>(
         context: context,
@@ -112,7 +112,7 @@ class AddictionDescriptionScreen extends StatelessWidget {
         });
   }
 
-  void deleteAddictionTrack(BuildContext context) {
+  void _deleteAddictionTrack(BuildContext context) {
     showDialog<String>(
       context: context,
       builder: (BuildContext context) => AlertDialog(
@@ -263,7 +263,7 @@ class AddictionDescriptionScreen extends StatelessWidget {
                 children: [
                   GestureDetector(
                       onTap: () {
-                        restartAddictionTrack(context);
+                        _restartAddictionTrack(context);
                       },
                       child: const Column(children: [
                         Icon(
@@ -276,7 +276,7 @@ class AddictionDescriptionScreen extends StatelessWidget {
                       ])),
                   GestureDetector(
                       onTap: () {
-                        editAddictionTrack(context);
+                        _editAddictionTrack(context);
                       },
                       child: const Column(children: [
                         Icon(
@@ -288,7 +288,7 @@ class AddictionDescriptionScreen extends StatelessWidget {
                       ])),
                   GestureDetector(
                       onTap: () {
-                        deleteAddictionTrack(context);
+                        _deleteAddictionTrack(context);
                       },
                       child: const Column(children: [
                         Icon(Icons.delete, color: Colors.blueGrey),

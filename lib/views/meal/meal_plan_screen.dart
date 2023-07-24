@@ -8,7 +8,7 @@ import 'meal_list_screen.dart';
 class MealPlanScreen extends StatelessWidget {
   const MealPlanScreen({Key? key}) : super(key: key);
 
-  void searchMealPlan(BuildContext context) async {
+  void _searchMealPlan(BuildContext context) async {
     await context.read<MealPlanViewModel>().fetchMealPlan();
     Navigator.push(
       context,
@@ -137,7 +137,7 @@ class MealPlanScreen extends StatelessWidget {
             SubmitButton(
                 text: 'Search',
                 onPressed: () {
-                  searchMealPlan(context);
+                  _searchMealPlan(context);
                 }),
           ],
         ),

@@ -8,7 +8,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 class MealListScreen extends StatelessWidget {
   const MealListScreen({Key? key}) : super(key: key);
 
-  _buildTotalNutrientsCard(BuildContext context) {
+  Widget _buildTotalNutrientsCard(BuildContext context) {
     final mealPlan = context.read<MealPlanViewModel>().mealPlan;
     return Container(
       height: 140.0,
@@ -106,7 +106,7 @@ class MealListScreen extends StatelessWidget {
     );
   }
 
-  _buildMealCard(int index, BuildContext context) {
+  Widget _buildMealCard(int index, BuildContext context) {
     final meal = context.read<MealPlanViewModel>().mealPlan!.meals[index];
     String mealType = _mealType(index);
     return GestureDetector(
@@ -205,7 +205,7 @@ class MealListScreen extends StatelessWidget {
     );
   }
 
-  _mealType(int index) {
+  String _mealType(int index) {
     switch (index) {
       case 0:
         return 'Breakfast';

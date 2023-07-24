@@ -9,7 +9,7 @@ import '../../components/submit_button.dart';
 class AddictionListScreen extends StatelessWidget {
   const AddictionListScreen({Key? key}) : super(key: key);
 
-  void openAddictionScreen(int index, BuildContext context) {
+  void _openAddictionScreen(int index, BuildContext context) {
     context.read<AddictionTrackViewModel>().getAddictionTracker(index);
     context.read<AddictionTrackViewModel>().getDaysAndMilestones();
     Navigator.push(
@@ -19,7 +19,7 @@ class AddictionListScreen extends StatelessWidget {
     );
   }
 
-  void openAddictionTrackerDialog(BuildContext context) {
+  void _openAddictionTrackerDialog(BuildContext context) {
     final addictionTrackViewModel = context.read<AddictionTrackViewModel>();
     addictionTrackViewModel.getAddictionTypes();
     addictionTrackViewModel
@@ -116,7 +116,7 @@ class AddictionListScreen extends StatelessWidget {
             itemCount: addictionTrackViewModel.addictionTracks.length,
             itemBuilder: (context, index) {
               return AddictionTrackCard(
-                  index: index, clickAction: openAddictionScreen);
+                  index: index, clickAction: _openAddictionScreen);
             },
           );
         }
@@ -125,7 +125,7 @@ class AddictionListScreen extends StatelessWidget {
       }),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          openAddictionTrackerDialog(context);
+          _openAddictionTrackerDialog(context);
         },
         backgroundColor: Colors.red,
         child: const Icon(Icons.add),

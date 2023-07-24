@@ -3,19 +3,9 @@ import 'package:healthcare/view-models/home_view_model.dart';
 import 'package:healthcare/views/addiction/addiction_list_screen.dart';
 import 'package:healthcare/views/medicine/reminder_list_screen.dart';
 import 'package:healthcare/views/meal/meal_screen.dart';
-import 'package:healthcare/services/firebase_service.dart';
-import 'package:healthcare/view-models/addiction_track_view_model.dart';
-import 'package:healthcare/view-models/meal_plan_view_model.dart';
-import 'package:healthcare/view-models/medication_reminder_view_model.dart';
-import 'package:provider/provider.dart';
 import '../../components/feature_button.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:healthcare/views/articles/articles_screen.dart';
-import '../../services/notification_service.dart';
-import '../../view-models/physical_status_view_model.dart';
-import '../../view-models/target_view_model.dart';
-import '../../view-models/track_view_model.dart';
-import '../../view-models/user_view_model.dart';
 import '../bmi/bmi_screen.dart';
 import '../heartrate/heart_rate_screen.dart';
 import '../profile/profile_screen.dart';
@@ -71,7 +61,6 @@ class HomeScreen extends StatelessWidget {
         actions: [
           IconButton(
             onPressed: () {
-              // FirebaseAuth.instance.signOut();
               Navigator.push(
                   context,
                   MaterialPageRoute(

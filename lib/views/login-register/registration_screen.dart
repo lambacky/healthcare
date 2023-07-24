@@ -8,7 +8,7 @@ import '../../components/text_input.dart';
 class RegistrationScreen extends StatelessWidget {
   const RegistrationScreen({Key? key}) : super(key: key);
 
-  void signUp(BuildContext context) async {
+  void _signUp(BuildContext context) async {
     String? message = await context.read<AuthViewModel>().signUp();
     if (message != null) {
       Fluttertoast.showToast(msg: message);
@@ -78,7 +78,7 @@ class RegistrationScreen extends StatelessWidget {
                     SubmitButton(
                         text: 'Sign Up',
                         onPressed: () {
-                          signUp(context);
+                          _signUp(context);
                         }),
                     const SizedBox(height: 20),
                     Row(

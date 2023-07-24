@@ -15,6 +15,7 @@ class MedicationReminderViewModel extends ChangeNotifier {
   late MedicationReminder _currentReminder;
   late int _currentIndex;
   MedicationReminder get reminder => _reminder;
+  MedicationReminder get currentReminder => _currentReminder;
   late bool _isEnabled;
   bool get isEnabled => _isEnabled;
 
@@ -110,13 +111,11 @@ class MedicationReminderViewModel extends ChangeNotifier {
   }
 
   void checkValid() {
-    bool buttonState = _reminder.name.isNotEmpty &&
+    _isEnabled = _reminder.name.isNotEmpty &&
         _reminder.doses.isNotEmpty &&
         _reminder.times.isNotEmpty &&
         _reminder.schedule.isNotEmpty &&
         _reminder != _currentReminder;
-
-    _isEnabled = buttonState;
     notifyListeners();
   }
 

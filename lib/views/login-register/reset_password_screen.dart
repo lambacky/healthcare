@@ -8,7 +8,7 @@ import '../../view-models/auth_view_model.dart';
 class ResetPasswordScreen extends StatelessWidget {
   const ResetPasswordScreen({Key? key}) : super(key: key);
 
-  void resetPassword(BuildContext context) async {
+  void _resetPassword(BuildContext context) async {
     String? message = await context.read<AuthViewModel>().resetPassword();
     if (message != null) {
       Fluttertoast.showToast(msg: message);
@@ -46,7 +46,7 @@ class ResetPasswordScreen extends StatelessWidget {
                 SubmitButton(
                     text: "Reset Password",
                     onPressed: () {
-                      resetPassword(context);
+                      _resetPassword(context);
                     })
               ],
             ),

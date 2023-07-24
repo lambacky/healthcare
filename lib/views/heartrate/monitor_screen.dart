@@ -1,6 +1,5 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'package:page_transition/page_transition.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
@@ -22,7 +21,7 @@ class _MeasureScreenState extends State<MonitorScreen> {
     context.read<HeartRateViewModel>().initialize(widget.cameras[0]);
   }
 
-  goToResultScreen() {
+  _goToResultScreen() {
     final heartRateViewModel = context.read<HeartRateViewModel>();
     if (heartRateViewModel.value == 1) {
       double bpm =
@@ -30,10 +29,11 @@ class _MeasureScreenState extends State<MonitorScreen> {
               heartRateViewModel.bpms.length;
       Navigator.push(
         context,
-        PageTransition(
-            type: PageTransitionType.rightToLeft,
-            duration: const Duration(milliseconds: 500),
-            child: ResultScreen(bpm: bpm)),
+        MaterialPageRoute(
+          builder: (context) => ResultScreen(
+            bpm: bpm,
+          ),
+        ),
       );
     }
   }
@@ -71,7 +71,7 @@ class _MeasureScreenState extends State<MonitorScreen> {
                       lineWidth: 15,
                       percent: heartRateViewModel.value,
                       progressColor: Colors.green,
-                      onAnimationEnd: goToResultScreen,
+                      onAnimationEnd: _goToResultScreen,
                       center: ClipOval(
                         child: SizedBox(
                           width: 270,

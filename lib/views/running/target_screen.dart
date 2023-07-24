@@ -10,7 +10,7 @@ import '../../components/submit_button.dart';
 class TargetScreen extends StatelessWidget {
   const TargetScreen({Key? key}) : super(key: key);
 
-  void deleteRunningTarget(index, BuildContext context) {
+  void _deleteRunningTarget(index, BuildContext context) {
     showDialog<String>(
       context: context,
       builder: (BuildContext context) => AlertDialog(
@@ -34,7 +34,7 @@ class TargetScreen extends StatelessWidget {
     );
   }
 
-  void openDatePicker(DateTime date, String type, BuildContext context) {
+  void _openDatePicker(DateTime date, String type, BuildContext context) {
     showDatePicker(
             context: context,
             initialDate: date,
@@ -47,7 +47,7 @@ class TargetScreen extends StatelessWidget {
     });
   }
 
-  void openTargetDialog(BuildContext context) {
+  void _openTargetDialog(BuildContext context) {
     final targetViewModel = context.read<TargetViewModel>();
     targetViewModel.getRunningTarget(targetViewModel.targets.length);
     final distanceController = TextEditingController(
@@ -108,7 +108,7 @@ class TargetScreen extends StatelessWidget {
                                     text: DateFormat('dd/MM/yyyy').format(
                                         targetViewModel.target.startDate)),
                                 onTap: () {
-                                  openDatePicker(
+                                  _openDatePicker(
                                       targetViewModel.target.startDate,
                                       'start',
                                       context);
@@ -129,8 +129,10 @@ class TargetScreen extends StatelessWidget {
                                     text: DateFormat('dd/MM/yyyy').format(
                                         targetViewModel.target.endDate)),
                                 onTap: () {
-                                  openDatePicker(targetViewModel.target.endDate,
-                                      'end', context);
+                                  _openDatePicker(
+                                      targetViewModel.target.endDate,
+                                      'end',
+                                      context);
                                 },
                               ),
                             )
@@ -177,7 +179,7 @@ class TargetScreen extends StatelessWidget {
                 const SizedBox(width: 20),
                 GestureDetector(
                   onTap: () {
-                    openTargetDialog(context);
+                    _openTargetDialog(context);
                   },
                   child: Container(
                     padding: const EdgeInsets.all(3),
@@ -210,7 +212,7 @@ class TargetScreen extends StatelessWidget {
                         if (targetViewModel.targets[index].status ==
                             'progress') {
                           return RunningTargetCard(
-                              index: index, deleteAction: deleteRunningTarget);
+                              index: index, deleteAction: _deleteRunningTarget);
                         }
                         return const SizedBox();
                       },
@@ -254,7 +256,7 @@ class TargetScreen extends StatelessWidget {
                         if (targetViewModel.targets[index].status ==
                             'finished') {
                           return RunningTargetCard(
-                              index: index, deleteAction: deleteRunningTarget);
+                              index: index, deleteAction: _deleteRunningTarget);
                         }
                         return const SizedBox();
                       },

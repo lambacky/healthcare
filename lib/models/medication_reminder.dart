@@ -35,7 +35,7 @@ class MedicationReminder extends Equatable {
         name: json['name'],
         doses: json['doses'],
         times: json['times'],
-        medicationType: MedicationType.fromJson(json['medicationType']),
+        medicationType: MedicationType.fromString(json['medicationType']),
         schedule: schedule,
         notificationIds: ids);
   }
@@ -49,7 +49,7 @@ class MedicationReminder extends Equatable {
       'name': name,
       'doses': doses,
       'times': times,
-      'medicationType': medicationType.toJson(),
+      'medicationType': medicationType.name,
       'schedule': timeSchedule,
       'notificationIds': notificationIds
     };

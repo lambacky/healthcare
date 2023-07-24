@@ -13,9 +13,25 @@ class ResultScreen extends StatelessWidget {
 
   ResultScreen({Key? key, required this.bpm}) : super(key: key);
 
+  void _setbpmInterpretation() {
+    if (bpm < 60) {
+      bpmStatus = "LOW";
+      bpmInterpretation = "Your heart rate is lower than average";
+      bpmStatusColor = Colors.orange;
+    } else if (bpm <= 100) {
+      bpmStatus = "NORMAL";
+      bpmInterpretation = "Your heart rate is in normal range";
+      bpmStatusColor = Colors.green;
+    } else {
+      bpmStatus = "HIGH";
+      bpmInterpretation = "Your heart rate is higher than average";
+      bpmStatusColor = Colors.red;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    setbpmInterpretation();
+    _setbpmInterpretation();
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -107,21 +123,5 @@ class ResultScreen extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  void setbpmInterpretation() {
-    if (bpm < 60) {
-      bpmStatus = "LOW";
-      bpmInterpretation = "Your heart rate is lower than average";
-      bpmStatusColor = Colors.orange;
-    } else if (bpm <= 100) {
-      bpmStatus = "NORMAL";
-      bpmInterpretation = "Your heart rate is in normal range";
-      bpmStatusColor = Colors.green;
-    } else {
-      bpmStatus = "HIGH";
-      bpmInterpretation = "Your heart rate is higher than average";
-      bpmStatusColor = Colors.red;
-    }
   }
 }

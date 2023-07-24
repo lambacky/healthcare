@@ -11,7 +11,7 @@ import 'tracking_screen.dart';
 class RunningMenuScreen extends StatelessWidget {
   const RunningMenuScreen({Key? key}) : super(key: key);
 
-  checkLocationPermission(BuildContext context) async {
+  void _checkLocationPermission(BuildContext context) async {
     LocationPermission permission;
     permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
@@ -21,7 +21,7 @@ class RunningMenuScreen extends StatelessWidget {
       }
     }
     if (permission == LocationPermission.deniedForever) {
-      openDialog(context);
+      _openDialog(context);
       return;
     }
     context.read<TrackViewModel>().setTrack();
@@ -31,7 +31,7 @@ class RunningMenuScreen extends StatelessWidget {
     );
   }
 
-  openDialog(BuildContext context) {
+  _openDialog(BuildContext context) {
     showDialog<String>(
       context: context,
       builder: (BuildContext context) => AlertDialog(
@@ -65,8 +65,8 @@ class RunningMenuScreen extends StatelessWidget {
           ? const HistoryScreen()
           : const TargetScreen(),
       floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          await checkLocationPermission(context);
+        onPressed: () {
+          _checkLocationPermission(context);
         },
         backgroundColor: Colors.red,
         child: const Icon(Icons.add),

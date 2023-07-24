@@ -10,12 +10,12 @@ import '../../components/medication_reminder_card.dart';
 class ReminderListScreen extends StatelessWidget {
   const ReminderListScreen({Key? key}) : super(key: key);
 
-  void checkNotificationPermission(BuildContext context) async {
+  void _checkNotificationPermission(BuildContext context) async {
     bool isGranted = await NotificationService().isAndroidPermissionGranted();
     if (!isGranted) {
       bool request = await NotificationService().requestPermissions();
       if (!request) {
-        openAppSettings();
+        _openDialog(context);
         return;
       }
     }
@@ -28,7 +28,7 @@ class ReminderListScreen extends StatelessWidget {
     );
   }
 
-  openDialog(BuildContext context) {
+  _openDialog(BuildContext context) {
     showDialog<String>(
       context: context,
       builder: (BuildContext context) => AlertDialog(
@@ -53,7 +53,7 @@ class ReminderListScreen extends StatelessWidget {
     );
   }
 
-  void deleteReminder(int index, BuildContext context) {
+  void _deleteReminder(int index, BuildContext context) {
     final reminderViewModel = context.read<MedicationReminderViewModel>();
     showDialog<String>(
       context: context,
@@ -78,7 +78,7 @@ class ReminderListScreen extends StatelessWidget {
     );
   }
 
-  void editReminder(int index, BuildContext context) async {
+  void _editReminder(int index, BuildContext context) async {
     final reminderViewModel = context.read<MedicationReminderViewModel>();
     reminderViewModel.getReminder(index);
     Navigator.push(
@@ -104,8 +104,8 @@ class ReminderListScreen extends StatelessWidget {
             itemCount: reminderViewModel.reminders.length,
             itemBuilder: (context, index) {
               return MedicationReminderCard(
-                  deleteAction: deleteReminder,
-                  editAction: editReminder,
+                  deleteAction: _deleteReminder,
+                  editAction: _editReminder,
                   index: index);
             },
           );
@@ -114,7 +114,7 @@ class ReminderListScreen extends StatelessWidget {
       }),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          checkNotificationPermission(context);
+          _checkNotificationPermission(context);
         },
         backgroundColor: Colors.red,
         child: const Icon(Icons.add),

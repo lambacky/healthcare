@@ -10,7 +10,7 @@ import '../bmi/bmi_screen.dart';
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({Key? key}) : super(key: key);
 
-  void deletePhysicStat(BuildContext context) {
+  void _deletePhysicStat(BuildContext context) {
     showDialog<String>(
       context: context,
       builder: (BuildContext context) => AlertDialog(
@@ -34,7 +34,7 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  void editProfile(BuildContext context) {
+  void _editProfile(BuildContext context) {
     final userViewModel = context.read<UserViewModel>();
     userViewModel.setNewUserModel();
     final firstNameController =
@@ -91,7 +91,7 @@ class ProfileScreen extends StatelessWidget {
         });
   }
 
-  void openSignOutDialog(BuildContext context) {
+  void _openSignOutDialog(BuildContext context) {
     showDialog<String>(
       context: context,
       builder: (BuildContext context) => AlertDialog(
@@ -159,7 +159,7 @@ class ProfileScreen extends StatelessWidget {
                     const SizedBox(width: 15),
                     GestureDetector(
                       onTap: () {
-                        editProfile(context);
+                        _editProfile(context);
                       },
                       child: Container(
                         padding: const EdgeInsets.all(10),
@@ -242,7 +242,7 @@ class ProfileScreen extends StatelessWidget {
                         ? const SizedBox()
                         : GestureDetector(
                             onTap: () {
-                              deletePhysicStat(context);
+                              _deletePhysicStat(context);
                             },
                             child: Container(
                               padding: const EdgeInsets.all(10),
@@ -347,7 +347,7 @@ class ProfileScreen extends StatelessWidget {
           SubmitButton(
               text: 'Sign Out',
               onPressed: () {
-                openSignOutDialog(context);
+                _openSignOutDialog(context);
               }),
           const SizedBox(height: 20),
         ]),

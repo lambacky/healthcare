@@ -5,7 +5,8 @@ import 'package:provider/provider.dart';
 
 class HistoryScreen extends StatelessWidget {
   const HistoryScreen({Key? key}) : super(key: key);
-  deleteTrack(int index, BuildContext context) {
+
+  void _deleteTrack(int index, BuildContext context) {
     showDialog<String>(
       context: context,
       builder: (BuildContext context) => AlertDialog(
@@ -43,7 +44,7 @@ class HistoryScreen extends StatelessWidget {
             reverse: true,
             itemCount: trackViewModel.tracks.length,
             itemBuilder: (context, index) {
-              return TrackCard(index: index, deleteAction: deleteTrack);
+              return TrackCard(index: index, deleteAction: _deleteTrack);
             },
           );
         }

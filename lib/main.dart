@@ -37,11 +37,6 @@ Future<void> main() async {
   tz.initializeTimeZones();
   final String timeZoneName = await FlutterTimezone.getLocalTimezone();
   tz.setLocalLocation(tz.getLocation(timeZoneName));
-  // await FireBaseMessagingService().initNotifications();
-  // final String timeZone = await FlutterNativeTimezone.getLocalTimezone();
-  // tz.setLocalLocation(tz.getLocation(timeZone));
-  // NotificationService().initNotification();
-
   HttpOverrides.global = MyHttpOverrides();
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
@@ -57,8 +52,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider<AuthViewModel>(
-            create: (_) => AuthViewModel()),
+        ChangeNotifierProvider<AuthViewModel>(create: (_) => AuthViewModel()),
         ChangeNotifierProvider<MedicationReminderViewModel>(
             create: (_) => MedicationReminderViewModel()),
         ChangeNotifierProvider<AddictionTrackViewModel>(

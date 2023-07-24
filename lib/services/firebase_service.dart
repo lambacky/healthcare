@@ -23,7 +23,7 @@ class FireBaseService {
     _fireStore.collection("users").doc(_auth.currentUser?.uid).update(data);
   }
 
-  Future<void> setUser(Map<String, dynamic> data, id) async {
+  Future<void> setUser(Map<String, dynamic> data, String id) async {
     _fireStore.collection("users").doc(id).set(data);
   }
 

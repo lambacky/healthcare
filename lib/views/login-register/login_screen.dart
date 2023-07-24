@@ -10,7 +10,7 @@ import '../../view-models/auth_view_model.dart';
 class LoginScreen extends StatelessWidget {
   const LoginScreen({Key? key}) : super(key: key);
 
-  void signIn(BuildContext context) async {
+  void _signIn(BuildContext context) async {
     String? message = await context.read<AuthViewModel>().signIn();
     if (message != null) {
       Fluttertoast.showToast(msg: message);
@@ -60,7 +60,7 @@ class LoginScreen extends StatelessWidget {
                     SubmitButton(
                         text: 'Log In',
                         onPressed: () {
-                          signIn(context);
+                          _signIn(context);
                         }),
                     const SizedBox(height: 20),
                     Row(

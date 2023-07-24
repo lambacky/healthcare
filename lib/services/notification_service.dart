@@ -16,9 +16,9 @@ void notificationTapBackground(NotificationResponse notificationResponse) {
 }
 
 class NotificationService {
-  final FlutterLocalNotificationsPlugin notificationsPlugin =
+  final FlutterLocalNotificationsPlugin _notificationsPlugin =
       FlutterLocalNotificationsPlugin();
-  final AndroidNotificationChannel channel = const AndroidNotificationChannel(
+  final AndroidNotificationChannel _channel = const AndroidNotificationChannel(
     'high_importance_channel', // id
     'High Importance Notifications', // title
     description:
@@ -32,17 +32,17 @@ class NotificationService {
 
     var initializationSettings =
         InitializationSettings(android: initializationSettingsAndroid);
-    await notificationsPlugin.initialize(initializationSettings,
+    await _notificationsPlugin.initialize(initializationSettings,
         onDidReceiveNotificationResponse: (details) {},
         onDidReceiveBackgroundNotificationResponse: notificationTapBackground);
-    await notificationsPlugin
+    await _notificationsPlugin
         .resolvePlatformSpecificImplementation<
             AndroidFlutterLocalNotificationsPlugin>()
-        ?.createNotificationChannel(channel);
+        ?.createNotificationChannel(_channel);
   }
 
   Future<bool> isAndroidPermissionGranted() async {
-    bool granted = await notificationsPlugin
+    bool granted = await _notificationsPlugin
             .resolvePlatformSpecificImplementation<
                 AndroidFlutterLocalNotificationsPlugin>()
             ?.areNotificationsEnabled() ??
@@ -52,7 +52,7 @@ class NotificationService {
 
   Future<bool> requestPermissions() async {
     final AndroidFlutterLocalNotificationsPlugin? androidImplementation =
-        notificationsPlugin.resolvePlatformSpecificImplementation<
+        _notificationsPlugin.resolvePlatformSpecificImplementation<
             AndroidFlutterLocalNotificationsPlugin>();
     bool? granted = await androidImplementation?.requestPermission();
     return granted ?? false;
@@ -60,15 +60,15 @@ class NotificationService {
 
   Future notificationDetails() async {
     return NotificationDetails(
-        android: AndroidNotificationDetails(channel.id, channel.name,
-            channelDescription: channel.description,
+        android: AndroidNotificationDetails(_channel.id, _channel.name,
+            channelDescription: _channel.description,
             priority: Priority.high,
             importance: Importance.max));
   }
 
   Future showNotification(
       {int id = 0, String? title, String? body, String? payLoad}) async {
-    return notificationsPlugin.show(
+    return _notificationsPlugin.show(
         id, title, body, await notificationDetails());
   }
 
@@ -78,7 +78,7 @@ class NotificationService {
       String? body,
       String? payLoad,
       required TimeOfDay scheduleTime}) async {
-    return notificationsPlugin.zonedSchedule(
+    return _notificationsPlugin.zonedSchedule(
       id,
       title,
       body,
@@ -101,16 +101,16 @@ class NotificationService {
   }
 
   Future<void> cancelAllNotifications() async {
-    await notificationsPlugin.cancelAll();
+    await _notificationsPlugin.cancelAll();
     print('delete');
   }
 
   Future<void> cancelNotification(int id) async {
-    await notificationsPlugin.cancel(id);
+    await _notificationsPlugin.cancel(id);
   }
 
   Future<bool> checkPendingNotications() async {
-    final pending = await notificationsPlugin.pendingNotificationRequests();
+    final pending = await _notificationsPlugin.pendingNotificationRequests();
     if (pending.isNotEmpty) {
       return true;
     }

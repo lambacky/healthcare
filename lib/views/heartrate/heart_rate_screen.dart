@@ -8,14 +8,14 @@ import 'package:permission_handler/permission_handler.dart';
 class HeartRateScreen extends StatelessWidget {
   const HeartRateScreen({Key? key}) : super(key: key);
 
-  checkCameraPermission(
+  _checkCameraPermission(
       List<CameraDescription> value, BuildContext context) async {
     var cameraStatus = await Permission.camera.request();
     if (cameraStatus.isDenied) {
       return;
     }
     if (cameraStatus.isPermanentlyDenied) {
-      openDialog(context);
+      _openDialog(context);
       return;
     }
     Navigator.push(
@@ -28,7 +28,7 @@ class HeartRateScreen extends StatelessWidget {
     );
   }
 
-  openDialog(BuildContext context) {
+  _openDialog(BuildContext context) {
     showDialog<String>(
       context: context,
       builder: (BuildContext context) => AlertDialog(
@@ -84,7 +84,7 @@ class HeartRateScreen extends StatelessWidget {
               icon: FontAwesomeIcons.heartPulse,
               onTap: () async {
                 await availableCameras()
-                    .then((value) => checkCameraPermission(value, context));
+                    .then((value) => _checkCameraPermission(value, context));
               },
             ),
           ],
