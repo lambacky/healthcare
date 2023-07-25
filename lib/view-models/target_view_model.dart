@@ -43,6 +43,7 @@ class TargetViewModel extends ChangeNotifier {
       for (var target in _targets) {
         if (target.checkDueDate()) {
           isChange = true;
+          _progress--;
         }
       }
       if (isChange) {
@@ -58,6 +59,7 @@ class TargetViewModel extends ChangeNotifier {
       for (var target in _targets) {
         if (target.checkDistance(distance)) {
           isChange = true;
+          _progress--;
         }
       }
       if (isChange) {

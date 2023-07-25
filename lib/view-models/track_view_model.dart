@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
@@ -134,6 +133,7 @@ class TrackViewModel extends ChangeNotifier {
     _polyLines.clear();
     _polyLineCount = 0;
     _coordinates.clear();
+    _currentPosition = null;
     notifyListeners();
   }
 
@@ -188,23 +188,21 @@ class TrackViewModel extends ChangeNotifier {
               southwest: LatLng(_south, _west),
               northeast: LatLng(_north, _east)),
           15));
-      await Future.delayed(const Duration(seconds: 2), () async {
-        var routeSnapshot = await controller.takeSnapshot();
-        String routeImageFile =
-            DateTime.now().microsecondsSinceEpoch.toString();
-        String routeImagePath =
-            '${FirebaseAuth.instance.currentUser?.uid}/$routeImageFile';
-        String routeImageURL = await FireBaseService()
-            .uploadAndGetURL(routeImagePath, routeSnapshot!);
-        String time = StopWatchTimer.getDisplayTime(
-            _stopWatchTimer!.rawTime.value,
-            milliSecond: false);
-        _track.updateTrack(time, place, routeImageURL, routeImagePath);
-        _tracks.add(_track);
-        await updateData();
-        _isHistoryScreen = true;
-        notifyListeners();
-      });
+      await Future.delayed(const Duration(seconds: 1));
+      var routeSnapshot = await controller.takeSnapshot();
+      String routeImageFile = DateTime.now().microsecondsSinceEpoch.toString();
+      String routeImagePath =
+          '${FirebaseAuth.instance.currentUser?.uid}/$routeImageFile';
+      String routeImageURL = await FireBaseService()
+          .uploadAndGetURL(routeImagePath, routeSnapshot!);
+      String time = StopWatchTimer.getDisplayTime(
+          _stopWatchTimer!.rawTime.value,
+          milliSecond: false);
+      _track.updateTrack(time, place, routeImageURL, routeImagePath);
+      _tracks.add(_track);
+      await updateData();
+      _isHistoryScreen = true;
+      notifyListeners();
       return true;
     } catch (e) {
       return false;
@@ -213,11 +211,8 @@ class TrackViewModel extends ChangeNotifier {
 
   Future<bool> deleteTrack(int index) async {
     try {
+      await FireBaseService().deleteImage(_tracks[index].routeImagePath);
       _tracks.removeAt(index);
-      await FirebaseStorage.instance
-          .ref()
-          .child(_tracks[index].routeImagePath)
-          .delete();
       await updateData();
       notifyListeners();
       return true;

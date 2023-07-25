@@ -33,6 +33,10 @@ class FireBaseService {
     return url;
   }
 
+  Future<void> deleteImage(String path) async {
+    await _storageReference.child(path).delete();
+  }
+
   Future<String> signIn(String email, String password) async {
     try {
       await _auth.signInWithEmailAndPassword(email: email, password: password);

@@ -55,12 +55,13 @@ class BMIScreen extends StatelessWidget {
                           builder: (context) => const ScoreScreen()),
                     );
                   }),
-              const SizedBox(height: 30),
+              const Spacer(),
               const Text(
                 "Note: BMI is not suitable for athletes, children, elderly individuals, and pregnant women",
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
               ),
+              const SizedBox(height: 30)
             ],
           ),
         ),
