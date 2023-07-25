@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:healthcare/models/running_target.dart';
 import '../services/firebase_service.dart';
@@ -33,48 +32,52 @@ class TargetViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> updateData() async {
+    List<dynamic> targets = _targets.map((item) => item.toJson()).toList();
+    await FireBaseService().updateData({'targets': targets});
+  }
+
   Future<void> checkDueDate() async {
-    List<dynamic> targets = [];
-    bool isChange = false;
-    for (var target in _targets) {
-      if (target.checkDueDate()) {
-        isChange = true;
+    try {
+      bool isChange = false;
+      for (var target in _targets) {
+        if (target.checkDueDate()) {
+          isChange = true;
+        }
       }
-      targets.add(target.toJson());
-    }
-    if (isChange) {
-      await FireBaseService().updateData({'targets': targets});
-      notifyListeners();
-    }
+      if (isChange) {
+        await updateData();
+        notifyListeners();
+      }
+    } catch (e) {}
   }
 
   Future<void> updateTargets(double distance) async {
-    List<dynamic> targets = [];
-    bool isChange = false;
-    for (var target in _targets) {
-      if (target.checkDistance(distance)) {
-        isChange = true;
+    try {
+      bool isChange = false;
+      for (var target in _targets) {
+        if (target.checkDistance(distance)) {
+          isChange = true;
+        }
       }
-      targets.add(target.toJson());
-    }
-    if (isChange) {
-      await FireBaseService().updateData({'targets': targets});
-      notifyListeners();
-    }
+      if (isChange) {
+        await updateData();
+        notifyListeners();
+      }
+    } catch (e) {}
   }
 
-  Future<void> deleteRunningTarget(int index) async {
+  Future<bool> deleteRunningTarget(int index) async {
     try {
-      await FireBaseService().updateData({
-        'targets': FieldValue.arrayRemove([_targets[index].toJson()])
-      });
       if (_targets[index].status == 'progress') {
         _progress--;
       }
       _targets.removeAt(index);
+      await updateData();
       notifyListeners();
+      return true;
     } catch (e) {
-      print(e);
+      return false;
     }
   }
 
@@ -110,19 +113,21 @@ class TargetViewModel extends ChangeNotifier {
     checkButtonState();
   }
 
-  Future<void> updateRunningTarget() async {
+  Future<bool> updateRunningTarget() async {
     try {
       if (_currentIndex < _targets.length) {
+        _target.checkDueDate();
+        _target.checkDistance(0);
         _targets[_currentIndex] = _target;
       } else {
         _targets.add(_target);
         _progress++;
       }
-      List<dynamic> targets = _targets.map((item) => item.toJson()).toList();
-      await FireBaseService().updateData({'targets': targets});
+      await updateData();
       notifyListeners();
+      return true;
     } catch (e) {
-      print(e);
+      return false;
     }
   }
 }

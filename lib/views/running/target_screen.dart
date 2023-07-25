@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:healthcare/components/running_target_card.dart';
 import 'package:healthcare/view-models/target_view_model.dart';
 import 'package:intl/intl.dart';
@@ -23,9 +24,17 @@ class TargetScreen extends StatelessWidget {
             child: const Text('Cancel'),
           ),
           TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              context.read<TargetViewModel>().deleteRunningTarget(index);
+            onPressed: () async {
+              bool success = await context
+                  .read<TargetViewModel>()
+                  .deleteRunningTarget(index);
+              if (success) {
+                Navigator.pop(context);
+                Fluttertoast.showToast(
+                    msg: "Running target deleted successful");
+              } else {
+                Fluttertoast.showToast(msg: "Error. Please try again");
+              }
             },
             child: const Text('Yes'),
           ),
@@ -47,9 +56,9 @@ class TargetScreen extends StatelessWidget {
     });
   }
 
-  void _openTargetDialog(BuildContext context) {
+  void _openTargetDialog(int index, BuildContext context) {
     final targetViewModel = context.read<TargetViewModel>();
-    targetViewModel.getRunningTarget(targetViewModel.targets.length);
+    targetViewModel.getRunningTarget(index);
     final distanceController = TextEditingController(
         text: targetViewModel.target.targetDistance.toString());
     showDialog<String>(
@@ -145,9 +154,17 @@ class TargetScreen extends StatelessWidget {
                         text: 'Save new target',
                         onPressed: !targetViewModel.isEnabled
                             ? null
-                            : () {
-                                targetViewModel.updateRunningTarget();
-                                Navigator.pop(context);
+                            : () async {
+                                bool success =
+                                    await targetViewModel.updateRunningTarget();
+                                if (success) {
+                                  Navigator.pop(context);
+                                  Fluttertoast.showToast(
+                                      msg: "Running target saved successful");
+                                } else {
+                                  Fluttertoast.showToast(
+                                      msg: "Error. Please try again");
+                                }
                               })),
               ],
             ),
@@ -179,7 +196,7 @@ class TargetScreen extends StatelessWidget {
                 const SizedBox(width: 20),
                 GestureDetector(
                   onTap: () {
-                    _openTargetDialog(context);
+                    _openTargetDialog(targetViewModel.targets.length, context);
                   },
                   child: Container(
                     padding: const EdgeInsets.all(3),
@@ -212,27 +229,20 @@ class TargetScreen extends StatelessWidget {
                         if (targetViewModel.targets[index].status ==
                             'progress') {
                           return RunningTargetCard(
-                              index: index, deleteAction: _deleteRunningTarget);
+                              index: index,
+                              editAction: _openTargetDialog,
+                              deleteAction: _deleteRunningTarget);
                         }
                         return const SizedBox();
                       },
                     ),
               const SizedBox(height: 20),
-              Row(children: [
-                const SizedBox(width: 20),
-                const Text('Finished',
+              const Row(children: [
+                SizedBox(width: 20),
+                Text('Finished',
                     style:
                         TextStyle(fontSize: 25, fontWeight: FontWeight.bold)),
-                const SizedBox(width: 20),
-                // GestureDetector(
-                //   onTap: () {},
-                //   child: Container(
-                //     padding: const EdgeInsets.all(3),
-                //     decoration: const BoxDecoration(
-                //         color: Colors.blueGrey, shape: BoxShape.circle),
-                //     child: const Icon(Icons.add, color: Colors.white),
-                //   ),
-                // )
+                SizedBox(width: 20),
               ]),
               targetViewModel.progress == targetViewModel.targets.length
                   ? Container(
@@ -256,7 +266,9 @@ class TargetScreen extends StatelessWidget {
                         if (targetViewModel.targets[index].status ==
                             'finished') {
                           return RunningTargetCard(
-                              index: index, deleteAction: _deleteRunningTarget);
+                              index: index,
+                              editAction: _openTargetDialog,
+                              deleteAction: _deleteRunningTarget);
                         }
                         return const SizedBox();
                       },

@@ -21,7 +21,8 @@ class MealDetailScreen extends StatelessWidget {
           if (mealPlanViewModel.loading) {
             return const Center(child: CircularProgressIndicator());
           } else {
-            if (mealPlanViewModel.mealDetail == null) {
+            if (mealPlanViewModel.mealDetail == null &&
+                mealPlanViewModel.recipeSteps == null) {
               return Center(
                   child: Text(
                 'Data loading failed. Please check your network',

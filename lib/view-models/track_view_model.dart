@@ -1,6 +1,4 @@
 import 'dart:async';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -171,65 +169,66 @@ class TrackViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> saveRun() async {
-    String place = '';
-    _runningState = 'finish';
+  Future<bool> saveRun() async {
     try {
-      List<Placemark> placemarks = await placemarkFromCoordinates(
-          _currentPosition!.latitude, _currentPosition!.longitude);
-      if (placemarks.isNotEmpty) {
-        place =
-            "${placemarks[0].subAdministrativeArea}, ${placemarks[0].administrativeArea}, ${placemarks[0].country}";
-      }
-    } catch (e) {}
+      String place = '';
+      _runningState = 'finish';
+      try {
+        List<Placemark> placemarks = await placemarkFromCoordinates(
+            _currentPosition!.latitude, _currentPosition!.longitude);
+        if (placemarks.isNotEmpty) {
+          place =
+              "${placemarks[0].subAdministrativeArea}, ${placemarks[0].administrativeArea}, ${placemarks[0].country}";
+        }
+      } catch (e) {}
 
-    var controller = await _controller!.future;
-    await controller.animateCamera(CameraUpdate.newLatLngBounds(
-        LatLngBounds(
-            southwest: LatLng(_south, _west), northeast: LatLng(_north, _east)),
-        15));
-    await Future.delayed(const Duration(seconds: 2), () async {
-      var routeSnapshot = await controller.takeSnapshot();
-      String routeImageFile = DateTime.now().microsecondsSinceEpoch.toString();
-      String routeImagePath =
-          '${FirebaseAuth.instance.currentUser?.uid}/$routeImageFile';
-      String routeImageURL = await FireBaseService()
-          .uploadAndGetURL(routeImagePath, routeSnapshot!);
-      String time = StopWatchTimer.getDisplayTime(
-          _stopWatchTimer!.rawTime.value,
-          milliSecond: false);
-      _track.updateTrack(time, place, routeImageURL, routeImagePath);
-      addTrack();
-    });
+      var controller = await _controller!.future;
+      await controller.animateCamera(CameraUpdate.newLatLngBounds(
+          LatLngBounds(
+              southwest: LatLng(_south, _west),
+              northeast: LatLng(_north, _east)),
+          15));
+      await Future.delayed(const Duration(seconds: 2), () async {
+        var routeSnapshot = await controller.takeSnapshot();
+        String routeImageFile =
+            DateTime.now().microsecondsSinceEpoch.toString();
+        String routeImagePath =
+            '${FirebaseAuth.instance.currentUser?.uid}/$routeImageFile';
+        String routeImageURL = await FireBaseService()
+            .uploadAndGetURL(routeImagePath, routeSnapshot!);
+        String time = StopWatchTimer.getDisplayTime(
+            _stopWatchTimer!.rawTime.value,
+            milliSecond: false);
+        _track.updateTrack(time, place, routeImageURL, routeImagePath);
+        _tracks.add(_track);
+        await updateData();
+        _isHistoryScreen = true;
+        notifyListeners();
+      });
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
 
-  Future<void> deleteTrack(int index) async {
+  Future<bool> deleteTrack(int index) async {
     try {
-      await FireBaseService().updateData({
-        'running': FieldValue.arrayRemove([_tracks[index].toJson()])
-      });
+      _tracks.removeAt(index);
       await FirebaseStorage.instance
           .ref()
           .child(_tracks[index].routeImagePath)
           .delete();
-      _tracks.removeAt(index);
+      await updateData();
       notifyListeners();
+      return true;
     } catch (e) {
-      print(e);
+      return false;
     }
   }
 
-  Future<void> addTrack() async {
-    try {
-      _tracks.add(_track);
-      await FireBaseService().updateData({
-        'running': FieldValue.arrayUnion([_track.toJson()])
-      });
-      _isHistoryScreen = true;
-      notifyListeners();
-    } catch (e) {
-      print(e);
-    }
+  Future<void> updateData() async {
+    List<dynamic> tracks = _tracks.map((item) => item.toJson()).toList();
+    await FireBaseService().updateData({'running': tracks});
   }
 
   Future<void> cancel() async {

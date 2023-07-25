@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:healthcare/components/submit_button.dart';
 import 'package:healthcare/constants/constants.dart';
 import 'package:healthcare/models/medication_type.dart';
@@ -152,35 +153,28 @@ class _ReminderDescriptionScreenState extends State<ReminderDescriptionScreen> {
         });
   }
 
-  Future<void> _showMyDialog() {
-    return showDialog<void>(
-      context: context,
-      barrierDismissible: false, // user must tap button!
-      builder: (BuildContext context) {
-        return const AlertDialog(
-          title: Text(''),
-          content: SingleChildScrollView(
-            child: ListBody(
-              children: <Widget>[
-                Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Center(child: CircularProgressIndicator()),
-                ),
-                Center(child: Text('Saving reminder...')),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  void _saveReminder() {
-    _showMyDialog();
-    context.read<MedicationReminderViewModel>().updateReminder();
-    Navigator.pop(context);
-    Navigator.pop(context);
-  }
+  // Future<void> _showMyDialog() {
+  //   return showDialog<void>(
+  //     context: context,
+  //     barrierDismissible: false, // user must tap button!
+  //     builder: (BuildContext context) {
+  //       return const AlertDialog(
+  //         title: Text(''),
+  //         content: SingleChildScrollView(
+  //           child: ListBody(
+  //             children: <Widget>[
+  //               Padding(
+  //                 padding: EdgeInsets.all(8.0),
+  //                 child: Center(child: CircularProgressIndicator()),
+  //               ),
+  //               Center(child: Text('Saving reminder...')),
+  //             ],
+  //           ),
+  //         ),
+  //       );
+  //     },
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -324,8 +318,19 @@ class _ReminderDescriptionScreenState extends State<ReminderDescriptionScreen> {
                       child: SubmitButton(
                           text: 'Add reminder',
                           onPressed: reminderViewModel.isEnabled
-                              ? () {
-                                  _saveReminder();
+                              ? () async {
+                                  bool success = await context
+                                      .read<MedicationReminderViewModel>()
+                                      .updateReminder();
+                                  if (success) {
+                                    Navigator.pop(context);
+                                    Fluttertoast.showToast(
+                                        msg:
+                                            "Medication reminder saved successful");
+                                  } else {
+                                    Fluttertoast.showToast(
+                                        msg: "Error. Please try again");
+                                  }
                                 }
                               : null)),
                 ],

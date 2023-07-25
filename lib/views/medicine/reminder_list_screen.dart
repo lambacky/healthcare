@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:healthcare/services/notification_service.dart';
 import 'package:healthcare/views/medicine/reminder_description_screen.dart';
 import 'package:healthcare/view-models/medication_reminder_view_model.dart';
@@ -67,9 +68,15 @@ class ReminderListScreen extends StatelessWidget {
             child: const Text('Cancel'),
           ),
           TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              reminderViewModel.deleteReminder(index);
+            onPressed: () async {
+              bool success = await reminderViewModel.deleteReminder(index);
+              if (success) {
+                Navigator.pop(context);
+                Fluttertoast.showToast(
+                    msg: "Medication reminder deleted successful");
+              } else {
+                Fluttertoast.showToast(msg: "Error. Please try again");
+              }
             },
             child: const Text('Yes'),
           ),
@@ -110,7 +117,7 @@ class ReminderListScreen extends StatelessWidget {
             },
           );
         }
-        return const Center(child: Text("There are currently no records"));
+        return const Center(child: Text("There are currently no reminders"));
       }),
       floatingActionButton: FloatingActionButton(
         onPressed: () {

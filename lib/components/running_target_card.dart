@@ -2,15 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:provider/provider.dart';
-
 import '../view-models/target_view_model.dart';
 
 class RunningTargetCard extends StatelessWidget {
   final int index;
-
+  final Function(int, BuildContext) editAction;
   final Function(int, BuildContext) deleteAction;
   const RunningTargetCard(
-      {Key? key, required this.index, required this.deleteAction})
+      {Key? key,
+      required this.index,
+      required this.deleteAction,
+      required this.editAction})
       : super(key: key);
 
   @override
@@ -59,7 +61,9 @@ class RunningTargetCard extends StatelessWidget {
                     status == 'finished'
                         ? const SizedBox()
                         : GestureDetector(
-                            onTap: () {},
+                            onTap: () {
+                              editAction(index, context);
+                            },
                             child: const Icon(
                               Icons.edit,
                               color: Colors.red,

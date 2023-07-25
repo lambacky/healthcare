@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:healthcare/components/submit_button.dart';
 import 'package:healthcare/view-models/addiction_track_view_model.dart';
 import 'package:intl/intl.dart';
@@ -20,9 +21,17 @@ class AddictionDescriptionScreen extends StatelessWidget {
             child: const Text('Cancel'),
           ),
           TextButton(
-            onPressed: () {
-              context.read<AddictionTrackViewModel>().restartAddictionTrack();
-              Navigator.pop(context);
+            onPressed: () async {
+              bool success = await context
+                  .read<AddictionTrackViewModel>()
+                  .restartAddictionTrack();
+              if (success) {
+                Navigator.pop(context);
+                Fluttertoast.showToast(
+                    msg: "Addiction tracker restarted successful");
+              } else {
+                Fluttertoast.showToast(msg: "Error. Please try again");
+              }
             },
             child: const Text('Yes'),
           ),
@@ -81,8 +90,7 @@ class AddictionDescriptionScreen extends StatelessWidget {
                               initialDate: addictionTrackViewModel
                                   .addictionTracker.startDate,
                               firstDate: DateTime(2000),
-                              lastDate: addictionTrackViewModel
-                                  .addictionTracker.startDate)
+                              lastDate: DateTime.now())
                           .then((value) {
                         if (value != null &&
                             value !=
@@ -99,10 +107,18 @@ class AddictionDescriptionScreen extends StatelessWidget {
                       child: SubmitButton(
                           text: 'Save new tracker',
                           onPressed: addictionTrackViewModel.isEnabled
-                              ? () {
-                                  addictionTrackViewModel
+                              ? () async {
+                                  bool success = await addictionTrackViewModel
                                       .updateAddictionTracker();
-                                  Navigator.pop(context);
+                                  if (success) {
+                                    Navigator.pop(context);
+                                    Fluttertoast.showToast(
+                                        msg:
+                                            "Addiction tracker saved successful");
+                                  } else {
+                                    Fluttertoast.showToast(
+                                        msg: "Error. Please try again");
+                                  }
                                 }
                               : null)),
                 ],
@@ -125,10 +141,18 @@ class AddictionDescriptionScreen extends StatelessWidget {
             child: const Text('Cancel'),
           ),
           TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              context.read<AddictionTrackViewModel>().deleteAddictionTracker();
-              Navigator.pop(context);
+            onPressed: () async {
+              bool success = await context
+                  .read<AddictionTrackViewModel>()
+                  .deleteAddictionTracker();
+              if (success) {
+                Navigator.pop(context);
+                Navigator.pop(context);
+                Fluttertoast.showToast(
+                    msg: "Addiction tracker deleted successful");
+              } else {
+                Fluttertoast.showToast(msg: "Error. Please try again");
+              }
             },
             child: const Text('Yes'),
           ),

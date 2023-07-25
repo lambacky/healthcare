@@ -13,11 +13,7 @@ class ArticleViewModel extends ChangeNotifier {
 
   Future<void> fetchArticle() async {
     _loading = true;
-    try {
-      _articles = await ArticleApiService().getArticle();
-    } catch (e) {
-      print(e);
-    }
+    _articles = await ArticleApiService().getArticle();
     _loading = false;
     notifyListeners();
   }

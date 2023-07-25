@@ -54,24 +54,26 @@ class PhysicStatViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> updatePhysicStat() async {
+  Future<bool> updatePhysicStat() async {
     try {
       await FireBaseService().updateData({'physicStat': physicStat!.toJson()});
       _isSaved = true;
       notifyListeners();
+      return true;
     } catch (e) {
-      print(e);
+      return false;
     }
   }
 
-  Future<void> deletePhysicStat() async {
+  Future<bool> deletePhysicStat() async {
     try {
       await FireBaseService().updateData({'physicStat': FieldValue.delete()});
       _physicStat = null;
       _isSaved = false;
       notifyListeners();
+      return true;
     } catch (e) {
-      print(e);
+      return false;
     }
   }
 }

@@ -21,7 +21,6 @@ class AuthViewModel extends ChangeNotifier {
   GlobalKey<FormState> get registerFormKey => _registerFormKey;
   GlobalKey<FormState> get resetPasswordFormKey => _resetPasswordFormKey;
   Stream<User?> get authStateChanges => _auth.authStateChanges();
-
   String? validate(value, title) {
     if (value!.isEmpty) {
       return ("Field cannot be Empty");

@@ -52,15 +52,11 @@ class MealPlanViewModel extends ChangeNotifier {
 
   Future<void> fetchMealPlan() async {
     _loading = true;
-    try {
-      if (!_isSaved) {
-        _mealPlan = await MealApiService().generateMealPlan(
-          targetCalories: _targetCalories.toInt(),
-          diet: _diet,
-        );
-      }
-    } catch (e) {
-      print("error network connection");
+    if (!_isSaved) {
+      _mealPlan = await MealApiService().generateMealPlan(
+        targetCalories: _targetCalories.toInt(),
+        diet: _diet,
+      );
     }
     _loading = false;
     notifyListeners();
@@ -68,34 +64,32 @@ class MealPlanViewModel extends ChangeNotifier {
 
   Future<void> fetchMealInfo(int id) async {
     _loading = true;
-    try {
-      _mealDetail = await MealApiService().getMealInformation(id.toString());
-      _recipeSteps = await MealApiService().fetchRecipeSteps(id.toString());
-    } catch (e) {
-      print("error network connection");
-    }
+    _mealDetail = await MealApiService().getMealInformation(id.toString());
+    _recipeSteps = await MealApiService().fetchRecipeSteps(id.toString());
     _loading = false;
     notifyListeners();
   }
 
-  Future<void> saveMealPlan() async {
+  Future<bool> saveMealPlan() async {
     try {
       await FireBaseService().updateData({'mealPlan': mealPlan!.toJson()});
       _isSaved = true;
       notifyListeners();
+      return true;
     } catch (e) {
-      print(e);
+      return false;
     }
   }
 
-  Future<void> changeMealPlan() async {
+  Future<bool> changeMealPlan() async {
     try {
       await FireBaseService().updateData({'mealPlan': FieldValue.delete()});
       _mealPlan = null;
       _isSaved = false;
       notifyListeners();
+      return true;
     } catch (e) {
-      print(e);
+      return false;
     }
   }
 }

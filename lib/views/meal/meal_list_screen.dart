@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:healthcare/views/meal/meal_detail_screen.dart';
 import 'package:healthcare/view-models/meal_plan_view_model.dart';
 import 'package:provider/provider.dart';
@@ -257,11 +258,25 @@ class MealListScreen extends StatelessWidget {
                                     ? 'Change the diet'
                                     : 'Save the plan',
                                 onPressed: mealPlanViewModel.isSaved
-                                    ? () {
-                                        mealPlanViewModel.changeMealPlan();
+                                    ? () async {
+                                        bool success = await mealPlanViewModel
+                                            .changeMealPlan();
+                                        if (!success) {
+                                          Fluttertoast.showToast(
+                                              msg: "Error. Please try again");
+                                        }
                                       }
-                                    : () {
-                                        mealPlanViewModel.saveMealPlan();
+                                    : () async {
+                                        bool success = await mealPlanViewModel
+                                            .saveMealPlan();
+                                        if (success) {
+                                          Fluttertoast.showToast(
+                                              msg:
+                                                  "Meal plan saved successful");
+                                        } else {
+                                          Fluttertoast.showToast(
+                                              msg: "Error. Please try again");
+                                        }
                                       }),
                           );
                         }

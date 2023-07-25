@@ -38,15 +38,16 @@ class UserViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> updateUserModel() async {
+  Future<bool> updateUserModel() async {
     try {
       _userModel = _newUserModel;
       await FireBaseService().updateData(
           {'firstName': _userModel.firstName, 'lastName': _userModel.lastName});
       _isValid = false;
       notifyListeners();
+      return true;
     } catch (e) {
-      print(e);
+      return false;
     }
   }
 }

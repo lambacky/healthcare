@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:healthcare/models/addiction_tracker.dart';
 import '../constants/constants.dart';
@@ -56,6 +55,12 @@ class AddictionTrackViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> updateData() async {
+    List<dynamic> addictionTracks =
+        _addictionTracks.map((item) => item.toJson()).toList();
+    await FireBaseService().updateData({'addiction': addictionTracks});
+  }
+
   void getAddictionTracks(Map<String, dynamic>? data) {
     _addictionTracks.clear();
     if (data != null &&
@@ -69,17 +74,18 @@ class AddictionTrackViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> deleteAddictionTracker() async {
+  Future<bool> deleteAddictionTracker() async {
     try {
-      await FireBaseService().updateData({
-        'addiction': FieldValue.arrayRemove([_addictionTracker.toJson()])
-      });
       _addictionTracks.remove(_addictionTracker);
+      await updateData();
       notifyListeners();
-    } catch (e) {}
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
 
-  Future<void> updateAddictionTracker() async {
+  Future<bool> updateAddictionTracker() async {
     try {
       _currentAddictionTracker = _addictionTracker;
       if (_currentIndex < _addictionTracks.length) {
@@ -87,14 +93,11 @@ class AddictionTrackViewModel extends ChangeNotifier {
       } else {
         _addictionTracks.add(_addictionTracker);
       }
-
-      List<dynamic> addictionTracks =
-          _addictionTracks.map((item) => item.toJson()).toList();
-
-      await FireBaseService().updateData({'addiction': addictionTracks});
+      await updateData();
       getDaysAndMilestones();
+      return true;
     } catch (e) {
-      print(e);
+      return false;
     }
   }
 
@@ -127,9 +130,9 @@ class AddictionTrackViewModel extends ChangeNotifier {
     checkButtonState();
   }
 
-  void restartAddictionTrack() {
+  Future<bool> restartAddictionTrack() async {
     _addictionTracker.restartAddictionTrack();
     _currentAddictionTracker = _addictionTracker;
-    updateAddictionTracker();
+    return await updateAddictionTracker();
   }
 }

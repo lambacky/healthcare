@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:healthcare/views/addiction/addiction_description_screen.dart';
 import 'package:healthcare/view-models/addiction_track_view_model.dart';
 import 'package:intl/intl.dart';
@@ -89,9 +90,17 @@ class AddictionListScreen extends StatelessWidget {
                       alignment: Alignment.center,
                       child: SubmitButton(
                           text: 'Save new tracker',
-                          onPressed: () {
-                            addictionTrackViewModel.updateAddictionTracker();
-                            Navigator.pop(context);
+                          onPressed: () async {
+                            bool success = await addictionTrackViewModel
+                                .updateAddictionTracker();
+                            if (success) {
+                              Navigator.pop(context);
+                              Fluttertoast.showToast(
+                                  msg: "Addiction tracker saved successful");
+                            } else {
+                              Fluttertoast.showToast(
+                                  msg: "Error. Please try again");
+                            }
                           })),
                 ],
               ),

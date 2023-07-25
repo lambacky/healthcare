@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:healthcare/components/track_card.dart';
 import 'package:healthcare/view-models/track_view_model.dart';
 import 'package:provider/provider.dart';
@@ -19,9 +20,15 @@ class HistoryScreen extends StatelessWidget {
             child: const Text('Cancel'),
           ),
           TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              context.read<TrackViewModel>().deleteTrack(index);
+            onPressed: () async {
+              bool success =
+                  await context.read<TrackViewModel>().deleteTrack(index);
+              if (success) {
+                Navigator.pop(context);
+                Fluttertoast.showToast(msg: "Running track deleted successful");
+              } else {
+                Fluttertoast.showToast(msg: "Error. Please try again");
+              }
             },
             child: const Text('Yes'),
           ),

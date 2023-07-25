@@ -68,12 +68,8 @@ class _TrackingScreenState extends State<TrackingScreen> {
             child: const Text('Cancel'),
           ),
           TextButton(
-            onPressed: () async {
-              var navigator = Navigator.of(context);
-              await _saveRun(context);
-              navigator.pop();
-              navigator.pop();
-              Fluttertoast.showToast(msg: "Running track saved successfully");
+            onPressed: () {
+              _saveRun(context);
             },
             child: const Text('Save'),
           ),
@@ -83,10 +79,17 @@ class _TrackingScreenState extends State<TrackingScreen> {
   }
 
   Future<void> _saveRun(BuildContext context) async {
-    await context.read<TrackViewModel>().saveRun();
-    await context
-        .read<TargetViewModel>()
-        .updateTargets(context.read<TrackViewModel>().track.distance);
+    bool success = await context.read<TrackViewModel>().saveRun();
+    if (success) {
+      Navigator.pop(context);
+      Navigator.pop(context);
+      Fluttertoast.showToast(msg: "Running track saved successful");
+      await context
+          .read<TargetViewModel>()
+          .updateTargets(context.read<TrackViewModel>().track.distance);
+    } else {
+      Fluttertoast.showToast(msg: "Error. Please try again");
+    }
   }
 
   void _closeScreen() {
@@ -109,12 +112,8 @@ class _TrackingScreenState extends State<TrackingScreen> {
             child: const Text('No'),
           ),
           TextButton(
-            onPressed: () async {
-              var navigator = Navigator.of(context);
-              await _saveRun(context);
-              navigator.pop();
-              navigator.pop();
-              Fluttertoast.showToast(msg: "Running track saved successfully");
+            onPressed: () {
+              _saveRun(context);
             },
             child: const Text('Save'),
           ),
@@ -226,9 +225,11 @@ class _TrackingScreenState extends State<TrackingScreen> {
                                   fixedSize: const Size(90, 90),
                                   shape: const CircleBorder(),
                                   backgroundColor: Colors.red),
-                              onPressed: trackViewModel.runningState != "run"
-                                  ? trackViewModel.startRun
-                                  : trackViewModel.stopRun,
+                              onPressed: () {
+                                trackViewModel.runningState != "run"
+                                    ? trackViewModel.startRun()
+                                    : trackViewModel.stopRun();
+                              },
                               child: trackViewModel.runningState == "none"
                                   ? const Text("START",
                                       style: TextStyle(fontSize: 13))

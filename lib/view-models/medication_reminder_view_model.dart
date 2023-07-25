@@ -1,5 +1,4 @@
 import 'dart:math';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:healthcare/constants/constants.dart';
 import 'package:healthcare/models/medication_reminder.dart';
@@ -44,20 +43,26 @@ class MedicationReminderViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> deleteReminder(int index) async {
+  Future<bool> deleteReminder(int index) async {
     try {
-      await FireBaseService().updateData({
-        'medicine': FieldValue.arrayRemove([_reminders[index].toJson()])
-      });
       for (var id in _reminders[index].notificationIds) {
         await NotificationService().cancelNotification(id);
       }
       _reminders.removeAt(index);
+      await updateData();
       notifyListeners();
-    } catch (e) {}
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
 
-  Future<void> updateReminder() async {
+  Future<void> updateData() async {
+    List<dynamic> reminders = _reminders.map((item) => item.toJson()).toList();
+    await FireBaseService().updateData({'medicine': reminders});
+  }
+
+  Future<bool> updateReminder() async {
     try {
       List<int> notificationIds = [];
       for (var scheduleTime in _reminder.schedule) {
@@ -81,13 +86,11 @@ class MedicationReminderViewModel extends ChangeNotifier {
       } else {
         _reminders.add(_reminder);
       }
-
-      List<dynamic> reminders =
-          _reminders.map((item) => item.toJson()).toList();
-      await FireBaseService().updateData({'medicine': reminders});
+      await updateData();
       notifyListeners();
+      return true;
     } catch (e) {
-      print(e);
+      return false;
     }
   }
 

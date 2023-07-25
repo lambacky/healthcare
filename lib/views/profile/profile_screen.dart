@@ -23,9 +23,16 @@ class ProfileScreen extends StatelessWidget {
             child: const Text('Cancel'),
           ),
           TextButton(
-            onPressed: () {
-              context.read<PhysicStatViewModel>().deletePhysicStat();
-              Navigator.pop(context);
+            onPressed: () async {
+              bool success =
+                  await context.read<PhysicStatViewModel>().deletePhysicStat();
+              if (success) {
+                Navigator.pop(context);
+                Fluttertoast.showToast(
+                    msg: "Physical status deleted successful");
+              } else {
+                Fluttertoast.showToast(msg: "Error. Please try again");
+              }
             },
             child: const Text('Yes'),
           ),
@@ -80,9 +87,17 @@ class ProfileScreen extends StatelessWidget {
                           text: 'Save new profile',
                           onPressed: !userViewModel.isValid
                               ? null
-                              : () {
-                                  userViewModel.updateUserModel();
-                                  Navigator.pop(context);
+                              : () async {
+                                  bool success =
+                                      await userViewModel.updateUserModel();
+                                  if (success) {
+                                    Navigator.pop(context);
+                                    Fluttertoast.showToast(
+                                        msg: "User profile updated successful");
+                                  } else {
+                                    Fluttertoast.showToast(
+                                        msg: "Error. Please try again");
+                                  }
                                 })),
                 ],
               ),

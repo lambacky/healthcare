@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:healthcare/view-models/physical_status_view_model.dart';
 import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
@@ -98,8 +99,15 @@ class ScoreScreen extends StatelessWidget {
                 height: 20,
               ),
               GestureDetector(
-                onTap: () {
+                onTap: () async {
                   physicStatViewModel.updatePhysicStat();
+                  bool success = await physicStatViewModel.updatePhysicStat();
+                  if (success) {
+                    Fluttertoast.showToast(
+                        msg: "Physical status saved successful");
+                  } else {
+                    Fluttertoast.showToast(msg: "Error. Please try again");
+                  }
                 },
                 child: const Text(
                   'Save as your physical status?',
