@@ -49,7 +49,6 @@ dependencies:
   geolocator: ^9.0.2
   flutter_launcher_icons: ^0.13.1
   stop_watch_timer: ^3.0.0
-  syncfusion_flutter_charts: ^22.1.39
   intl: ^0.18.1
   firebase_storage: ^11.2.2
   geocoding: ^2.1.0
