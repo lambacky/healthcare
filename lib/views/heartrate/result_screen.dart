@@ -3,7 +3,7 @@ import 'package:syncfusion_flutter_gauges/gauges.dart';
 
 // ignore: must_be_immutable
 class ResultScreen extends StatelessWidget {
-  final double bpm;
+  final int bpm;
 
   String? bpmStatus;
 
@@ -42,26 +42,37 @@ class ResultScreen extends StatelessWidget {
           padding: const EdgeInsets.all(30),
           child: Column(
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text((bpm.round().toString()),
-                      style: const TextStyle(
-                          fontSize: 70, fontWeight: FontWeight.w500)),
-                  const SizedBox(width: 30),
-                  const Column(
-                    children: [
-                      Icon(
-                        Icons.favorite,
-                        size: 30,
-                        color: Colors.red,
-                      ),
-                      Text(" bpm",
-                          style: TextStyle(
-                              fontSize: 30, fontWeight: FontWeight.w500)),
-                    ],
-                  ),
-                ],
+              Container(
+                height: 250,
+                width: 250,
+                decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: const Color.fromARGB(255, 255, 168, 162),
+                      width: 10,
+                    )),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text((bpm.toString()),
+                        style: const TextStyle(
+                            fontSize: 70, fontWeight: FontWeight.w500)),
+                    const SizedBox(width: 10),
+                    const Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.favorite,
+                          size: 30,
+                          color: Colors.red,
+                        ),
+                        Text(" bpm",
+                            style: TextStyle(
+                                fontSize: 30, fontWeight: FontWeight.w500)),
+                      ],
+                    ),
+                  ],
+                ),
               ),
               const SizedBox(height: 30),
               SfLinearGauge(
@@ -72,7 +83,7 @@ class ResultScreen extends StatelessWidget {
                 axisTrackStyle: const LinearAxisTrackStyle(thickness: 0),
                 markerPointers: [
                   LinearShapePointer(
-                      value: bpm,
+                      value: bpm.toDouble(),
                       shapeType: LinearShapePointerType.triangle,
                       position: LinearElementPosition.inside)
                 ],
@@ -115,9 +126,12 @@ class ResultScreen extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: const TextStyle(fontSize: 20),
               ),
-              const Expanded(child: SizedBox()),
-              const Text("Note: This result is only for reference"),
-              const SizedBox(height: 30)
+              const Spacer(),
+              const Text(
+                "Note: This result is only for reference",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 20)
             ],
           ),
         ),

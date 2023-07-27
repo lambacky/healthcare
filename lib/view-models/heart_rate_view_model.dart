@@ -10,7 +10,6 @@ class HeartRateViewModel extends ChangeNotifier {
   late bool _isProcessing;
   List<SensorData> _data = [];
   List<double> _bpms = [];
-  List<double> get bpms => _bpms;
   Timer? _bpmTimer;
   late String _text;
   String get text => _text;
@@ -46,8 +45,6 @@ class HeartRateViewModel extends ChangeNotifier {
     double avg2 = cameraImage.planes[2].bytes
             .reduce((value, element) => value + element) /
         cameraImage.planes[2].bytes.length;
-    print(
-        '${avg.toStringAsFixed(1)}, ${avg1.toStringAsFixed(1)}, ${avg2.toStringAsFixed(1)}');
 
     if (avg < 100 && avg1 > 150 && avg2 > 150) {
       if (_data.isEmpty) {
@@ -112,6 +109,11 @@ class HeartRateViewModel extends ChangeNotifier {
       bpm = bpm / counter;
       _bpms.add(bpm);
     }
+  }
+
+  int getFinalResult() {
+    return (_bpms.reduce((value, element) => value + element) / _bpms.length)
+        .round();
   }
 
   Future<void> cancel() async {

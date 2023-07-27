@@ -19,13 +19,11 @@ class HeartRateScreen extends StatelessWidget {
       return;
     }
     Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => MonitorScreen(
-          cameras: value,
-        ),
-      ),
-    );
+        context,
+        MaterialPageRoute(
+            builder: (context) => MonitorScreen(
+                  cameras: value,
+                )));
   }
 
   _openDialog(BuildContext context) {

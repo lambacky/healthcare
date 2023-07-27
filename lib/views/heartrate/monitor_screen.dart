@@ -2,7 +2,6 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import 'package:provider/provider.dart';
-import 'package:syncfusion_flutter_charts/charts.dart';
 import '../../view-models/heart_rate_view_model.dart';
 import 'result_screen.dart';
 
@@ -24,9 +23,7 @@ class _MeasureScreenState extends State<MonitorScreen> {
   _goToResultScreen() {
     final heartRateViewModel = context.read<HeartRateViewModel>();
     if (heartRateViewModel.value == 1) {
-      double bpm =
-          heartRateViewModel.bpms.reduce((value, element) => value + element) /
-              heartRateViewModel.bpms.length;
+      int bpm = heartRateViewModel.getFinalResult();
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -84,24 +81,6 @@ class _MeasureScreenState extends State<MonitorScreen> {
                     const SizedBox(height: 20),
                     Text(heartRateViewModel.text,
                         style: const TextStyle(fontSize: 18)),
-                    // const SizedBox(height: 30),
-                    // Expanded(
-                    //   child: SfCartesianChart(
-                    //       margin: const EdgeInsets.all(0),
-                    //       backgroundColor: Colors.black,
-                    //       plotAreaBorderWidth: 0,
-                    //       primaryXAxis: DateTimeAxis(isVisible: false),
-                    //       primaryYAxis: NumericAxis(isVisible: false),
-                    //       series: <ChartSeries>[
-                    //         // Renders fast line chart
-                    //         LineSeries<SensorValue, DateTime>(
-                    //             dataSource: _data,
-                    //             color: Colors.red,
-                    //             width: 3,
-                    //             xValueMapper: (SensorValue data, _) => data.time,
-                    //             yValueMapper: (SensorValue data, _) => data.value)
-                    //       ]),
-                    // )
                   ],
                 ),
               ),

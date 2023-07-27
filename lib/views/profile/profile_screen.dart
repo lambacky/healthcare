@@ -321,7 +321,7 @@ class ProfileScreen extends StatelessWidget {
                                       fontSize: 16)),
                               const SizedBox(height: 10),
                               Text(
-                                  '${physicStatViewModel.physicStat!.height.toString()} kg',
+                                  '${physicStatViewModel.physicStat!.weight.toString()} kg',
                                   style: const TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 16)),
