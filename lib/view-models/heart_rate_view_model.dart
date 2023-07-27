@@ -15,10 +15,13 @@ class HeartRateViewModel extends ChangeNotifier {
   String get text => _text;
   late double _value;
   double get value => _value;
+  // late int _bpm;
+  // int get bpm => _bpm;
 
   Future<void> initialize(CameraDescription camera) async {
     _text = "Place your finger on camera";
     _value = 0;
+    // _bpm = 0;
     _isProcessing = false;
     _data.clear();
     _bpms.clear();
@@ -62,6 +65,7 @@ class HeartRateViewModel extends ChangeNotifier {
         _bpmTimer?.cancel();
         _text = "Place your finger on camera";
         _value = 0;
+        // _bpm = 0;
       }
     }
     if (_data.length >= 50) {
@@ -108,6 +112,8 @@ class HeartRateViewModel extends ChangeNotifier {
     if (counter > 0) {
       bpm = bpm / counter;
       _bpms.add(bpm);
+      // _bpm = bpm.round();
+      // notifyListeners();
     }
   }
 
