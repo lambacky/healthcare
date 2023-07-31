@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:healthcare/services/notification_service.dart';
 import 'package:healthcare/views/medicine/reminder_description_screen.dart';
 import 'package:healthcare/view-models/medication_reminder_view_model.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -12,15 +11,12 @@ class ReminderListScreen extends StatelessWidget {
   const ReminderListScreen({Key? key}) : super(key: key);
 
   void _checkNotificationPermission(BuildContext context) async {
-    bool isGranted = await NotificationService().isAndroidPermissionGranted();
-    if (!isGranted) {
-      bool request = await NotificationService().requestPermissions();
-      if (!request) {
-        _openDialog(context);
-        return;
-      }
-    }
     final reminderViewModel = context.read<MedicationReminderViewModel>();
+    bool isGranted = await reminderViewModel.checkPermission();
+    if (!isGranted) {
+      _openDialog(context);
+      return;
+    }
     reminderViewModel.getReminder(reminderViewModel.reminders.length);
     Navigator.push(
       context,
@@ -29,7 +25,7 @@ class ReminderListScreen extends StatelessWidget {
     );
   }
 
-  _openDialog(BuildContext context) {
+  void _openDialog(BuildContext context) {
     showDialog<String>(
       context: context,
       builder: (BuildContext context) => AlertDialog(

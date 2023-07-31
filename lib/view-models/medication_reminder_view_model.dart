@@ -151,4 +151,12 @@ class MedicationReminderViewModel extends ChangeNotifier {
     _reminder.addScheduleTime(dateTime, scheduleTime);
     checkValid();
   }
+
+  Future<bool> checkPermission() async {
+    bool isGranted = await NotificationService().isAndroidPermissionGranted();
+    if (!isGranted) {
+      isGranted = await NotificationService().requestPermissions();
+    }
+    return isGranted;
+  }
 }

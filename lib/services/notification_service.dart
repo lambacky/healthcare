@@ -62,7 +62,7 @@ class NotificationService {
     return NotificationDetails(
         android: AndroidNotificationDetails(_channel.id, _channel.name,
             channelDescription: _channel.description,
-            priority: Priority.high,
+            priority: Priority.max,
             importance: Importance.max));
   }
 
