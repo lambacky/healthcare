@@ -41,7 +41,7 @@ class MealPlanScreen extends StatelessWidget {
               margin: const EdgeInsets.symmetric(
                 horizontal: 10,
               ),
-              padding: const EdgeInsets.symmetric(horizontal: 30.0),
+              padding: const EdgeInsets.symmetric(horizontal: 10.0),
               height: MediaQuery.of(context).size.height * 0.5,
               decoration: BoxDecoration(
                   color: Colors.white.withOpacity(0.9),
@@ -76,8 +76,8 @@ class MealPlanScreen extends StatelessWidget {
                           text: mealPlanViewModel.targetCalories
                               .truncate()
                               .toString(),
-                          style: TextStyle(
-                            color: Theme.of(context).primaryColor,
+                          style: const TextStyle(
+                            color: Colors.red,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -90,21 +90,14 @@ class MealPlanScreen extends StatelessWidget {
                       ],
                     ),
                   ),
-                  SliderTheme(
-                    data: SliderTheme.of(context).copyWith(
-                      thumbColor: Theme.of(context).primaryColor,
-                      activeTrackColor: Theme.of(context).primaryColor,
-                      inactiveTrackColor: Colors.lightBlue[100],
-                      trackHeight: 6.0,
-                    ),
-                    child: Slider(
-                      min: 0.0,
-                      max: 4500.0,
-                      value: mealPlanViewModel.targetCalories,
-                      onChanged: (value) {
-                        mealPlanViewModel.setTargetCalories(value);
-                      },
-                    ),
+                  Slider(
+                    min: 300,
+                    max: 3000,
+                    value: mealPlanViewModel.targetCalories,
+                    thumbColor: Colors.red,
+                    onChanged: (value) {
+                      mealPlanViewModel.setTargetCalories(value);
+                    },
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 30.0),

@@ -9,7 +9,7 @@ https://docs.flutter.dev/get-started/install/windows
 2. EXECUTION
 
 - Open the program using Visual Studio Code or Android Studio.
-- Connect  an Android phone to computer, or open an android emulator from Android Studio
+- Connect an Android phone to computer, or open an android emulator from Android Studio
 - Run the program by pressing F5 (or Fn + F5), or type the command "flutter run" in terminal.
 
 

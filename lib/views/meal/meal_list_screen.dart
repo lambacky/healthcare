@@ -13,7 +13,7 @@ class MealListScreen extends StatelessWidget {
     final mealPlan = context.read<MealPlanViewModel>().mealPlan;
     return Container(
       height: 140.0,
-      margin: const EdgeInsets.all(20.0),
+      margin: const EdgeInsets.symmetric(vertical: 20.0),
       padding: const EdgeInsets.symmetric(
         horizontal: 15.0,
         vertical: 10.0,
@@ -84,28 +84,28 @@ class MealListScreen extends StatelessWidget {
     );
   }
 
-  Future<void> _showMyDialog(BuildContext context) {
-    return showDialog<void>(
-      context: context,
-      barrierDismissible: false, // user must tap button!
-      builder: (BuildContext context) {
-        return const AlertDialog(
-          title: Text(''),
-          content: SingleChildScrollView(
-            child: ListBody(
-              children: <Widget>[
-                Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Center(child: CircularProgressIndicator()),
-                ),
-                Center(child: Text('Please wait for the recipes to be loaded')),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
+  // Future<void> _showMyDialog(BuildContext context) {
+  //   return showDialog<void>(
+  //     context: context,
+  //     barrierDismissible: false, // user must tap button!
+  //     builder: (BuildContext context) {
+  //       return const AlertDialog(
+  //         title: Text(''),
+  //         content: SingleChildScrollView(
+  //           child: ListBody(
+  //             children: <Widget>[
+  //               Padding(
+  //                 padding: EdgeInsets.all(8.0),
+  //                 child: Center(child: CircularProgressIndicator()),
+  //               ),
+  //               Center(child: Text('Please wait for the recipes to be loaded')),
+  //             ],
+  //           ),
+  //         ),
+  //       );
+  //     },
+  //   );
+  // }
 
   Widget _buildMealCard(int index, BuildContext context) {
     final meal = context.read<MealPlanViewModel>().mealPlan!.meals[index];
@@ -113,9 +113,6 @@ class MealListScreen extends StatelessWidget {
     return GestureDetector(
       onTap: () async {
         var navigator = Navigator.of(context);
-        // _showMyDialog(context);
-        // await context.read<MealPlanViewModel>().fetchMealInfo(meal.id);
-        // navigator.pop();
         navigator.push(
           MaterialPageRoute(
             builder: (_) => MealDetailScreen(id: meal.id),
@@ -133,7 +130,6 @@ class MealListScreen extends StatelessWidget {
                 height: 220.0,
                 width: double.infinity,
                 margin: const EdgeInsets.symmetric(
-                  horizontal: 20.0,
                   vertical: 10.0,
                 ),
                 padding: const EdgeInsets.symmetric(
@@ -175,7 +171,7 @@ class MealListScreen extends StatelessWidget {
             ),
           ),
           Container(
-            margin: const EdgeInsets.all(60.0),
+            margin: const EdgeInsets.all(50.0),
             padding: const EdgeInsets.all(10.0),
             color: Colors.black45,
             child: Column(
@@ -222,18 +218,10 @@ class MealListScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final mealPlanViewModel = context.watch<MealPlanViewModel>();
-    // context.read<MealPlanViewModel>().fetchMealPlan();
     return Scaffold(
         appBar: AppBar(
           centerTitle: true,
           title: const Text("Meal Plan"),
-          leading: BackButton(onPressed: () {
-            if (mealPlanViewModel.isSaved) {
-              Navigator.popUntil(context, (route) => route.isFirst);
-            } else {
-              Navigator.pop(context);
-            }
-          }),
         ),
         body: mealPlanViewModel.loading
             ? const Center(child: CircularProgressIndicator())
@@ -247,44 +235,49 @@ class MealListScreen extends StatelessWidget {
                     onRefresh: () async {
                       mealPlanViewModel.fetchMealPlan();
                     },
-                    child: ListView.builder(
-                      itemCount: 2 + mealPlanViewModel.mealPlan!.meals.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        if (index == 0) {
-                          return Padding(
-                            padding: const EdgeInsets.fromLTRB(60, 20, 60, 0),
-                            child: SubmitButton(
-                                text: mealPlanViewModel.isSaved
-                                    ? 'Change the diet'
-                                    : 'Save the plan',
-                                onPressed: mealPlanViewModel.isSaved
-                                    ? () async {
-                                        bool success = await mealPlanViewModel
-                                            .changeMealPlan();
-                                        if (!success) {
-                                          Fluttertoast.showToast(
-                                              msg: "Error. Please try again");
+                    child: Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: ListView.builder(
+                        itemCount: 2 + mealPlanViewModel.mealPlan!.meals.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          if (index == 0) {
+                            return Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 50),
+                              child: SubmitButton(
+                                  text: mealPlanViewModel.isSaved
+                                      ? 'Change the diet'
+                                      : 'Save the plan',
+                                  onPressed: mealPlanViewModel.isSaved
+                                      ? () async {
+                                          bool success = await mealPlanViewModel
+                                              .changeMealPlan();
+                                          if (!success) {
+                                            Fluttertoast.showToast(
+                                                msg: "Error. Please try again");
+                                          }
                                         }
-                                      }
-                                    : () async {
-                                        bool success = await mealPlanViewModel
-                                            .saveMealPlan();
-                                        if (success) {
-                                          Fluttertoast.showToast(
-                                              msg:
-                                                  "Meal plan saved successful");
-                                        } else {
-                                          Fluttertoast.showToast(
-                                              msg: "Error. Please try again");
-                                        }
-                                      }),
-                          );
-                        }
-                        if (index == 1) {
-                          return _buildTotalNutrientsCard(context);
-                        }
-                        return _buildMealCard(index - 2, context);
-                      },
+                                      : () async {
+                                          bool success = await mealPlanViewModel
+                                              .saveMealPlan();
+                                          if (success) {
+                                            Navigator.pop(context);
+                                            Fluttertoast.showToast(
+                                                msg:
+                                                    "Meal plan saved successful");
+                                          } else {
+                                            Fluttertoast.showToast(
+                                                msg: "Error. Please try again");
+                                          }
+                                        }),
+                            );
+                          }
+                          if (index == 1) {
+                            return _buildTotalNutrientsCard(context);
+                          }
+                          return _buildMealCard(index - 2, context);
+                        },
+                      ),
                     )));
   }
 }
