@@ -156,6 +156,9 @@ class MealListScreen extends StatelessWidget {
             placeholder: (context, url) => Container(
               height: 220.0,
               width: double.infinity,
+              margin: const EdgeInsets.symmetric(
+                vertical: 10.0,
+              ),
               decoration: BoxDecoration(
                 color: Colors.grey,
                 borderRadius: BorderRadius.circular(12.0),
@@ -164,6 +167,9 @@ class MealListScreen extends StatelessWidget {
             errorWidget: (context, url, error) => Container(
               height: 220.0,
               width: double.infinity,
+              margin: const EdgeInsets.symmetric(
+                vertical: 10.0,
+              ),
               decoration: BoxDecoration(
                 color: Colors.grey,
                 borderRadius: BorderRadius.circular(12.0),
