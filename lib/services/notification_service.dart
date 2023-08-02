@@ -58,32 +58,31 @@ class NotificationService {
     return granted ?? false;
   }
 
-  Future notificationDetails() async {
+  NotificationDetails notificationDetails() {
     return NotificationDetails(
         android: AndroidNotificationDetails(_channel.id, _channel.name,
             channelDescription: _channel.description,
-            priority: Priority.max,
+            priority: Priority.high,
             importance: Importance.max));
   }
 
-  Future showNotification(
+  Future<void> showNotification(
       {int id = 0, String? title, String? body, String? payLoad}) async {
-    return _notificationsPlugin.show(
-        id, title, body, await notificationDetails());
+    await _notificationsPlugin.show(id, title, body, notificationDetails());
   }
 
-  Future scheduleNotification(
+  Future<void> scheduleNotification(
       {required int id,
       String? title,
       String? body,
       String? payLoad,
       required TimeOfDay scheduleTime}) async {
-    return _notificationsPlugin.zonedSchedule(
+    await _notificationsPlugin.zonedSchedule(
       id,
       title,
       body,
       scheduleDailyTime(scheduleTime),
-      await notificationDetails(),
+      notificationDetails(),
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
       uiLocalNotificationDateInterpretation:
           UILocalNotificationDateInterpretation.absoluteTime,
@@ -102,7 +101,6 @@ class NotificationService {
 
   Future<void> cancelAllNotifications() async {
     await _notificationsPlugin.cancelAll();
-    print('delete');
   }
 
   Future<void> cancelNotification(int id) async {
